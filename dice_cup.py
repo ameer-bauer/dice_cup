@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 0.0.1
-#Date: 2015-04-17
+#Version: 0.0.2
+#Date: 2015-04-22
 #----------------
 
 import os
@@ -21,12 +21,7 @@ parser.add_argument("-m", nargs='?', type=int, help="Add or subtract a roll modi
 parser.add_argument("-n", nargs='?', type=int, help="Set the number of rolls to make.", metavar='roll #')
 args = parser.parse_args()
 
-version = "0.0.1"
-
-def d_roll (d, s): #Dice rolling function (random integer in range from 1 -> dice type.
-    random.seed(s)  #Initialize the random number generator with of random data
-    r = random.randint (1, d)
-    return r
+version = "0.0.2"
 
 if args.v:
     print('dice_cup version:', version)
@@ -55,7 +50,7 @@ if args.h:
     print('      -----\n      Ideal Average: \'X\'\n      Roll  Average: \'Y\'')
     print('\n    \"Quiet Mode\" will just simply render a roll outcome per line.')
     print('\nEXAMPLES\n  python3 dice_cup.py -d 6 -n 3')
-    print('    Prints the \"Standard Mode\" output for 3 unmodified single (d6) rolls.')
+    print('    Prints the \"Standard Mode\" output for a single (d6) roll 3 times.')
     print('\n  python3 dice_cup.py -c 3 -d 8 -m 10 -n 2')
     print('    Prints the \"Standard Mode\" output for 3(d8)+10 roll 2 times.')
     print('\n  python3 dice_cup.py -q -d 100 -m \-20 -n 30')
@@ -64,8 +59,18 @@ if args.h:
 
 n = 1 #Set the default number of dice to roll.
 c = 1 #Set the default dice combination.
-a = 0 #Set the initial average counter.
 m = 0 #Set the initial modifier value
+
+def d_roll (s, t = 6, c = 1, m = 0):
+    #Dice rolling: (random integer in range from 1 -> t (dice type)
+    #Default input, with s defined, yields roll = 1(d6)+0
+    #d_roll with parameters set yield a roll = c(dt)+m
+    #s is the seed for the RNG, use at LEAST 8 bytes of random data.
+    roll = 0
+    random.seed(s)
+    for x in range(c):
+        roll += random.randint (1, t)
+    return (roll + m)
 
 if args.n and args.n > 0:
     n = args.n
@@ -77,31 +82,25 @@ if args.m:
     m = args.m
 
 if args.d and args.d > 0:
+    a = 0 #Initialize the average counter to 0
     c_str = str(c)
     d_str = str(args.d)
     m_str = str(m)
     n_len = len(str(n))
-    
     for x in range(n):
-        r = 0 #Set the initial random value.
-        for y in range(c):
-            s = os.urandom(16) #Get 16 bytes of crypto-sound sudo-random data.
-            d_r = d_roll(args.d, s)
-            r += d_r
-        if args.m:
-            r += m #Apply a modifier if present
+        r = d_roll(os.urandom(16), args.d, c, m) #Pass d_roll 16 bytes of OS entropy
         if args.q: #Quiet Mode
             print(r)
         else:
-            if m < 0: #If the roll modifier is negative, adjust the printed output to show "-" instead of "+"
+            if m < 0: #If the roll modifier is negative, adjust printed output for "-" instead of "+"
                 print(repr(x+1).rjust(n_len), '|', c_str+'(d'+d_str+')'+m_str+' :', r)
             else:
                 print(repr(x+1).rjust(n_len), '|', c_str+'(d'+d_str+')+'+m_str+' :', r)
             a += r
     if a:
         a = a / n #Calculate roll average.
-        n = (c * ((args.d + 1) / 2)) + m
-        print('-----\nIdeal Average:', n)
+        r = (c * ((args.d + 1) / 2)) + m #Calculate the ideal average. 
+        print('-----\nIdeal Average:', r)
         print('Roll  Average:', a) 
     sys.exit()
 
