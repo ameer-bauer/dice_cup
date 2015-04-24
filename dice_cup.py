@@ -13,7 +13,7 @@ import random
 def pos_int(p): #a funtion for argparse 'type' to call for checking input values
     int_p = int(p)
     if int_p <= 0:
-        msg = "%r is not a positive integer." % string
+        msg = "%r is not a positive integer." % p
         raise argparse.ArgumentTypeError(msg)
     return int_p
 
