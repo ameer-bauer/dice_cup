@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.0.1
+#Version: 1.0.2
 #Date: 2015-04-24
 #----------------
 
@@ -10,19 +10,37 @@ import sys
 import argparse
 import random
 
+def pos_int(p): #a funtion for argparse 'type' to call for checking input values
+    int_p = int(p)
+    if int_p <= 0:
+        msg = "%r is not a positive integer." % string
+        raise argparse.ArgumentTypeError(msg)
+    return value
+
+def d_roll (s, t = 6, c = 1, m = 0):
+    #Dice rolling: (random integer in range from 1 -> t (dice type)
+    #Default input, with s defined, yields roll = 1(d6)+0
+    #d_roll with parameters set yield a roll = c(dt)+m
+    #s is the seed for the RNG, use at LEAST 8 bytes of random data
+    roll = 0
+    random.seed(s)
+    for x in range(c):
+        roll += random.randint (1, t)
+    return (roll + m)
+
 #Setup all of the flags and options to be passed from the CLI
 parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cup, a CLI-based dice rolling program.')
 parser.add_argument("-h", action='store_true', help="Display the help page.")
 parser.add_argument("-v", action='store_true', help="Display version information.")
 parser.add_argument("-q", action='store_true', help="Quiet Mode: only display rolled numbers.")
-parser.add_argument("-c", nargs='?', default=1, type=int, help="Set combination of dice to roll.", metavar='# (dice)')
-parser.add_argument("-d", nargs='?', type=int, help="(REQUIRED) Define the dice type to roll.", metavar='# (type)')
+parser.add_argument("-c", nargs='?', default=1, type=pos_int, help="Set combination of dice to roll.", metavar='# (dice)')
+parser.add_argument("-d", nargs='?', type=int, help="*REQUIRED* Set the dice type to roll.", metavar='# (type)')
 parser.add_argument("-m", nargs='?', default=0, type=int, help="Add or subtract a roll modifier.", metavar='# or \-#')
-parser.add_argument("-n", nargs='?', default=1, type=int, help="Set the number of rolls in a group.", metavar='# (rolls)')
-parser.add_argument("-s", nargs='?', default=1, type=int, help="How many sets of groups to roll.", metavar='# (sets)')
+parser.add_argument("-n", nargs='?', default=1, type=pos_int, help="Set the number of rolls in a group.", metavar='# (rolls)')
+parser.add_argument("-s", nargs='?', default=1, type=pos_int, help="Define how many \'sets of groups\' to roll.", metavar='# (sets)')
 args = parser.parse_args()
 
-version = "1.0.1"
+version = "1.0.2"
 
 if args.v:
     print('dice_cup version:', version)
@@ -80,17 +98,6 @@ if args.h:
     print('\n  python3 dice_cup.py -q -d 100 -m \-20 -n 30 -s 2')
     print('    Prints the Quiet Mode output for 2{30[1(d100)-20]} rolls.')
     sys.exit()
-
-def d_roll (s, t = 6, c = 1, m = 0):
-    #Dice rolling: (random integer in range from 1 -> t (dice type)
-    #Default input, with s defined, yields roll = 1(d6)+0
-    #d_roll with parameters set yield a roll = c(dt)+m
-    #s is the seed for the RNG, use at LEAST 8 bytes of random data
-    roll = 0
-    random.seed(s)
-    for x in range(c):
-        roll += random.randint (1, t)
-    return (roll + m)
 
 if args.d and args.d > 1:
     c_str = str(args.c)
