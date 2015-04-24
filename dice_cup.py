@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.0.0
-#Date: 2015-04-23
+#Version: 1.0.1
+#Date: 2015-04-24
 #----------------
 
 import os
@@ -15,14 +15,14 @@ parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cu
 parser.add_argument("-h", action='store_true', help="Display the help page.")
 parser.add_argument("-v", action='store_true', help="Display version information.")
 parser.add_argument("-q", action='store_true', help="Quiet Mode: only display rolled numbers.")
-parser.add_argument("-c", nargs='?', type=int, help="Set combination of dice to roll.", metavar='# dice')
-parser.add_argument("-d", nargs='?', type=int, help="(REQUIRED) Define the dice type to roll.", metavar='# type')
-parser.add_argument("-m", nargs='?', type=int, help="Add or subtract a roll modifier.", metavar='# or \-#')
-parser.add_argument("-n", nargs='?', type=int, help="Define the number of rolls in a group.", metavar='# rolls')
-parser.add_argument("-s", nargs='?', type=int, help="Define the number of sets to roll.", metavar='# sets')
+parser.add_argument("-c", nargs='?', default=1, type=int, help="Set combination of dice to roll.", metavar='# (dice)')
+parser.add_argument("-d", nargs='?', type=int, help="(REQUIRED) Define the dice type to roll.", metavar='# (type)')
+parser.add_argument("-m", nargs='?', default=0, type=int, help="Add or subtract a roll modifier.", metavar='# or \-#')
+parser.add_argument("-n", nargs='?', default=1, type=int, help="Set the number of rolls in a group.", metavar='# (rolls)')
+parser.add_argument("-s", nargs='?', default=1, type=int, help="How many sets of groups to roll.", metavar='# (sets)')
 args = parser.parse_args()
 
-version = "1.0.0"
+version = "1.0.1"
 
 if args.v:
     print('dice_cup version:', version)
@@ -81,11 +81,6 @@ if args.h:
     print('    Prints the Quiet Mode output for 2{30[1(d100)-20]} rolls.')
     sys.exit()
 
-n = 1 #Set the default number of dice to roll.
-c = 1 #Set the default dice combination.
-m = 0 #Set the default modifier value
-s = 1 #Set the default set value
-
 def d_roll (s, t = 6, c = 1, m = 0):
     #Dice rolling: (random integer in range from 1 -> t (dice type)
     #Default input, with s defined, yields roll = 1(d6)+0
@@ -97,41 +92,29 @@ def d_roll (s, t = 6, c = 1, m = 0):
         roll += random.randint (1, t)
     return (roll + m)
 
-if args.n and args.n > 0:
-    n = args.n
-
-if args.c and args.c > 0:
-    c = args.c
-
-if args.s and args.s > 0:
-    s = args.s
-
-if args.m:
-    m = args.m
-
 if args.d and args.d > 1:
-    c_str = str(c)
+    c_str = str(args.c)
     d_str = str(args.d)
-    m_str = str(m)
-    n_len = len(str(n))
-    for y in range(s):
+    m_str = str(args.m)
+    n_len = len(str(args.n))
+    for y in range(args.s):
         a = 0 #Initialize the average counter to 0
         if not args.q:
             print('-----\nSet', (y+1))
         print('-----')
-        for x in range(n):
-            r = d_roll(os.urandom(16), args.d, c, m) #Pass d_roll 16 bytes of OS entropy
+        for x in range(args.n):
+            r = d_roll(os.urandom(16), args.d, args.c, args.m) #Pass d_roll 16 bytes of OS entropy
             if args.q: #Quiet Mode
                 print(r)
             else:
-                if m < 0: #If the roll modifier is negative, adjust printed output for "-" instead of "+"
+                if args.m < 0: #If the roll modifier is negative, adjust printed output for "-" instead of "+"
                     print(repr(x+1).rjust(n_len), '|', c_str+'(d'+d_str+')'+m_str+' :', r)
                 else:
                     print(repr(x+1).rjust(n_len), '|', c_str+'(d'+d_str+')+'+m_str+' :', r)
                 a += r
         if not args.q:
-            a = a / n #Calculate roll average.
-            r = (c * ((args.d + 1) / 2)) + m #Calculate the ideal average. 
+            a = a / args.n #Calculate roll average.
+            r = (args.c * ((args.d + 1) / 2)) + args.m #Calculate the ideal average. 
             print('-----\nIdeal Average:', r)
             print('Group Average:', a) 
     sys.exit()
