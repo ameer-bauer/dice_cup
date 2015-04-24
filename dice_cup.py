@@ -15,7 +15,7 @@ def pos_int(p): #a funtion for argparse 'type' to call for checking input values
     if int_p <= 0:
         msg = "%r is not a positive integer." % string
         raise argparse.ArgumentTypeError(msg)
-    return value
+    return int_p
 
 def d_roll (s, t = 6, c = 1, m = 0):
     #Dice rolling: (random integer in range from 1 -> t (dice type)
