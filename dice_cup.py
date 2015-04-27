@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.0.2
-#Date: 2015-04-24
+#Version: 1.1.0
+#Date: 2015-04-27
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-def pos_int(p): #a funtion for argparse 'type' to call for checking input values
+def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
     if int_p <= 0:
         msg = "%r is not a positive integer." % p
@@ -33,14 +33,13 @@ parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cu
 parser.add_argument("-h", action='store_true', help="Display the help page.")
 parser.add_argument("-v", action='store_true', help="Display version information.")
 parser.add_argument("-q", action='store_true', help="Quiet Mode: only display rolled numbers.")
-parser.add_argument("-c", nargs='?', default=1, type=pos_int, help="Set combination of dice to roll.", metavar='# (dice)')
-parser.add_argument("-d", nargs='?', type=int, help="*REQUIRED* Set the dice type to roll.", metavar='# (type)')
-parser.add_argument("-m", nargs='?', default=0, type=int, help="Add or subtract a roll modifier.", metavar='# or \-#')
-parser.add_argument("-n", nargs='?', default=1, type=pos_int, help="Set the number of rolls in a group.", metavar='# (rolls)')
-parser.add_argument("-s", nargs='?', default=1, type=pos_int, help="Define how many \'sets of groups\' to roll.", metavar='# (sets)')
+parser.add_argument("-d", nargs='+', type=str, help="*REQUIRED* Set the combo and die type(s) to roll.", metavar='#,#')
+parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add or subtract a roll modifier.", metavar='# or \-#')
+parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define the number of rolls in a Group.", metavar='#')
+parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Groups\' to roll.", metavar='#')
 args = parser.parse_args()
 
-version = "1.0.2"
+version = "1.1.0"
 
 if args.v:
     print('dice_cup version:', version)
@@ -50,80 +49,116 @@ if args.h:
     print('Introduction to dice_cup', version)
     print('  Hello, dice_cup is a CLI program written in Python 3.x to simulate')
     print('  the outcome of various types of dice rolls. Die types can be set')
-    print('  arbitrarily greater than 1, making for fun dice types like (d11).')
-    print('\nSYNTAX\n  python3 dice_cup.py [-h] [-v] [-q] [-c] [-d] [-m] [-n] [-s]')
+    print('  arbitrarily greater than 1, making for fun dice types like an eleven-')
+    print('  sided die, or \"1(d11)\".  The nomenclature for die rolls herein is as')
+    print('  follows: \"set\"{\"group\"[\"combination\"(\"die type\")+\\-\"modifier\"]}')
+    print('\nSYNTAX\n  python3 dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s]')
     print('\nARGUMENTS')
     print('  -h Displays this help page.\n')
     print('  -v Displays the version of dice_cup.\n')
     print('  -q Quiet Mode: Only displays a set marker and roll outcomes followed')
     print('     by a new line.\n')
-    print('  -c Choose a combination of the specified dice to roll, such as three six-')
-    print('     sided dice, or 3(d6).')
-    print('     <defaults to c = 1>\n')
-    print('  -d Specify the dice type, such as \'-d 6\' for a six-sided die, or a (d6),')
-    print('     and \'-d 100\' for a percentile die, or a (d100).\n')
+    print('  -d Specify the combination and die type(s) to roll.  Single or multiple')
+    print('     parameter pairs may be entered to combine various die types.  The')
+    print('     input pairs must be POSITIVE INTEGERS separated by a \',\' as below.\n')
+    print('     INPUT PAIR FORMAT')
+    print('       Single die types: \'-d A,B\', where A > 0 and B > 1, yields a')
+    print('         die roll of \'A\' combinations of \'B\'-sided dice.  The input')
+    print('         \'-d 1,6\' will roll a single six-sided die, or \"1(d6)\", and the')
+    print('         input \'-d 2,10\' will roll two ten-sided dice, or \"2(d10)\".')
+    print('       Multiple die types: \'-d A,B C,D ... Y,Z\' yields multiple dice')
+    print('         rolled together in form \"A(dB) + C(dD) + ... + Y(dZ)\", where the')
+    print('         first number of each parameter pair must be greater than 0, while')
+    print('         the second number of each pair must be greater than 1.  The input')
+    print('         \'-d 1,6 2,4 4,3\' will roll \"1(d6) + 2(d4) + 4(d3)\".\n')
     print('  -m Add or subtract a modifier to a roll; addition is the default action.')
     print('     <defaults to m = 0>')
     print('     **Note: to enter a NEGATIVE number, the \'-\' must be escaped.')
     print('             i.e. for a (-4) modifier, the appropriate flag is \'-m \-4\'.')
     print('                  for a (+7) modifier, the appropriate flag is \'-m 7\'.\n')
-    print('  -n Define the number of dice combos you wish to roll in a group at once.')
-    print('     Such as, rolling a group of three combos of two six-sided dice,')
-    print('     or 3[2(d6)+0].')
-    print('     <defaults to n = 1>\n')
-    print('  -s Define how many sets of groups you wish to roll. Such as, two sets of')
-    print('     groups containing three combos of two six-sided dice, or 2{3[2(d6)+0]}.')
-    print('     <defaults to s = 1>')
+    print('  -g Define the number of dice combos you wish to roll in a Group at once.')
+    print('     Such as rolling a Group of three combos of two six-sided dice,')
+    print('     or \"3[2(d6)+0]\".  <defaults to g = 1>\n')
+    print('  -s Define how many Sets of Groups you wish to roll. Such as, two sets of')
+    print('     Groups containing three combos of two six-sided dice,')
+    print('     or \"2{3[2(d6)+0]}\".  <defaults to s = 1>\n')
     print('\nOUTPUT FORMAT\n  Note that dice_cup has two modes of output:\n')
     print('   1. Standard Mode: will print the set number, a single line for each dice')
     print('      roll in the group, the Ideal (probabilistic) average, and the Group')
     print('      (actually rolled) average.\n')
     print('      The dice_cup output for a single set with multiple rolls in a group:')
-    print('        -----\n        Set 1\n        -----')
-    print('        \'1\' | \'roll combination\' : \'outcome\'')
-    print('        \'2\' | \'roll combination\' : \'outcome\'')
-    print('        \'.\' | \'        .       \' : \'   .   \'')
-    print('        \'.\' | \'        .       \' : \'   .   \'')
-    print('        \'.\' | \'        .       \' : \'   .   \'')
-    print('        \'N\' | \'roll combination\' : \'outcome\'')
-    print('        -----\n        Ideal Average: \'X\'\n        Group Average: \'Y\'')
-    print('\n   2. Quiet Mode: will just simply output a set marker (\'-----\') and')
+    print('        --\n        Set 1\n        --')
+    print('        \'1\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('        \'2\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('        \'.\' | \'              .              \' : \'   .   \'')
+    print('        \'.\' | \'              .              \' : \'   .   \'')
+    print('        \'.\' | \'              .              \' : \'   .   \'')
+    print('        \'N\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('        --\n        Ideal Average: \'X\'\n        Group Average: \'Y\'')
+    print('\n   2. Quiet Mode: will just simply output a set marker (\'--\') and')
     print('      a single roll outcome, per line, of the group.')
-    print('\nEXAMPLES\n  python3 dice_cup.py -d 6 -n 3')
-    print('    Prints the Standard Mode output for 3[1(d6)] rolls.')
-    print('\n  python3 dice_cup.py -c 3 -d 8 -m 10 -n 2')
-    print('    Prints the Standard Mode output for 2[3(d8)+10] rolls.')
-    print('\n  python3 dice_cup.py -c 4 -d 10 -n 3 -s 5')
-    print('    Prints the Standard Mode output for 5{4[3(d8)+10]} rolls.')
-    print('\n  python3 dice_cup.py -q -d 100 -m \-20 -n 30 -s 2')
-    print('    Prints the Quiet Mode output for 2{30[1(d100)-20]} rolls.')
+    print('\nEXAMPLES\n  python3 dice_cup.py -d 1,6 -g 3')
+    print('    Prints the Standard Mode output for \"3[1(d6)]\" rolls.')
+    print('\n  python3 dice_cup.py -d 3,8 -m 10 -g 2')
+    print('    Prints the Standard Mode output for \"2[3(d8)+10]\" rolls.')
+    print('\n  python3 dice_cup.py -d 1,10 2,6 -g 4 -m 10 -s 5')
+    print('    Prints the Standard Mode output for \"5{4[1(d10)+2(d6)+10]}\" rolls.')
+    print('\n  python3 dice_cup.py -q -d 1,100 -m \-20 -g 30 -s 2')
+    print('    Prints the Quiet Mode output for \"2{30[1(d100)-20]}\" rolls.')
     sys.exit()
 
-if args.d and args.d > 1:
-    c_str = str(args.c)
-    d_str = str(args.d)
+if args.d:
+    p_list = []
     m_str = str(args.m)
-    n_len = len(str(args.n))
+    g_len = len(str(args.g))
+    for x in args.d:
+        d_pair = x.split(',')
+        #Check the -d parameter list for input errors...
+        if len(d_pair) != 2:
+            print('Input Error: flag \'-d\' parameter %r must be a pair of positive integers \'A,B\'.' % x)
+            print('             Please read the dice_cup help by invoking the \'-h\' flag.')
+            sys.exit(1)
+        try:
+            if (int(d_pair[0]) < 1) or (int(d_pair[1]) < 2):
+                print('Input Error: flag \'-d\' parameter %r is out of range; \'A,B\' must have the' % x)
+                print('             MINIMUM VALUES of A = 1 & B = 2; please read the dice_cup help.')
+                sys.exit(1)
+        except ValueError:
+            print('Input Error: flag \'-d\' parameter %r must contain POSITIVE INTEGERS only.' % x)
+            print('             Please read the dice_cup help by invoking the \'-h\' flag.')
+            sys.exit(1)
+        p_list.append(d_pair)#Store the sane -d parameter list
+    a_ideal = 0;
+    for z in p_list:
+        z0_int = int(z[0])
+        z1_int = int(z[1])
+        a_ideal += (z0_int * ((z1_int + 1) / 2)) #Calculate the Ideal average
+    a_ideal += args.m
     for y in range(args.s):
-        a = 0 #Initialize the average counter to 0
+        a_group = 0
         if not args.q:
-            print('-----\nSet', (y+1))
-        print('-----')
-        for x in range(args.n):
-            r = d_roll(os.urandom(16), args.d, args.c, args.m) #Pass d_roll 16 bytes of OS entropy
-            if args.q: #Quiet Mode
-                print(r)
+            print('--\nSet', (y+1))
+        print('--')
+        for x in range(args.g):
+            r = 0
+            if not args.q:
+                print(repr(x+1).rjust(g_len), '|', end = ' ')
+            for z in p_list:
+                z0_int = int(z[0])
+                z1_int = int(z[1])
+                r += d_roll(os.urandom(16), z1_int, z0_int)
+                if not args.q:
+                    print(z[0]+'(d'+z[1]+') +', end = ' ')
+            r += args.m
+            if not args.q:
+                print('('+m_str+') :', r)
             else:
-                if args.m < 0: #If the roll modifier is negative, adjust printed output for "-" instead of "+"
-                    print(repr(x+1).rjust(n_len), '|', c_str+'(d'+d_str+')'+m_str+' :', r)
-                else:
-                    print(repr(x+1).rjust(n_len), '|', c_str+'(d'+d_str+')+'+m_str+' :', r)
-                a += r
+                print(r)
+            a_group += r
+        a_group = a_group / args.g #Calculate the Group roll average
         if not args.q:
-            a = a / args.n #Calculate roll average.
-            r = (args.c * ((args.d + 1) / 2)) + args.m #Calculate the ideal average. 
-            print('-----\nIdeal Average:', r)
-            print('Group Average:', a) 
+            print('--\nIdeal Average:', a_ideal)
+            print('Group Average:', a_group) 
     sys.exit()
 
 parser.print_help()
