@@ -34,7 +34,9 @@ parser.add_argument("-h", action='store_true', help="Display the help page")
 parser.add_argument("-v", action='store_true', help="Display version information")
 parser.add_argument("-q", action='store_true', help="Only display rolled numbers, called \'Quite Mode\'")
 parser.add_argument("-d", nargs='+', type=str, help="-REQUIRED- Define the number and type(s) of dice to roll, called a \'Dice Group\'", metavar='#,#')
-parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='# or \-#')
+parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='# or -#')
+parser.add_argument("-l", nargs='?', const=0, default=0, type=int, help="Define a lower bound for all die rolls", metavar='# or -#')
+parser.add_argument("-u", nargs='?', const=0, default=0, type=int, help="Define an upper bound for all die rolls", metavar='# or -#')
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll {Defaults to 1}", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll {Defaults to 1}", metavar='#')
 parser.add_argument("-t", action='store_true', help="Display the sum total of a Dice Group roll.")
@@ -117,8 +119,13 @@ if args.h:
     print('    Prints the Standard Mode output for \"2[3(d8)+5]\" rolls.')
     print('\n  python3 dice_cup.py -d 1,10 2,6 -g 4 -m 10 -s 5')
     print('    Prints the Standard Mode output for \"5{4[1(d10)+2(d6)+10]}\" rolls.')
-    print('\n  python3 dice_cup.py -q -d 3,6 2,4 1,32 -m \-20 -g 30 -s 2')
+    print('\n  python3 dice_cup.py -q -d 3,6 2,4 1,32 -m -20 -g 30 -s 2')
     print('    Prints the Quiet Mode output for \"2{30[3(d6)+2(d4)+1(d32)-20]}\" rolls.')
+    sys.exit()
+
+if args.l > args.u:
+    print('Input Error: flags \'-l\' and \'-u\' are set, but l =', args.l, 'is greater than u =', args.u, '.')
+    print('             Please read the dice_cup help by invoking the \'-l\' and \'-u\' flags.')
     sys.exit()
 
 if args.d:
