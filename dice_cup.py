@@ -17,26 +17,34 @@ def pos_int(p): #a function for argparse 'type' to call for checking input value
         raise argparse.ArgumentTypeError(msg)
     return int_p
 
-def d_roll (s, t = 6, c = 1, m = 0):
+def d_roll(s, t = 6, c = 1, m = 0):
     #Dice rolling: (random integer in range from 1 -> t (dice type)
     #Default input, with s defined, yields roll = 1(d6)+0
     #d_roll with parameters set yield a roll = c(dt)+m
     #s is the seed for the RNG, use at LEAST 8 bytes of random data
     roll = 0
     random.seed(s)
-    for x in range(c):
-        roll += random.randint (1, t)
-    return (roll + m)
+    if c == 0:
+        return(m)
+    elif c > 0:
+        for x in range(c):
+            roll += random.randint(1, t)
+        return(roll + m)
+    else:
+        c = abs(c)
+        for x in range(c):
+            roll -= random.randint(1, t)
+        return(roll + m)
 
 #Setup all of the flags and options to be passed from the CLI
 parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cup, a CLI-based dice rolling program.')
 parser.add_argument("-h", action='store_true', help="Display the help page")
 parser.add_argument("-v", action='store_true', help="Display version information")
 parser.add_argument("-q", action='store_true', help="Only display rolled numbers, called \'Quite Mode\'")
-parser.add_argument("-d", nargs='+', type=str, help="-REQUIRED- Define the number and type(s) of dice to roll, called a \'Dice Group\'", metavar='#,#')
+parser.add_argument("-d", nargs='+', type=str, help="-REQUIRED- Define the number and type(s) of dice to roll, called a \'Dice Group\'", metavar='#,# or #,-#')
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='# or -#')
-parser.add_argument("-l", nargs='?', const=0, default=0, type=int, help="Define a lower bound for all die rolls", metavar='# or -#')
-parser.add_argument("-u", nargs='?', const=0, default=0, type=int, help="Define an upper bound for all die rolls", metavar='# or -#')
+parser.add_argument("-l", nargs='?', type=str, help="Define a lower bound for all die rolls", metavar='# or -#')
+parser.add_argument("-u", nargs='?', type=str, help="Define an upper bound for all die rolls", metavar='# or -#')
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll {Defaults to 1}", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll {Defaults to 1}", metavar='#')
 parser.add_argument("-t", action='store_true', help="Display the sum total of a Dice Group roll.")
@@ -63,7 +71,7 @@ if args.h:
     print('     Sets are separated by a new line; one Set is printed per line.\n')
     print('  -d Specify the combination and die type(s) to roll.  Single or multiple')
     print('     parameter pairs may be entered to combine various die types.  The')
-    print('     input pairs must be POSITIVE INTEGERS separated by a \',\'.  An example')
+    print('     input pairs must be integers separated by a \',\'.  An example')
     print('     of the format for these parameters is listed below:\n')
     print('     INPUT FORMAT {\'-d\' input / parameter pairs}')
     print('       Single die types: \'-d A,B\', where A > 0 and B > 1, yields a')
@@ -124,10 +132,10 @@ if args.h:
     print('    Prints the Quiet Mode output for \"2{30[3(d6)+2(d4)+1(d32)-20]}\" rolls.')
     sys.exit()
 
-if args.l > args.u:
-    print('Input Error: flags \'-l\' and \'-u\' are set, but l =', args.l, 'is greater than u =', args.u, '.')
-    print('             Please read the dice_cup help by invoking the \'-l\' and \'-u\' flags.')
-    sys.exit()
+#if args.l > args.u:
+#    print('Input Error: flags \'-l\' and \'-u\' are set, but l =', args.l, 'is greater than u =', args.u, '.')
+#    print('             Please read the dice_cup help by invoking the \'-l\' and \'-u\' flags.')
+#    sys.exit(1)
 
 if args.d:
     p_list = []
@@ -137,24 +145,24 @@ if args.d:
         d_pair = x.split(',')
         #Check the -d parameter list for input errors...
         if len(d_pair) != 2:
-            print('Input Error: flag \'-d\' parameter %r must be a pair of positive integers \'A,B\'.' % x)
+            print('Input Error: flag \'-d\' parameter %r must be a pair of integers \'A,B\' or \'-A,B\'.' % x)
             print('             Please read the dice_cup help by invoking the \'-h\' flag.')
             sys.exit(1)
         try:
-            if (int(d_pair[0]) < 1) or (int(d_pair[1]) < 2):
+            if (int(d_pair[1]) == 0) or (int(d_pair[0]) < 2):
                 print('Input Error: flag \'-d\' parameter %r is out of range; \'A,B\' must have the' % x)
-                print('             MINIMUM VALUES of A = 1 & B = 2; please read the dice_cup help.')
+                print('             constraints of A != 0 & B >= 2; please read the dice_cup help.')
                 sys.exit(1)
         except ValueError:
-            print('Input Error: flag \'-d\' parameter %r must contain POSITIVE INTEGERS only.' % x)
+            print('Input Error: flag \'-d\' parameter %r must contain integers only.' % x)
             print('             Please read the dice_cup help by invoking the \'-h\' flag.')
             sys.exit(1)
         p_list.append(d_pair)#Store the sane -d parameter list
     a_ideal = 0;
     for z in p_list:
-        z0_int = int(z[0])
-        z1_int = int(z[1])
-        a_ideal += (z0_int * ((z1_int + 1) / 2)) #Calculate the Ideal average
+        zt_int = int(z[0])
+        zg_int = int(z[1])
+        a_ideal += (zg_int * ((zt_int + 1) / 2)) #Calculate the Ideal average
     a_ideal += args.m
     for y in range(args.s):
         t_group = 0
@@ -166,11 +174,11 @@ if args.d:
             if not args.q:
                 print(repr(x+1).rjust(g_len), '|', end = ' ')
             for z in p_list:
-                z0_int = int(z[0])
-                z1_int = int(z[1])
-                r += d_roll(os.urandom(16), z1_int, z0_int)
+                zt_int = int(z[0])
+                zg_int = int(z[1])
+                r += d_roll(os.urandom(16), zt_int, zg_int)
                 if not args.q:
-                    print(z[0]+'(d'+z[1]+') +', end = ' ')
+                    print(z[1]+'(d'+z[0]+') +', end = ' ')
             r += args.m
             if not args.q:
                 print('('+m_str+') :', r)
