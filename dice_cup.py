@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.3
-#Date: 2015-05-01
+#Version: 1.1.4
+#Date: 2016-03-14
 #----------------
 
 import os
@@ -30,17 +30,17 @@ def d_roll (s, t = 6, c = 1, m = 0):
 
 #Setup all of the flags and options to be passed from the CLI
 parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cup, a CLI-based dice rolling program.')
-parser.add_argument("-h", action='store_true', help="Display the help page.")
-parser.add_argument("-v", action='store_true', help="Display version information.")
-parser.add_argument("-q", action='store_true', help="Quiet Mode: only display rolled numbers.")
-parser.add_argument("-d", nargs='+', type=str, help="*REQUIRED* Set the combo and die type(s) to roll.", metavar='#,#')
-parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add or subtract a roll modifier.", metavar='# or \-#')
-parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define the number of rolls in a Group.", metavar='#')
-parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Groups\' to roll.", metavar='#')
-parser.add_argument("-t", action='store_true', help="Display the total / sum of a Group roll.")
+parser.add_argument("-h", action='store_true', help="Display the help page")
+parser.add_argument("-v", action='store_true', help="Display version information")
+parser.add_argument("-q", action='store_true', help="Only display rolled numbers, called \'Quite Mode\'")
+parser.add_argument("-d", nargs='+', type=str, help="-REQUIRED- Define the number and type(s) of dice to roll, called a \'Dice Group\'", metavar='#,#')
+parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='# or \-#')
+parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll {Defaults to 1}", metavar='#')
+parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll {Defaults to 1}", metavar='#')
+parser.add_argument("-t", action='store_true', help="Display the sum total of a Dice Group roll.")
 args = parser.parse_args()
 
-version = "1.1.3"
+version = "1.1.4"
 
 if args.v:
     print('dice_cup version:', version)
@@ -48,11 +48,11 @@ if args.v:
 
 if args.h:
     print('Introduction to dice_cup', version)
-    print('  Hello, dice_cup is a CLI program written in Python 3.x to simulate')
+    print('  Hello, dice_cup is a CLI program written in Python 3 to simulate')
     print('  the outcome of various types of dice rolls.  Die types can be set')
     print('  arbitrarily greater than 1, making for fun dice types like an eleven-')
     print('  sided die, or \"1(d11)\".  The nomenclature for die rolls herein is as')
-    print('  follows: \"set { group [ combination ( die type ) +\\- modifier ] }\"')
+    print('  follows: \"set { group [ number ( die type ) +\\- modifier ] }\"')
     print('\nSYNTAX\n  python3 dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-t]')
     print('\nARGUMENTS')
     print('  -h Displays this help page.\n')
@@ -76,9 +76,10 @@ if args.h:
     print('  -m Add or subtract a modifier to a roll; addition is the default action.')
     print('     <defaults to m = 0>')
     print('     *Note: for NEGATIVE modifiers, some OSs may require the \'-\' to be escaped.')
-    print('         i.e. for a (-4) modifier, the appropriate (escaped) flag would be')
-    print('               \'-m \-4\' or \'-m \'-4\'\'.')
-    print('              for a (+7) modifier, the appropriate flag is \'-m 7\'.\n')
+    print('         i.e. for a (-4) modifier, the appropriate (non-escaped) flag is \'-m -4\'')
+    print('              for a (-4) modifier, the appropriate (escaped) value would be')
+    print('               \'-m \-4\' or possibly \'-m \'-4\'\'')
+    print('              for a (+7) modifier, the appropriate flag is \'-m 7\'\n')
     print('  -g Define the number of dice combos you wish to roll in a \"Group\" at once.')
     print('     Such as rolling a Group of three combos of two six-sided dice,')
     print('     or \"3[2(d6)]\".  <defaults to g = 1>\n')
@@ -89,7 +90,7 @@ if args.h:
     print('\nOUTPUT FORMAT\n  Note that dice_cup has two modes of output:\n')
     print('   1. Standard Mode: will print the Set number, a single line for each dice')
     print('      roll in the Group, the \"Ideal Average\" (probabilistic), and the \"Group')
-    print('      Average" (actually rolled).  NOTE: if the \'-t\' flag is set, then the')
+    print('      Average" (actual roll outcome).  NOTE: if the \'-t\' flag is set, then the')
     print('      Group Total will be printed the line after the Group Average.\n')
     print('      The dice_cup output format for two Sets with multiple rolls in a Group:')
     print('        --\n        Set 1\n        --')
