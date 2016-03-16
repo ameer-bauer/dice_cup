@@ -158,12 +158,12 @@ if args.d:
             print('Input Error: flag \'-d\' parameter %r must contain integer pairs (T,N) only.' % x)
             print('             Please read the dice_cup help by invoking the \'-h\' flag.')
             sys.exit(1)
-        p_list.append(d_pair)#Store the sane -d parameter list
+        p_list.append(d_pair) #Store the sane -d parameter list
     a_ideal = 0;
-    for z in p_list:
+    for z in p_list: #Scan through the -d parameters to calulate the Ideal Average
         zt_int = int(z[0])
         zg_int = int(z[1])
-        a_ideal += (zg_int * ((zt_int + 1) / 2)) #Calculate the Ideal average
+        a_ideal += (zg_int * ((zt_int + 1) / 2))
     a_ideal += args.m
     for y in range(args.s):
         t_group = 0
@@ -174,7 +174,7 @@ if args.d:
             r = 0
             if not args.q:
                 print(repr(x+1).rjust(g_len), '|', end = ' ')
-            for z in p_list:
+            for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
                 r += d_roll(os.urandom(16), zt_int, zg_int)
