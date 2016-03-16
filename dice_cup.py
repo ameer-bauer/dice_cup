@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+#
+#WINDOWS USERS: change the first line to #!python to run this w/o typing "python dice_cup.py"
+#
 #----------------
 #Name: dice_cup
 #Version: 1.1.4
-#Date: 2016-03-14
+#Date: 2016-03-15
 #----------------
 
 import os
