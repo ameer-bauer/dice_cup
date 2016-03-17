@@ -2,13 +2,15 @@
 #----------------
 #Name: dice_cup
 #Version: 1.1.4
-#Date: 2016-03-15
+#Date: 2016-03-17
 #----------------
 
 import os
 import sys
 import argparse
 import random
+
+version = "1.1.4"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -37,27 +39,13 @@ def d_roll(s, t = 6, c = 1, m = 0):
     
     return(roll + m)
 
-#Setup all of the flags and options to be passed from the CLI
-parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cup, a CLI-based dice rolling program.')
-parser.add_argument("-h", action='store_true', help="Display the help page")
-parser.add_argument("-v", action='store_true', help="Display version information")
-parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quite Mode\'")
-parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to roll; called a \'Dice Group\'", metavar='#,#')
-parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
-parser.add_argument("-l", nargs='?', type=str, help="Define a lower bound for all die rolls", metavar='#')
-parser.add_argument("-u", nargs='?', type=str, help="Define an upper bound for all die rolls", metavar='#')
-parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll <Defaults to 1>", metavar='#')
-parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll <Defaults to 1>", metavar='#')
-parser.add_argument("-t", action='store_true', help="Display the sum total of a Dice Group roll")
-args = parser.parse_args()
+def d_err():
+    print('Error: flag \'-d\' parameter %r is incorrect.  Only integer pairs of the form' % x)
+    print('       T,N having constraints of T > 1 and N != 0 are supported. Please read')
+    print('       the dice_cup help by running \'dice_cup -h\'.')
+    return
 
-version = "1.1.4"
-
-if args.v:
-    print('dice_cup version:', version)
-    sys.exit()
-
-if args.h:
+def h_main():
     print('Introduction to dice_cup', version)
     print('  Hello, dice_cup is a CLI program written in Python 3 to simulate')
     print('  the outcome of various types of dice rolls.  Die types can be set')
@@ -72,7 +60,7 @@ if args.h:
     print('     Sets are separated by a new line; one Set is printed per line.\n')
     print('  -d Specify the die type and number to roll.  Single or multiple')
     print('     parameter pairs may be entered to combine various die types.  The')
-    print('     input pairs must be integers (T,N) separated by a \',\'.  An example')
+    print('     input pairs must be integers T,N separated by a \',\'.  An example')
     print('     of the format for these parameters is listed below:\n')
     print('     INPUT FORMAT \'-d T1,N1 [T2,N2 ... Tn,Nn]\'')
     print('       Single die types: \'-d T,N\', where type (T) > 1 and number (N) != 0,')
@@ -131,6 +119,28 @@ if args.h:
     print('    Prints the Standard Mode output for \"5{4[1(d10)+2(d6)+10]}\" rolls.')
     print('\n  python3 dice_cup.py -q -d 6,3 4,-2 32,1 -m -20 -g 30 -s 2')
     print('    Prints the Quiet Mode output for \"2{30[3(d6)-2(d4)+1(d32)-20]}\" rolls.')
+    return
+
+#Setup all of the flags and options to be passed from the CLI
+parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cup, a CLI-based dice rolling program.')
+parser.add_argument("-h", action='store_true', help="Display the help page")
+parser.add_argument("-v", action='store_true', help="Display version information")
+parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quite Mode\'")
+parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to roll; called a \'Dice Group\'", metavar='#,#')
+parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
+parser.add_argument("-l", nargs='?', type=str, help="Define a lower bound for all die rolls", metavar='#')
+parser.add_argument("-u", nargs='?', type=str, help="Define an upper bound for all die rolls", metavar='#')
+parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll <Defaults to 1>", metavar='#')
+parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll <Defaults to 1>", metavar='#')
+parser.add_argument("-t", action='store_true', help="Display the sum total of a Dice Group roll")
+args = parser.parse_args()
+
+if args.v:
+    print('dice_cup version:', version)
+    sys.exit()
+
+if args.h:
+    h_main()
     sys.exit()
 
 #if args.l > args.u:
@@ -146,21 +156,19 @@ if args.d:
         d_pair = x.split(',')
         #Check the -d parameter list for input errors...
         if len(d_pair) != 2:
-            print('Input Error: flag \'-d\' parameter %r must be a pair of integers \'T,N\'.' % x)
-            print('             Please read the dice_cup help by invoking the \'-h\' flag.')
+            d_err()
             sys.exit(1)
         try:
             if (int(d_pair[1]) == 0) or (int(d_pair[0]) < 2):
-                print('Input Error: flag \'-d\' parameter %r is out of range; \'T,N\' must have the' % x)
-                print('             constraints of T > 1 and N != 0; please read the dice_cup help.')
+                d_err()
                 sys.exit(1)
         except ValueError:
-            print('Input Error: flag \'-d\' parameter %r must contain integer pairs (T,N) only.' % x)
-            print('             Please read the dice_cup help by invoking the \'-h\' flag.')
+            d_err()
             sys.exit(1)
         p_list.append(d_pair) #Store the sane -d parameter list
     a_ideal = 0;
-    for z in p_list: #Scan through the -d parameters to calulate the Ideal Average
+    #Scan through the -d parameters to calulate the Ideal Average
+    for z in p_list: #Faster to calculate here, just in case there are multiple groups
         zt_int = int(z[0])
         zg_int = int(z[1])
         a_ideal += (zg_int * ((zt_int + 1) / 2))
