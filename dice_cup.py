@@ -93,24 +93,28 @@ def h_main():
     print('      Average" (actual roll outcome).  NOTE: if the \'-t\' flag is set, then the')
     print('      Group Total will be printed the line after the Group Average.\n')
     print('      The dice_cup output format for two Sets with multiple rolls in a Group:')
-    print('        --\n        Set 1\n        --')
-    print('        \'1\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('        \'2\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('        \'.\' | \'              .              \' : \'   .   \'')
-    print('        \'.\' | \'              .              \' : \'   .   \'')
-    print('        \'.\' | \'              .              \' : \'   .   \'')
-    print('        \'N\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('        --\n        Ideal Average: \'X1\'\n        Group Average: \'Y1\'')
-    print('        --\n        Set 2\n        --')
-    print('        \'1\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('        \'2\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('        \'.\' | \'              .              \' : \'   .   \'')
-    print('        \'.\' | \'              .              \' : \'   .   \'')
-    print('        \'.\' | \'              .              \' : \'   .   \'')
-    print('        \'N\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('        --\n        Ideal Average: \'X2\'\n        Group Average: \'Y2\'')
-    print('\n   2. Quiet Mode: will only output a single Set of Group rolls per line, roll')
-    print('        outcomes will be separated by a \',\' (comma).')
+    print('        ---\n        Set 1\n        ---')
+    print('        \'Group 1\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('        \'Group 2\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('            .     | \'              .              \' : \'   .   \'')
+    print('            .     | \'              .              \' : \'   .   \'')
+    print('            .     | \'              .              \' : \'   .   \'')
+    print('        \'Group n\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('        ---\n        Ideal Average: \'X1\'\n        Group Average: \'Y1\'')
+    print('        ---')
+    print('         .')
+    print('         .')
+    print('         .')
+    print('        ---\n        Set n\n        ---')
+    print('        \'Group 1\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('        \'Group 2\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('            .     | \'              .              \' : \'   .   \'')
+    print('            .     | \'              .              \' : \'   .   \'')
+    print('            .     | \'              .              \' : \'   .   \'')
+    print('        \'Group n\' | \'roll combination +\\- modifier\' : \'outcome\'')
+    print('        ---\n        Ideal Average: \'X2\'\n        Group Average: \'Y2\'')
+    print('\n   2. Quiet Mode: will only output a single Set of Group rolls per line,')
+    print('                    results will be printed as a comma separated list.')
     print('\nEXAMPLES\n  python3 dice_cup.py -d 6,1 -g 3')
     print('    Prints the Standard Mode output for \"3[1(d6)]\" rolls.')
     print('\n  python3 dice_cup.py -d 8,3 -m -5 -g 2')
@@ -176,12 +180,12 @@ if args.d:
     for y in range(args.s):
         t_group = 0
         if not args.q:
-            print('--\nSet', (y+1))
-            print('--')
+            print('---\nSet', (y+1))
+            print('---')
         for x in range(args.g):
             r = 0
             if not args.q:
-                print(repr(x+1).rjust(g_len), '|', end = ' ')
+                print('Group',repr(x+1).rjust(g_len), '|', end = ' ')
             for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
@@ -199,7 +203,7 @@ if args.d:
             t_group += r
         a_group = t_group / args.g #Calculate the Group roll average
         if not args.q:
-            print('--\nIdeal Average:', a_ideal)
+            print('---\nIdeal Average:', a_ideal)
             print('Group Average:', a_group)
         if args.t and not args.q:
             print('Group Total:', t_group)
