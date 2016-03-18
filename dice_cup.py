@@ -27,11 +27,11 @@ def d_roll(s, t = 6, c = 1, m = 0):
     roll = 0
     random.seed(s)
     
-    if c == 0:
-        return(m)
-    elif c > 0:
+    if c > 0:
         for x in range(c):
             roll += random.randint(1, t)
+    elif c == 0:
+        return(m)
     else:
         c = abs(c)
         for x in range(c):
@@ -126,7 +126,7 @@ def h_main():
     return
 
 #Setup all of the flags and options to be passed from the CLI
-parser = argparse.ArgumentParser(add_help=False, description='Welcome to dice_cup, a CLI-based dice rolling program.')
+parser = argparse.ArgumentParser(add_help=False, description='Welcome, dice_cup is a CLI-based die roll simulation engine. It utilizes a cryptographic PRNG to accurately simulate various dice rolls.')
 parser.add_argument("-h", action='store_true', help="Display the help page")
 parser.add_argument("-v", action='store_true', help="Display version information")
 parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quite Mode\'")
@@ -136,7 +136,7 @@ parser.add_argument("-l", nargs='?', type=str, help="Define a lower bound for al
 parser.add_argument("-u", nargs='?', type=str, help="Define an upper bound for all die rolls", metavar='#')
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll <Defaults to 1>", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll <Defaults to 1>", metavar='#')
-parser.add_argument("-t", action='store_true', help="Display the sum total of a Dice Group roll")
+parser.add_argument("-t", action='store_true', help="Display the sum total of a \'Dice Group\' roll")
 args = parser.parse_args()
 
 if args.v:
