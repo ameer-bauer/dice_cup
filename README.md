@@ -1,6 +1,10 @@
 # dice_cup
-Hi, dice_cup is a CLI dice roll simulator written for Python 3.x; it has support for arbitrary die types, combinations, modifiers, and groupings.  It is designed to be a dice rolling engine for use with other programs or a GUI, but it works well on its own. :D
-
+----
+Hi, dice_cup is a CLI dice roll simulator written for Python 3.x; it
+has support for arbitrary die types, combinations, modifiers, and
+groupings, just to name a few features.  It is designed to be a dice
+rolling engine for use with other programs or a GUI, but it works well
+on its own. 
 ~The help screen is below, enjoy.~
 
 Introduction to dice_cup 1.1.4
