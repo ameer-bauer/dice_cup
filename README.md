@@ -22,9 +22,8 @@ ARGUMENTS
 
   -v Displays the version of dice_cup.
 
-  -q Quiet Mode: only displays the Dice Group roll outcomes delimited by
-     a comma.  Sets are separated by a new line, only one Set is printed
-     per line.
+  -q Quiet Mode: only displays the Dice Group roll outcomes delimited by a ','
+     comma. Sets are separated by a new line, only one Set is printed per line.
 
   -d Specify the die type and number to roll.  Single or multiple
      parameter pairs may be entered to combine various die types.  The
