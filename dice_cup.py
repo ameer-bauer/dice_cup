@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.4
-#Date: 2016-03-17
+#Version: 1.1.5
+#Date: 2016-03-18
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.4"
+version = "1.1.5"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -41,8 +41,8 @@ def d_roll(s, t = 6, c = 1, m = 0):
 
 def d_err():
     print('Error: flag \'-d\' parameter %r is incorrect.  Only integer pairs of the form' % x)
-    print('       T,N having constraints of T > 1 and N != 0 are supported. Please read')
-    print('       the dice_cup help by running \'dice_cup -h\'.')
+    print('       T,N having constraints of T > 1 and N != 0 are supported.')
+    print('       Please read the dice_cup help by running \'dice_cup -h\'.')
     return
 
 def h_main():
@@ -132,8 +132,8 @@ parser.add_argument("-v", action='store_true', help="Display version information
 parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quite Mode\'")
 parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to roll; called a \'Dice Group\'", metavar='#,#')
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
-parser.add_argument("-l", nargs='?', type=str, help="Define a lower bound for all die rolls", metavar='#')
-parser.add_argument("-u", nargs='?', type=str, help="Define an upper bound for all die rolls", metavar='#')
+parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all die rolls", metavar='#')
+parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all die rolls", metavar='#')
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll <Defaults to 1>", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll <Defaults to 1>", metavar='#')
 parser.add_argument("-t", action='store_true', help="Display the sum total of a \'Dice Group\' roll")
@@ -147,10 +147,12 @@ if args.h:
     h_main()
     sys.exit()
 
-#if args.l > args.u:
-#    print('Input Error: flags \'-l\' and \'-u\' are set, but l =', args.l, 'is greater than u =', args.u, '.')
-#    print('             Please read the dice_cup help by invoking the \'-l\' and \'-u\' flags.')
-#    sys.exit(1)
+if (isinstance(args.l, int) and isinstance(args.u, int)):#See if both -l and -u are set and check for errors
+    if args.l >= args.u:
+        print('Input Error: flags \'-l\' and \'-u\' are set, but ( l =', args.l, ') and ( u =', args.u, ') ergo')
+        print('             the lower bound is greater than or equal to the upper bound -><-.')
+        print('             Please read the dice_cup help by running \'dice_cup -h\'.')
+        sys.exit(1)
 
 if args.d:
     p_list = []
@@ -184,15 +186,37 @@ if args.d:
             print('---')
         for x in range(args.g):
             r = 0
+            b = 0
+            trim = False
             if not args.q:
                 print('Group',repr(x+1).rjust(g_len), '|', end = ' ')
             for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
-                r += d_roll(os.urandom(16), zt_int, zg_int)
+                if (isinstance(args.l, int) or isinstance(args.u, int)):#See if both -l and -u are set
+                    b += d_roll(os.urandom(16), zt_int, zg_int)
+                else:
+                    r += d_roll(os.urandom(16), zt_int, zg_int)
                 if not args.q:
                     print(z[1]+'(d'+z[0]+') +', end = ' ')
-            r += args.m
+            b += args.m
+            if (isinstance(args.l, int) and isinstance(args.u, int)):
+                if ((b >= args.l) and (b <= args.u)):
+                    r += b
+                else:
+                    trim = True
+            elif isinstance(args.l, int):
+                if (b >= args.l):
+                    r += b
+                else:
+                    trim = True
+            elif isinstance(args.u, int):
+                if (b <= args.u):
+                    r += b
+                else:
+                    trim = True
+            else:
+                r += args.m
             if not args.q:
                 print('('+m_str+') :', r)
             else:
