@@ -93,7 +93,9 @@ def h_main():
     print('      Average" (actual roll outcome).  NOTE: if the \'-t\' flag is set, then the')
     print('      Group Total will be printed the line after the Group Average.\n')
     print('      The dice_cup output format for two Sets with multiple rolls in a Group:')
-    print('        ---\n        Set 1\n        ---')
+    print('        =====\n        Set 1\n        =====')
+    print('        Lower Bound = \'lower bound value\'')
+    print('        Upper Bound = \'upper bound value\'\n        ---')
     print('        \'Group 1\' | \'roll combination +\\- modifier\' : \'outcome\'')
     print('        \'Group 2\' | \'roll combination +\\- modifier\' : \'outcome\'')
     print('            .     | \'              .              \' : \'   .   \'')
@@ -105,7 +107,9 @@ def h_main():
     print('         .')
     print('         .')
     print('         .')
-    print('        ---\n        Set n\n        ---')
+    print('        =====\n        Set n\n        =====')
+    print('        Lower Bound = \'lower bound value\'')
+    print('        Upper Bound = \'upper bound value\'\n        ---')
     print('        \'Group 1\' | \'roll combination +\\- modifier\' : \'outcome\'')
     print('        \'Group 2\' | \'roll combination +\\- modifier\' : \'outcome\'')
     print('            .     | \'              .              \' : \'   .   \'')
@@ -158,6 +162,7 @@ if args.d:
     p_list = []
     m_str = str(args.m)
     g_len = len(str(args.g))
+    s_len = len(str(args.s))
     for x in args.d:
         d_pair = x.split(',')
         #Check the -d parameter list for input errors...
@@ -181,8 +186,15 @@ if args.d:
     a_ideal += args.m
     for y in range(args.s):
         t_group = 0
+        c_trim = 0
+        g_div = 0
+        a_group = "DNE"
         if not args.q:
-            print('---\nSet', (y+1))
+            print('=' * (s_len + 4))
+            print('Set', repr(y+1).rjust(s_len))
+            print('=' * (s_len + 4))
+            print('Lower Bound =', args.l,)
+            print('Upper Bound =', args.u)
             print('---')
         for x in range(args.g):
             r = 0
@@ -203,34 +215,55 @@ if args.d:
             if (isinstance(args.l, int) and isinstance(args.u, int)):
                 if ((b >= args.l) and (b <= args.u)):
                     r += b
+                elif b < args.l:
+                    trim = "LB"
+                    c_trim += 1
                 else:
-                    trim = True
+                    trim = "UB"
+                    c_trim += 1
             elif isinstance(args.l, int):
-                if (b >= args.l):
+                if b >= args.l:
                     r += b
                 else:
-                    trim = True
+                    trim = "LB"
+                    c_trim += 1
             elif isinstance(args.u, int):
-                if (b <= args.u):
+                if b <= args.u:
                     r += b
                 else:
-                    trim = True
+                    trim = "UB"
+                    c_trim += 1
             else:
                 r += args.m
             if not args.q:
-                print('('+m_str+') :', r)
+                if trim:
+                    print('('+m_str+') :', trim)
+                else:
+                    print('('+m_str+') :', r)
             else:
                 if (x+1) < args.g:
-                    print(r, end=',')
+                    if trim:
+                        print(trim, end=',')
+                    else:
+                        print(r, end=',') 
                 else:
-                    print(r)
-            t_group += r
-        a_group = t_group / args.g #Calculate the Group roll average
+                    if trim:
+                        print(trim)
+                    else:
+                        print(r)
+            if not trim:
+                t_group += r
+        g_div = args.g - c_trim 
+        if g_div != 0:
+            a_group = t_group / g_div#Calculate the Group roll average
         if not args.q:
             print('---\nIdeal Average:', a_ideal)
             print('Group Average:', a_group)
         if args.t and not args.q:
-            print('Group Total:', t_group)
+            if g_div == 0:
+                print('Group Total: DNE')
+            else:
+                print('Group Total:', t_group)
     sys.exit()
 
 parser.print_help()
