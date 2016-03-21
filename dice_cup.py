@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.5
+#Version: 1.1.6
 #Date: 2016-03-20
 #----------------
 
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.5"
+version = "1.1.6"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -40,8 +40,8 @@ def d_roll(s, t = 6, c = 1, m = 0):
     return(roll + m)
 
 def d_err():
-    print('Error: flag \'-d\' parameter %r is incorrect.  Only integer pairs of the form' % x)
-    print('       T,N having constraints of T > 1 and N != 0 are supported.')
+    print('Error: the flag \'-d\' parameter %r is incorrect.  Only integer pairs of the' % x)
+    print('       form \'T,N\' having constraints of T > 1 and N != 0 are supported.')
     print('       Please read the dice_cup help by running \'dice_cup -h\'.')
     return
 
@@ -57,7 +57,7 @@ def h_main():
     print('  -h Displays this help page.\n')
     print('  -v Displays the version of dice_cup.\n')
     print('  -q Quiet Mode: only outputs Dice Group roll(s) results delimited by a \',\'')
-    print('     comma. Only one Set is printed per line.\n')
+    print('     comma. Only one Set is displayed per line.\n')
     print('  -d Specify the die type and number to roll.  Single or multiple')
     print('     parameter pairs may be entered to combine various die types.  The')
     print('     input pairs must be integers T,N separated by a \',\'.  An example')
@@ -73,13 +73,17 @@ def h_main():
     print('         while the second number of each pair must not be equal to 0.  The')
     print('         input \'-d 6,1 4,-2 3,4\' will roll \"1(d6) - 2(d4) + 4(d3)\".\n')
     print('  -l Set an integer value as the Lower Bound for all Dice Groups.  Results that')
-    print('     are trimmed will be displayed as \'LB\' in the Dice Group outcome.\n')
+    print('     are trimmed will be displayed as \'LB\' in the Dice Group outcome.')
+    print('     If all results in a Set of Dice Group(s) are trimmed, both Set Average and')
+    print('     Set Total will output a value of \'DNE\' representing \"Does Not Exist\".\n')
     print('  -u Set an integer value as the Upper Bound for all Dice Groups.  Results that')
-    print('     are trimmed will be displayed as \'UB\' in the Dice Group outcome.\n')
+    print('     are trimmed will be displayed as \'UB\' in the Dice Group outcome.')
+    print('     If all results in a Set of Dice Group(s) are trimmed, both Set Average and')
+    print('     Set Total will output a value of \'DNE\' representing \"Does Not Exist\".\n')
     print('  -m Add or subtract a an integer value, a \"modifier\", from a Dice Group.')
-    print('     e.g. add a +5 modifier with \'-m 5\' or subtract a -3 modifier with \'-m -3\'.\n')
+    print('     i.e. add a +5 modifier with \'-m 5\' or subtract a -3 modifier with \'-m -3\'.')
     print('     Note: for NEGATIVE modifiers, some OSs may require the \'-\' to be escaped.')
-    print('           i.e. for a -4 modifier, the appropriate escaped flag values may be')
+    print('           e.g. for a -4 modifier, the appropriate escaped flag values may be')
     print('                \'-m \-4\' or possibly \'-m \'-4\'\'.\n')
     print('  -g Define the number of \"Dice Groups\" you wish to roll in a single Set.')
     print('     Such as rolling a group of three Dice Groups of two six-sided dice,')
@@ -87,12 +91,14 @@ def h_main():
     print('  -s Define how many \"Sets\" of Dice Groups you wish to roll.  Such as,')
     print('     two Sets each containing three Dice Groups of two six-sided dice,')
     print('     or \"2{3[2(d6)]}\".\n')
-    print('  -t Print the total sum of the Group rolls in a Set; listed as \"Group Total\".')
+    print('  -t Print the total sum of the Group rolls in a Set; listed as \"Set Total\".')
+    print('     If \'-t\' is used in Quiet Mode, a new line with the Set Total will be shown')
+    print('     below each Set\'s result list as a single integer.')
     print('\nOUTPUT FORMAT\n  Note that dice_cup has two modes of output:\n')
     print('    1) Standard Mode: will print the Set number, a single line for each dice')
-    print('       roll in the Group, the \"Ideal Average\" (probabilistic), and the \"Group')
-    print('       Average" (actual roll outcome).  NOTE: if the \'-t\' flag is set, then the')
-    print('       Group Total will be printed the line after the Group Average.\n')
+    print('       roll in the Group, the \"Ideal Average\" (probabilistic), and the')
+    print('       \"Set Average\" (actual roll outcome).  If the \'-t\' flag is set, then')
+    print('       the \"Set Total\" will be printed the line after the Set Average.\n')
     print('       The dice_cup Standard Mode output format is as follows:\n')
     print('         =====\n         Set 1\n         =====')
     print('         Lower Bound = \'lower bound value\'')
@@ -103,7 +109,7 @@ def h_main():
     print('             .     |                .                :     .')
     print('             .     |                .                :     .')
     print('         \'Group n\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('         ---\n         Ideal Average: \'X1\'\n         Group Average: \'Y1\'')
+    print('         ---\n         Ideal Average: \'X1\'\n         Set Average: \'Y1\'')
     print('         ---')
     print('          .')
     print('          .')
@@ -117,16 +123,18 @@ def h_main():
     print('             .     |                .                :     .')
     print('             .     |                .                :     .')
     print('         \'Group n\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('         ---\n         Ideal Average: \'X2\'\n         Group Average: \'Y2\'')
+    print('         ---\n         Ideal Average: \'X2\'\n         Set Average: \'Y2\'')
     print('\n    2) Quiet Mode: only outputs the final result(s) of Dice Group(s), listing')
     print('       one Set per line.  Results will be printed as a comma separated list.')
-    print('\nEXAMPLES\n  dice_cup.py -d 6,1 -g 3')
-    print('    Prints the Standard Mode output for \"3[1(d6)]\" rolls.')
-    print('\n  dice_cup.py -d 8,3 -m -5 -g 2')
-    print('    Prints the Standard Mode output for \"2[3(d8)-5]\" rolls.')
-    print('\n  dice_cup.py -d 23,1 4,-2 -l -1 -u 18 -g 2')
+    print('       If \'-t\' is set, the Set Total will be displayed on a new line below')
+    print('       each Set\'s result list as a single integer.')
+    print('\nEXAMPLES\n  dice_cup.py -d 6,3')
+    print('    Prints the Standard Mode output for a single \"3(d6)\" roll.')
+    print('\n  dice_cup.py -d 8,4 -m -5 -g 2')
+    print('    Prints the Standard Mode output for \"2[4(d8)-5]\" rolls.')
+    print('\n  dice_cup.py -d 23,1 4,-2 -l -1 -u 18 -g 2 -t')
     print('    Prints the Standard Mode output for \"2[1(d23)-2(d4)]\" rolls with a Lower')
-    print('    Bound of -1 and an Upper Bound of 18.')
+    print('    Bound of -1 and an Upper Bound of 18 with the Set Total displayed.')
     print('\n  dice_cup.py -d 10,1 6,2 -g 4 -m 10 -s 5')
     print('    Prints the Standard Mode output for \"5{4[1(d10)+2(d6)+10]}\" rolls.')
     print('\n  dice_cup.py -q -d 6,3 4,-2 32,1 -m -20 -g 30 -s 2')
@@ -142,8 +150,8 @@ parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all die rolls", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all die rolls", metavar='#')
-parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll <Defaults to 1>", metavar='#')
-parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll <Defaults to 1>", metavar='#')
+parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll", metavar='#')
+parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll", metavar='#')
 parser.add_argument("-t", action='store_true', help="Display the sum total of a \'Dice Group\' roll")
 args = parser.parse_args()
 
@@ -157,9 +165,9 @@ if args.h:
 
 if (isinstance(args.l, int) and isinstance(args.u, int)):#See if both -l and -u are set and check for errors
     if args.l >= args.u:
-        print('Input Error: flags \'-l\' and \'-u\' are set, but ( l =', args.l, ') and ( u =', args.u, ') ergo')
-        print('             the lower bound is greater than or equal to the upper bound -><-.')
-        print('             Please read the dice_cup help by running \'dice_cup -h\'.')
+        print('Error: the flags \'-l\' and \'-u\' are set, but -l =', args.l, 'and -u =', args.u)
+        print('       i.e. the lower bound is either greater than, or equal to, the')
+        print('       upper bound.  Please enter new boundary values so that \'-l\' < \'-u\'.')
         sys.exit(1)
 
 if args.d:
@@ -189,10 +197,10 @@ if args.d:
         a_ideal += (zg_int * ((zt_int + 1) / 2))
     a_ideal += args.m
     for y in range(args.s):
-        t_group = 0
+        t_set = 0
         c_trim = 0
         g_div = 0
-        a_group = "DNE"
+        a_set = "DNE"
         if not args.q:
             print('=' * (s_len + 4))
             print('Set', repr(y+1).rjust(s_len))
@@ -256,18 +264,23 @@ if args.d:
                     else:
                         print(r)
             if not trim:
-                t_group += r
+                t_set += r
         g_div = args.g - c_trim 
         if g_div != 0:
-            a_group = t_group / g_div#Calculate the Group roll average
+            a_set = t_set / g_div#Calculate the Group roll average
         if not args.q:
             print('---\nIdeal Average:', a_ideal)
-            print('Group Average:', a_group)
+            print('Set Average:', a_set)
         if args.t and not args.q:
             if g_div == 0:
-                print('Group Total: DNE')
+                print('Set Total: DNE')
             else:
-                print('Group Total:', t_group)
+                print('Set Total:', t_set)
+        elif args.t:
+            if g_div == 0:
+                print('DNE')
+            else:
+                print(t_set)
     sys.exit()
 
 parser.print_help()
