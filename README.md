@@ -1,13 +1,14 @@
 # dice_cup
 ----
-Hi, dice_cup is a CLI dice roll simulator written for Python 3.x; it
+Hi, dice_cup is a CLI dice roll simulator written for Python 3.  It
 has support for arbitrary die types, combinations, modifiers, and
 groupings, just to name a few features.  It is designed to be a dice
 rolling engine for use with other programs or a GUI, but it works well
-on its own. 
+on its own.
+
 ~The help screen is below, enjoy.~
 
-Introduction to dice_cup 1.1.5
+Introduction to dice_cup 1.1.6
   Hello, dice_cup is a CLI program written in Python 3 to simulate
   the outcome of various types of dice rolls.  Die types can be set
   arbitrarily greater than 1, making for fun die types such as an eleven-
@@ -23,7 +24,7 @@ ARGUMENTS
   -v Displays the version of dice_cup.
 
   -q Quiet Mode: only outputs Dice Group roll(s) results delimited by a ','
-     comma. Only one Set is printed per line.
+     comma. Only one Set is displayed per line.
 
   -d Specify the die type and number to roll.  Single or multiple
      parameter pairs may be entered to combine various die types.  The
@@ -44,15 +45,18 @@ ARGUMENTS
 
   -l Set an integer value as the Lower Bound for all Dice Groups.  Results that
      are trimmed will be displayed as 'LB' in the Dice Group outcome.
+     If all results in a Set of Dice Group(s) are trimmed, both Set Average and
+     Set Total will output a value of 'DNE' representing "Does Not Exist".
 
   -u Set an integer value as the Upper Bound for all Dice Groups.  Results that
      are trimmed will be displayed as 'UB' in the Dice Group outcome.
+     If all results in a Set of Dice Group(s) are trimmed, both Set Average and
+     Set Total will output a value of 'DNE' representing "Does Not Exist".
 
   -m Add or subtract a an integer value, a "modifier", from a Dice Group.
-     e.g. add a +5 modifier with '-m 5' or subtract a -3 modifier with '-m -3'.
-
+     i.e. add a +5 modifier with '-m 5' or subtract a -3 modifier with '-m -3'.
      Note: for NEGATIVE modifiers, some OSs may require the '-' to be escaped.
-           i.e. for a -4 modifier, the appropriate escaped flag values may be
+           e.g. for a -4 modifier, the appropriate escaped flag values may be
                 '-m \-4' or possibly '-m '-4''.
 
   -g Define the number of "Dice Groups" you wish to roll in a single Set.
@@ -63,15 +67,17 @@ ARGUMENTS
      two Sets each containing three Dice Groups of two six-sided dice,
      or "2{3[2(d6)]}".
 
-  -t Print the total sum of the Group rolls in a Set; listed as "Group Total".
+  -t Print the total sum of the Group rolls in a Set; listed as "Set Total".
+     If '-t' is used in Quiet Mode, a new line with the Set Total will be shown
+     below each Set's result list as a single integer.
 
 OUTPUT FORMAT
   Note that dice_cup has two modes of output:
 
     1) Standard Mode: will print the Set number, a single line for each dice
-       roll in the Group, the "Ideal Average" (probabilistic), and the "Group
-       Average" (actual roll outcome).  NOTE: if the '-t' flag is set, then the
-       Group Total will be printed the line after the Group Average.
+       roll in the Group, the "Ideal Average" (probabilistic), and the
+       "Set Average" (actual roll outcome).  If the '-t' flag is set, then
+       the "Set Total" will be printed the line after the Set Average.
 
        The dice_cup Standard Mode output format is as follows:
 
@@ -89,7 +95,7 @@ OUTPUT FORMAT
          'Group n' | 'roll combination +\- modifier' : 'outcome'
          ---
          Ideal Average: 'X1'
-         Group Average: 'Y1'
+         Set Average: 'Y1'
          ---
           .
           .
@@ -108,21 +114,23 @@ OUTPUT FORMAT
          'Group n' | 'roll combination +\- modifier' : 'outcome'
          ---
          Ideal Average: 'X2'
-         Group Average: 'Y2'
+         Set Average: 'Y2'
 
     2) Quiet Mode: only outputs the final result(s) of Dice Group(s), listing
        one Set per line.  Results will be printed as a comma separated list.
+       If '-t' is set, the Set Total will be displayed on a new line below
+       each Set's result list as a single integer.
 
 EXAMPLES
-  dice_cup.py -d 6,1 -g 3
-    Prints the Standard Mode output for "3[1(d6)]" rolls.
+  dice_cup.py -d 6,3
+    Prints the Standard Mode output for a single "3(d6)" roll.
 
-  dice_cup.py -d 8,3 -m -5 -g 2
-    Prints the Standard Mode output for "2[3(d8)-5]" rolls.
+  dice_cup.py -d 8,4 -m -5 -g 2
+    Prints the Standard Mode output for "2[4(d8)-5]" rolls.
 
-  dice_cup.py -d 23,1 4,-2 -l -1 -u 18 -g 2
+  dice_cup.py -d 23,1 4,-2 -l -1 -u 18 -g 2 -t
     Prints the Standard Mode output for "2[1(d23)-2(d4)]" rolls with a Lower
-    Bound of -1 and an Upper Bound of 18.
+    Bound of -1 and an Upper Bound of 18 with the Set Total displayed.
 
   dice_cup.py -d 10,1 6,2 -g 4 -m 10 -s 5
     Prints the Standard Mode output for "5{4[1(d10)+2(d6)+10]}" rolls.
