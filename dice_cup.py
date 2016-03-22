@@ -132,9 +132,9 @@ def h_main():
     print('    Prints the Standard Mode output for a single \"3(d6)\" roll.')
     print('\n  dice_cup.py -d 8,4 -m -5 -g 2')
     print('    Prints the Standard Mode output for \"2[4(d8)-5]\" rolls.')
-    print('\n  dice_cup.py -d 23,1 4,-2 -l -1 -u 18 -g 2 -t')
+    print('\n  dice_cup.py -d 23,1 4,-2 -l -2 -u 18 -g 2 -t')
     print('    Prints the Standard Mode output for \"2[1(d23)-2(d4)]\" rolls with a Lower')
-    print('    Bound of -1 and an Upper Bound of 18 with the Set Total displayed.')
+    print('    Bound of -2 and an Upper Bound of 18 with the Set Total displayed.')
     print('\n  dice_cup.py -d 10,1 6,2 -g 4 -m 10 -s 5')
     print('    Prints the Standard Mode output for \"5{4[1(d10)+2(d6)+10]}\" rolls.')
     print('\n  dice_cup.py -q -d 6,3 4,-2 32,1 -m -20 -g 30 -s 2')
@@ -148,10 +148,10 @@ parser.add_argument("-v", action='store_true', help="Display version information
 parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quite Mode\'")
 parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to roll; called a \'Dice Group\'", metavar='#,#')
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
-parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all die rolls", metavar='#')
-parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all die rolls", metavar='#')
-parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="How many \'Dice Groups\' to roll", metavar='#')
-parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="How many \'Sets of Dice Groups\' to roll", metavar='#')
+parser.add_argument("-l", nargs='?', type=int, help="Set a lower bound for all Dice Groups", metavar='#')
+parser.add_argument("-u", nargs='?', type=int, help="Set an upper bound for all Dice Groups", metavar='#')
+parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
+parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
 parser.add_argument("-t", action='store_true', help="Display the sum total of a \'Dice Group\' roll")
 args = parser.parse_args()
 
@@ -166,7 +166,7 @@ if args.h:
 if (isinstance(args.l, int) and isinstance(args.u, int)):#See if both -l and -u are set and check for errors
     if args.l >= args.u:
         print('Error: the flags \'-l\' and \'-u\' are set, but -l =', args.l, 'and -u =', args.u)
-        print('       i.e. the lower bound is either greater than, or equal to, the')
+        print('       i.e. the lower bound is either greater than, or equal, to the')
         print('       upper bound.  Please enter new boundary values so that \'-l\' < \'-u\'.')
         sys.exit(1)
 
