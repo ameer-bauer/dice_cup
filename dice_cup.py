@@ -276,7 +276,7 @@ if args.d:
                 print('Set Total:', t_set)
         elif args.i:
             if g_div == 0:
-                print('DNE')
+                print(a_ideal, a_set, 'DNE', sep=',')
             else:
                 print(a_ideal, a_set, t_set, sep=',')
     sys.exit()
