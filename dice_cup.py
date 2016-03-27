@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.6
-#Date: 2016-03-20
+#Version: 1.1.7
+#Date: 2016-03-26
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.6"
+version = "1.1.7"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -52,7 +52,7 @@ def h_main():
     print('  arbitrarily greater than 1, making for fun die types such as an eleven-')
     print('  sided die, or \"1(d11)\".  The nomenclature for die rolls herein is as')
     print('  follows: \"set { dice group [ number ( die type ) +\\- modifier ] }\"')
-    print('\nSYNTAX\n  dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-t] [-l] [-u]')
+    print('\nSYNTAX\n  dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-i] [-l] [-u]')
     print('\nARGUMENTS')
     print('  -h Displays this help page.\n')
     print('  -v Displays the version of dice_cup.\n')
@@ -91,14 +91,18 @@ def h_main():
     print('  -s Define how many \"Sets\" of Dice Groups you wish to roll.  Such as,')
     print('     two Sets each containing three Dice Groups of two six-sided dice,')
     print('     or \"2{3[2(d6)]}\".\n')
-    print('  -t Print the total sum of the Group rolls in a Set; listed as \"Set Total\".')
-    print('     If \'-t\' is used in Quiet Mode, a new line with the Set Total will be shown')
-    print('     below each Set\'s result list as a single integer.')
+    print('  -i Prints statistical information about the Dice Group rolls of a Set:')
+    print('       a) the \"Ideal Average\", or theoretic probabilistic average, of a Set')
+    print('       b) the \"Set Average\", or actual rolled average, of a Set')
+    print('       c) the \"Set Total\", or the sum total of rolls, of a Set')
+    print('     If \'-i\' is used in Quiet Mode, a new line with the Ideal Average, Set')
+    print('     Average, and Set Total will be printed below each Set\'s result list as')
+    print('     a 3-tuple in the aforementioned order.')
     print('\nOUTPUT FORMAT\n  Note that dice_cup has two modes of output:\n')
-    print('    1) Standard Mode: will print the Set number, a single line for each dice')
-    print('       roll in the Group, the \"Ideal Average\" (probabilistic), and the')
-    print('       \"Set Average\" (actual roll outcome).  If the \'-t\' flag is set, then')
-    print('       the \"Set Total\" will be printed the line after the Set Average.\n')
+    print('    1) Standard Mode: will print the Set number and a single line for each')
+    print('       Dice Group rolled.  If the \'-i\' flag is set, the \"Ideal Average\",')
+    print('       \"Set Average\", and \"Set Total\" will be displayed after the Dice')
+    print('       Group rolls; below a \'---\' delimiter.\n')
     print('       The dice_cup Standard Mode output format is as follows:\n')
     print('         =====\n         Set 1\n         =====')
     print('         Lower Bound = \'lower bound value\'')
@@ -109,8 +113,6 @@ def h_main():
     print('             .     |                .                :     .')
     print('             .     |                .                :     .')
     print('         \'Group n\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('         ---\n         Ideal Average: \'X1\'\n         Set Average: \'Y1\'')
-    print('         ---')
     print('          .')
     print('          .')
     print('          .')
@@ -123,18 +125,15 @@ def h_main():
     print('             .     |                .                :     .')
     print('             .     |                .                :     .')
     print('         \'Group n\' | \'roll combination +\\- modifier\' : \'outcome\'')
-    print('         ---\n         Ideal Average: \'X2\'\n         Set Average: \'Y2\'')
     print('\n    2) Quiet Mode: only outputs the final result(s) of Dice Group(s), listing')
     print('       one Set per line.  Results will be printed as a comma separated list.')
-    print('       If \'-t\' is set, the Set Total will be displayed on a new line below')
-    print('       each Set\'s result list as a single integer.')
     print('\nEXAMPLES\n  dice_cup.py -d 6,3')
     print('    Prints the Standard Mode output for a single \"3(d6)\" roll.')
     print('\n  dice_cup.py -d 8,4 -m -5 -g 2')
     print('    Prints the Standard Mode output for \"2[4(d8)-5]\" rolls.')
-    print('\n  dice_cup.py -d 23,1 4,-2 -l -2 -u 18 -g 2 -t')
+    print('\n  dice_cup.py -d 23,1 4,-2 -l -2 -u 18 -g 2 -i')
     print('    Prints the Standard Mode output for \"2[1(d23)-2(d4)]\" rolls with a Lower')
-    print('    Bound of -2 and an Upper Bound of 18 with the Set Total displayed.')
+    print('    Bound of -2, an Upper Bound of 18, and statistical information displayed.')
     print('\n  dice_cup.py -d 10,1 6,2 -g 4 -m 10 -s 5')
     print('    Prints the Standard Mode output for \"5{4[1(d10)+2(d6)+10]}\" rolls.')
     print('\n  dice_cup.py -q -d 6,3 4,-2 32,1 -m -20 -g 30 -s 2')
@@ -148,11 +147,11 @@ parser.add_argument("-v", action='store_true', help="Display version information
 parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quite Mode\'")
 parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to roll; called a \'Dice Group\'", metavar='#,#')
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
-parser.add_argument("-l", nargs='?', type=int, help="Set a lower bound for all Dice Groups", metavar='#')
-parser.add_argument("-u", nargs='?', type=int, help="Set an upper bound for all Dice Groups", metavar='#')
+parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
+parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
-parser.add_argument("-t", action='store_true', help="Display the sum total of a \'Dice Group\' roll")
+parser.add_argument("-i", action='store_true', help="Displays statistical information of each Set rolled")
 args = parser.parse_args()
 
 if args.v:
@@ -217,7 +216,7 @@ if args.d:
             for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
-                if (isinstance(args.l, int) or isinstance(args.u, int)):#See if both -l and -u are set
+                if (isinstance(args.l, int) or isinstance(args.u, int)): #See if both -l and -u are set
                     b += d_roll(os.urandom(16), zt_int, zg_int)
                 else:
                     r += d_roll(os.urandom(16), zt_int, zg_int)
@@ -267,20 +266,19 @@ if args.d:
                 t_set += r
         g_div = args.g - c_trim 
         if g_div != 0:
-            a_set = t_set / g_div#Calculate the Group roll average
-        if not args.q:
+            a_set = t_set / g_div #Calculate the Group roll average
+        if args.i and not args.q:
             print('---\nIdeal Average:', a_ideal)
             print('Set Average:', a_set)
-        if args.t and not args.q:
             if g_div == 0:
                 print('Set Total: DNE')
             else:
                 print('Set Total:', t_set)
-        elif args.t:
+        elif args.i:
             if g_div == 0:
                 print('DNE')
             else:
-                print(t_set)
+                print(a_ideal, a_set, t_set, sep=',')
     sys.exit()
 
 parser.print_help()
