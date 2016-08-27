@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.7
-#Date: 2016-03-26
+#Version: 1.1.8
+#Date: 2016-08-27
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.7"
+version = "1.1.8"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -95,9 +95,11 @@ def h_main():
     print('       a) the \"Ideal Average\", or theoretic probabilistic average, of a Set')
     print('       b) the \"Set Average\", or actual rolled average, of a Set')
     print('       c) the \"Set Total\", or the sum total of rolls, of a Set')
+    print('       d) the \"Set High\", or the highest roll of a Set')
+    print('       e) the \"Set Low\", or the lowest roll of a Set')
     print('     If \'-i\' is used in Quiet Mode, a new line with the Ideal Average, Set')
-    print('     Average, and Set Total will be printed below each Set\'s result list as')
-    print('     a 3-tuple in the aforementioned order.')
+    print('     Average, Set Total, Set High, and Set Low will be printed below each')
+    print('     Set\'s result list as a 5-tuple in the aforementioned order.')
     print('\nOUTPUT FORMAT\n  Note that dice_cup has two modes of output:\n')
     print('    1) Standard Mode: will print the Set number and a single line for each')
     print('       Dice Group rolled.  If the \'-i\' flag is set, the \"Ideal Average\",')
@@ -149,6 +151,8 @@ parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
+#parser.add_argument("-L", action='store_true', help="Drop the lowest roll in a Set of Dice Groups")
+#parser.add_argument("-H", action='store_true', help="Drop the highest roll in a Dice Groups")
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
 parser.add_argument("-i", action='store_true', help="Displays statistical information of each Set rolled")
@@ -200,6 +204,8 @@ if args.d:
         c_trim = 0
         g_div = 0
         a_set = "DNE"
+        r_high = False
+        r_low = False
         if not args.q:
             print('=' * (s_len + 4))
             print('Set', repr(y+1).rjust(s_len))
@@ -216,36 +222,47 @@ if args.d:
             for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
-                if (isinstance(args.l, int) or isinstance(args.u, int)): #See if both -l and -u are set
+                if (isinstance(args.l, int) or isinstance(args.u, int)): #See if either -l or -u are set
                     b += d_roll(os.urandom(16), zt_int, zg_int)
                 else:
                     r += d_roll(os.urandom(16), zt_int, zg_int)
                 if not args.q:
                     print(z[1]+'(d'+z[0]+') +', end = ' ')
             b += args.m
-            if (isinstance(args.l, int) and isinstance(args.u, int)):
+            if (isinstance(args.l, int) and isinstance(args.u, int)): #See if both -l and -u are set
                 if ((b >= args.l) and (b <= args.u)):
                     r += b
                 elif b < args.l:
-                    trim = "LB"
+                    trim = "LB["+str(b)+"]"
                     c_trim += 1
                 else:
-                    trim = "UB"
+                    trim = "UB["+str(b)+"]"
                     c_trim += 1
             elif isinstance(args.l, int):
                 if b >= args.l:
                     r += b
                 else:
-                    trim = "LB"
+                    trim = "LB["+str(b)+"]"
                     c_trim += 1
             elif isinstance(args.u, int):
                 if b <= args.u:
                     r += b
                 else:
-                    trim = "UB"
+                    trim = "UB["+str(b)+"]"
                     c_trim += 1
             else:
                 r += args.m
+            #Calculate the high and low rolls
+            if not r_high:
+                r_high = r
+            elif not trim:
+                if r > r_high:
+                    r_high = r
+            if not r_low:
+                r_low = r
+            elif not trim:
+                if r < r_low:
+                    r_low = r
             if not args.q:
                 if trim:
                     print('('+m_str+') :', trim)
@@ -272,13 +289,17 @@ if args.d:
             print('Set Average:', a_set)
             if g_div == 0:
                 print('Set Total: DNE')
+                print('Set High: DNE')
+                print('Set Low: DNE')
             else:
                 print('Set Total:', t_set)
+                print('Set High:', r_high)
+                print('Set Low:', r_low)
         elif args.i:
             if g_div == 0:
-                print(a_ideal, a_set, 'DNE', sep=',')
+                print(a_ideal, a_set, 'DNE', 'DNE', 'DNE', sep=',')
             else:
-                print(a_ideal, a_set, t_set, sep=',')
+                print(a_ideal, a_set, t_set, r_high, r_low, sep=',')
     sys.exit()
 
 parser.print_help()
