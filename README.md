@@ -8,7 +8,7 @@ on its own.
 
 ~The help screen is below, enjoy.~
 
-Introduction to dice_cup 1.1.6
+Introduction to dice_cup 1.1.8
   Hello, dice_cup is a CLI program written in Python 3 to simulate
   the outcome of various types of dice rolls.  Die types can be set
   arbitrarily greater than 1, making for fun die types such as an eleven-
@@ -16,7 +16,7 @@ Introduction to dice_cup 1.1.6
   follows: "set { dice group [ number ( die type ) +\- modifier ] }"
 
 SYNTAX
-  dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-t] [-l] [-u]
+  dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-i] [-l] [-u]
 
 ARGUMENTS
   -h Displays this help page.
@@ -67,17 +67,23 @@ ARGUMENTS
      two Sets each containing three Dice Groups of two six-sided dice,
      or "2{3[2(d6)]}".
 
-  -t Print the total sum of the Group rolls in a Set; listed as "Set Total".
-     If '-t' is used in Quiet Mode, a new line with the Set Total will be shown
-     below each Set's result list as a single integer.
+  -i Prints statistical information about the Dice Group rolls of a Set:
+       a) the "Ideal Average", or theoretic probabilistic average, of a Set
+       b) the "Set Average", or actual rolled average, of a Set
+       c) the "Set Total", or the sum total of rolls, of a Set
+       d) the "Set High", or the highest roll of a Set
+       e) the "Set Low", or the lowest roll of a Set
+     If '-i' is used in Quiet Mode, a new line with the Ideal Average, Set
+     Average, Set Total, Set High, and Set Low will be printed below each
+     Set's result list as a 5-tuple in the aforementioned order.
 
 OUTPUT FORMAT
   Note that dice_cup has two modes of output:
 
-    1) Standard Mode: will print the Set number, a single line for each dice
-       roll in the Group, the "Ideal Average" (probabilistic), and the
-       "Set Average" (actual roll outcome).  If the '-t' flag is set, then
-       the "Set Total" will be printed the line after the Set Average.
+    1) Standard Mode: will print the Set number and a single line for each
+       Dice Group rolled.  If the '-i' flag is set, the "Ideal Average",
+       "Set Average", and "Set Total" will be displayed after the Dice
+       Group rolls; below a '---' delimiter.
 
        The dice_cup Standard Mode output format is as follows:
 
@@ -93,10 +99,6 @@ OUTPUT FORMAT
              .     |                .                :     .
              .     |                .                :     .
          'Group n' | 'roll combination +\- modifier' : 'outcome'
-         ---
-         Ideal Average: 'X1'
-         Set Average: 'Y1'
-         ---
           .
           .
           .
@@ -112,14 +114,9 @@ OUTPUT FORMAT
              .     |                .                :     .
              .     |                .                :     .
          'Group n' | 'roll combination +\- modifier' : 'outcome'
-         ---
-         Ideal Average: 'X2'
-         Set Average: 'Y2'
 
     2) Quiet Mode: only outputs the final result(s) of Dice Group(s), listing
        one Set per line.  Results will be printed as a comma separated list.
-       If '-t' is set, the Set Total will be displayed on a new line below
-       each Set's result list as a single integer.
 
 EXAMPLES
   dice_cup.py -d 6,3
@@ -128,9 +125,9 @@ EXAMPLES
   dice_cup.py -d 8,4 -m -5 -g 2
     Prints the Standard Mode output for "2[4(d8)-5]" rolls.
 
-  dice_cup.py -d 23,1 4,-2 -l -1 -u 18 -g 2 -t
+  dice_cup.py -d 23,1 4,-2 -l -2 -u 18 -g 2 -i
     Prints the Standard Mode output for "2[1(d23)-2(d4)]" rolls with a Lower
-    Bound of -1 and an Upper Bound of 18 with the Set Total displayed.
+    Bound of -2, an Upper Bound of 18, and statistical information displayed.
 
   dice_cup.py -d 10,1 6,2 -g 4 -m 10 -s 5
     Prints the Standard Mode output for "5{4[1(d10)+2(d6)+10]}" rolls.
