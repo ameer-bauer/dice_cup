@@ -193,12 +193,25 @@ if args.d:
             sys.exit(1)
         p_list.append(d_pair) #Store the sane -d parameter list
     a_ideal = 0
+    a_low = 0
+    a_roll = 0
+    a_drop = 0
     #Scan through the -d parameters to calulate the Ideal Average(s)
     for z in p_list: #Faster to calculate here, just in case there are multiple groups
         zt_int = int(z[0])
         zg_int = int(z[1])
         a_ideal += (zg_int * ((zt_int + 1) / 2))
+        if args.L and (zg_int > 1):#Calculate the ways to roll the lowest die to drop
+            for r in range(1,zt_int):
+                a_low += (((((zt_int + 1) - r) ** zg_int) - ((zt_int - r) ** zg_int)) * r) + 1
+            a_low += 1
+            a_roll += zt_int ** zg_int
     a_ideal += args.m
+    if args.L:
+       a_drop = ((a_ideal * a_roll) - a_low) / a_roll
+       a_ideal = a_drop
+    print('a_low:', a_low)
+    print('a_roll:', a_roll)
     for y in range(args.s):
         t_set = 0
         c_trim = 0
@@ -208,7 +221,7 @@ if args.d:
         r_low = False
         if not args.q:
             print('=' * (s_len + 4))
-            print('Set', repr(y+1).rjust(s_len))
+            print('Set', repr(y + 1).rjust(s_len))
             print('=' * (s_len + 4))
             print('Lower Bound =', args.l,)
             print('Upper Bound =', args.u)
@@ -218,7 +231,7 @@ if args.d:
             b = 0
             trim = False
             if not args.q:
-                print('Group',repr(x+1).rjust(g_len), '|', end = ' ')
+                print('Group',repr(x + 1).rjust(g_len), '|', end = ' ')
             for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
