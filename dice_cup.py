@@ -151,7 +151,7 @@ parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
-#parser.add_argument("-L", action='store_true', help="Drop the lowest roll in a Set of Dice Groups")
+parser.add_argument("-L", action='store_true', help="Drop the lowest roll in a Set of Dice Groups")
 #parser.add_argument("-H", action='store_true', help="Drop the highest roll in a Dice Groups")
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
@@ -192,8 +192,8 @@ if args.d:
             d_err()
             sys.exit(1)
         p_list.append(d_pair) #Store the sane -d parameter list
-    a_ideal = 0;
-    #Scan through the -d parameters to calulate the Ideal Average
+    a_ideal = 0
+    #Scan through the -d parameters to calulate the Ideal Average(s)
     for z in p_list: #Faster to calculate here, just in case there are multiple groups
         zt_int = int(z[0])
         zg_int = int(z[1])
