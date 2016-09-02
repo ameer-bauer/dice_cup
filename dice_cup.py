@@ -151,7 +151,7 @@ parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
-parser.add_argument("-L", action='store_true', help="Drop the lowest roll in a Set of Dice Groups")
+parser.add_argument("-L", action='store_true', help="Drop the lowest single roll in all Dice Groups")
 #parser.add_argument("-H", action='store_true', help="Drop the highest roll in a Dice Groups")
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
@@ -201,7 +201,7 @@ if args.d:
         zt_int = int(z[0])
         zg_int = int(z[1])
         a_ideal += (zg_int * ((zt_int + 1) / 2))
-        if args.L and (zg_int > 1):#Calculate the ways to roll the lowest die to drop
+        if args.L:#Calculate the ways to roll the lowest die to drop
             for r in range(1,zt_int):
                 a_low += (((((zt_int + 1) - r) ** zg_int) - ((zt_int - r) ** zg_int)) * r) + 1
             a_low += 1
@@ -230,7 +230,9 @@ if args.d:
             r = 0
             b = 0
             trim = False
-            if not args.q:
+            if args.L and (not args.q):
+                print('Group',repr(x + 1).rjust(g_len), '{Drop Lowest} |', end = ' ')
+            elif not args.q:
                 print('Group',repr(x + 1).rjust(g_len), '|', end = ' ')
             for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
