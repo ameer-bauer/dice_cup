@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.8
+#Version: 1.1.9
 #Date: 2016-08-27
 #----------------
 
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.8"
+version = "1.1.9"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -19,23 +19,38 @@ def pos_int(p): #a function for argparse 'type' to call for checking input value
         raise argparse.ArgumentTypeError(msg)
     return int_p
 
-def d_roll(s, t = 6, c = 1, m = 0):
+def d_roll(s, t = 6, c = 1, m = 0, l = False):
     #Dice rolling: (random integer in range from 1 -> t (dice type)
     #Default input, with s defined, yields roll = 1(d6)+0
     #d_roll with parameters set yield a roll = c(dt)+m
     #s is the seed for the RNG, use at LEAST 8 bytes of random data
     roll = 0
     random.seed(s)
+    roll_sample = 0
+    roll_low = False
     
     if c > 0:
         for x in range(c):
-            roll += random.randint(1, t)
+            roll_sample = random.randint(1, t)
+            if not roll_low:
+                roll_low = roll_sample
+            elif roll_sample < roll_low:
+                roll_low = roll_sample
+            roll += roll_sample
     elif c == 0:
         return(m)
     else:
         c = abs(c)
         for x in range(c):
-            roll -= random.randint(1, t)
+            roll_sample = random.randint(1, t)
+            if not roll_low:
+                roll_low = roll_sample
+            elif roll_sample < roll_low:
+                roll_low = roll_sample
+            roll -= roll_sample
+    
+    if l:
+        roll -= roll_low
     
     return(roll + m)
 
@@ -151,7 +166,7 @@ parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
-parser.add_argument("-L", action='store_true', help="Drop the lowest single roll in all Dice Groups")
+parser.add_argument("-L", action='store_true', help="Drop the lowest inital roll in all Dice Groups")
 #parser.add_argument("-H", action='store_true', help="Drop the highest roll in a Dice Groups")
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
@@ -197,21 +212,20 @@ if args.d:
     a_roll = 0
     a_drop = 0
     #Scan through the -d parameters to calulate the Ideal Average(s)
+    first_run = True
     for z in p_list: #Faster to calculate here, just in case there are multiple groups
         zt_int = int(z[0])
         zg_int = int(z[1])
         a_ideal += (zg_int * ((zt_int + 1) / 2))
-        if args.L:#Calculate the ways to roll the lowest die to drop
-            for r in range(1,zt_int):
-                a_low += (((((zt_int + 1) - r) ** zg_int) - ((zt_int - r) ** zg_int)) * r) + 1
-            a_low += 1
+        if args.L and first_run:#Calculate the ways to roll the lowest die to drop
+            for r in range(1,(zt_int + 1)):
+                a_low += (((((zt_int + 1) - r) ** zg_int) - ((zt_int - r) ** zg_int)) * r)
             a_roll += zt_int ** zg_int
+        first_run = False
     a_ideal += args.m
     if args.L:
        a_drop = ((a_ideal * a_roll) - a_low) / a_roll
        a_ideal = a_drop
-    print('a_low:', a_low)
-    print('a_roll:', a_roll)
     for y in range(args.s):
         t_set = 0
         c_trim = 0
@@ -231,16 +245,24 @@ if args.d:
             b = 0
             trim = False
             if args.L and (not args.q):
-                print('Group',repr(x + 1).rjust(g_len), '{Drop Lowest} |', end = ' ')
+                print('Group',repr(x + 1).rjust(g_len), '| Drop Lowest', end = ' ')
             elif not args.q:
                 print('Group',repr(x + 1).rjust(g_len), '|', end = ' ')
+            first_run = True
             for z in p_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
                 if (isinstance(args.l, int) or isinstance(args.u, int)): #See if either -l or -u are set
-                    b += d_roll(os.urandom(16), zt_int, zg_int)
+                    if args.L and first_run:#Check for first dice run of group and L flag
+                        b += d_roll(os.urandom(16), zt_int, zg_int, 0, True)
+                    else:
+                        b += d_roll(os.urandom(16), zt_int, zg_int)
                 else:
-                    r += d_roll(os.urandom(16), zt_int, zg_int)
+                    if args.L and first_run:#Check for first dice run of group and L flag
+                        r += d_roll(os.urandom(16), zt_int, zg_int, 0, True)
+                    else:
+                        r += d_roll(os.urandom(16), zt_int, zg_int)
+                first_run = False
                 if not args.q:
                     print(z[1]+'(d'+z[0]+') +', end = ' ')
             b += args.m
