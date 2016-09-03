@@ -67,7 +67,7 @@ def h_main():
     print('  arbitrarily greater than 1, making for fun die types such as an eleven-')
     print('  sided die, or \"1(d11)\".  The nomenclature for die rolls herein is as')
     print('  follows: \"set { dice group [ number ( die type ) +\\- modifier ] }\"')
-    print('\nSYNTAX\n  dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-i] [-l] [-u]')
+    print('\nSYNTAX\n  dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-i] [-l] [-u] [-L]')
     print('\nARGUMENTS')
     print('  -h Displays this help page.\n')
     print('  -v Displays the version of dice_cup.\n')
@@ -87,6 +87,10 @@ def h_main():
     print('         the first number of each parameter pair must be greater than 1,')
     print('         while the second number of each pair must not be equal to 0.  The')
     print('         input \'-d 6,1 4,-2 3,4\' will roll \"1(d6) - 2(d4) + 4(d3)\".\n')
+    print('  -L Drop the lowest roll of the first dice combination within each Dice Group.')
+    print('     \"Drop Lowest\" will appear before each die combination to be modified.')
+    print('     i.e. to roll 3 Dice Groups of 4d6 + 1d4, dropping the lowest d6, the')
+    print('     following syntax would be appropriate: \'dice_cup -d 6,4 4,1 -g 3 -L\'\n')
     print('  -l Set an integer value as the Lower Bound for all Dice Groups.  Results that')
     print('     are trimmed will be displayed as \'LB\' in the Dice Group outcome.')
     print('     If all results in a Set of Dice Group(s) are trimmed, both Set Average and')
@@ -107,7 +111,7 @@ def h_main():
     print('     two Sets each containing three Dice Groups of two six-sided dice,')
     print('     or \"2{3[2(d6)]}\".\n')
     print('  -i Prints statistical information about the Dice Group rolls of a Set:')
-    print('       a) the \"Ideal Average\", or theoretic probabilistic average, of a Set')
+    print('       a) the \"Ideal Average\", or probabilistic average, of a Set')
     print('       b) the \"Set Average\", or actual rolled average, of a Set')
     print('       c) the \"Set Total\", or the sum total of rolls, of a Set')
     print('       d) the \"Set High\", or the highest roll of a Set')
@@ -224,8 +228,8 @@ if args.d:
         first_run = False
     a_ideal += args.m
     if args.L:
-       a_drop = ((a_ideal * a_roll) - a_low) / a_roll
-       a_ideal = a_drop
+        a_drop = ((a_ideal * a_roll) - a_low) / a_roll
+        a_ideal = a_drop
     for y in range(args.s):
         t_set = 0
         c_trim = 0
