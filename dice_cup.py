@@ -19,23 +19,32 @@ def pos_int(p): #a function for argparse 'type' to call for checking input value
         raise argparse.ArgumentTypeError(msg)
     return int_p
 
-def d_roll(s, t = 6, c = 1, m = 0, l = False):
+def d_roll(s, t = 6, c = 1, m = 0, l = False, h = False):
     #Dice rolling: (random integer in range from 1 -> t (dice type)
     #Default input, with s defined, yields roll = 1(d6)+0
     #d_roll with parameters set yield a roll = c(dt)+m
     #s is the seed for the RNG, use at LEAST 8 bytes of random data
+    #l is the drop the lowest roll flag
+    #h is the keep the highest roll flag
+    #NOTE: either l, or h, may be set, not both; h takes precidence
     roll = 0
     random.seed(s)
     roll_sample = 0
-    roll_low = False
+    first_run = True
+    roll_low = 0
+    roll_high = 0
     
     if c > 0:
         for x in range(c):
             roll_sample = random.randint(1, t)
-            if not roll_low:
+            if first_run:
                 roll_low = roll_sample
+                roll_high = roll_sample
+                first_run = False
             elif roll_sample < roll_low:
                 roll_low = roll_sample
+            elif roll_sample > roll_high:
+                roll_high = roll_sample
             roll += roll_sample
     elif c == 0:
         return(m)
@@ -43,13 +52,19 @@ def d_roll(s, t = 6, c = 1, m = 0, l = False):
         c = abs(c)
         for x in range(c):
             roll_sample = random.randint(1, t)
-            if not roll_low:
+            if first_run:
                 roll_low = roll_sample
+                roll_high = roll_sample
+                first_run = False
             elif roll_sample < roll_low:
                 roll_low = roll_sample
+            elif roll_sample > roll_high:
+                roll_high = roll_sample
             roll -= roll_sample
     
-    if l:
+    if h:
+        roll = roll_high
+    elif l:
         roll -= roll_low
     
     return(roll + m)
