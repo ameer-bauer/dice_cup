@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.9
-#Date: 2016-08-27
+#Version: 1.1.10
+#Date: 2016-09-08
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.9"
+version = "1.1.10"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -25,7 +25,7 @@ def d_roll(s, t = 6, c = 1, m = 0, l = False, h = False):
     #d_roll with parameters set yield a roll = c(dt)+m
     #s is the seed for the RNG, use at LEAST 8 bytes of random data
     #l is the drop the lowest roll flag
-    #h is the keep the highest roll flag
+    #h is the drop the highest roll flag
     #NOTE: either l, or h, may be set, not both; h takes precidence
     roll = 0
     random.seed(s)
@@ -62,10 +62,10 @@ def d_roll(s, t = 6, c = 1, m = 0, l = False, h = False):
                 roll_high = roll_sample
             roll -= roll_sample
     
-    if h:
-        roll = roll_high
-    elif l:
+    if l:
         roll -= roll_low
+    elif h:
+        roll -= roll_high
     
     return(roll + m)
 
@@ -106,6 +106,10 @@ def h_main():
     print('     \"Drop Lowest\" will appear before each die combination to be modified.')
     print('     i.e. to roll 3 Dice Groups of 4d6 + 1d4, dropping the lowest d6, the')
     print('     following syntax would be appropriate: \'dice_cup -d 6,4 4,1 -g 3 -L\'\n')
+    print('  -H Drop the highest roll of the first dice combination within each Dice Group.')
+    print('     \"Drop Highest\" will appear before each die combination to be modified.')
+    print('     i.e. to roll 5 Dice Groups of 3d6 + 2d8, dropping the lowest d6, the')
+    print('     following syntax would be appropriate: \'dice_cup -d 6,3 8,2 -g 5 -H\'\n')
     print('  -l Set an integer value as the Lower Bound for all Dice Groups.  Results that')
     print('     are trimmed will be displayed as \'LB\' in the Dice Group outcome.')
     print('     If all results in a Set of Dice Group(s) are trimmed, both Set Average and')
@@ -186,7 +190,7 @@ parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
 parser.add_argument("-L", action='store_true', help="Drop the lowest inital roll in all Dice Groups")
-#parser.add_argument("-H", action='store_true', help="Drop the highest roll in a Dice Groups")
+parser.add_argument("-H", action='store_true', help="Drop the highest inital roll in all Dice Groups")
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
 parser.add_argument("-i", action='store_true', help="Displays statistical information of each Set rolled")
@@ -206,6 +210,11 @@ if (isinstance(args.l, int) and isinstance(args.u, int)):#See if both -l and -u 
         print('       i.e. the lower bound is either greater than, or equal, to the')
         print('       upper bound.  Please enter new boundary values so that \'-l\' < \'-u\'.')
         sys.exit(1)
+
+if args.L and args.H:#See if both -L and -H are set
+    print('Error: the flags \'-L\' and \'-H\' are set, yet only one is allowed.')
+    print('       Please select either the \'-L\' or the \'-H\' flag.')
+    sys.exit(1)
 
 if args.d:
     p_list = []
@@ -228,9 +237,10 @@ if args.d:
         p_list.append(d_pair) #Store the sane -d parameter list
     a_ideal = 0
     a_low = 0
+    a_high = 0
     a_roll = 0
     a_drop = 0
-    #Scan through the -d parameters to calulate the Ideal Average(s)
+    #Scan through the -d parameters to calulate the Ideal Average
     first_run = True
     for z in p_list: #Faster to calculate here, just in case there are multiple groups
         zt_int = int(z[0])
@@ -240,10 +250,17 @@ if args.d:
             for r in range(1,(zt_int + 1)):
                 a_low += (((((zt_int + 1) - r) ** zg_int) - ((zt_int - r) ** zg_int)) * r)
             a_roll += zt_int ** zg_int
+        elif args.H and first_run:#Calculate the ways to roll the highest die to drop
+            for r in range(1,(zt_int + 1)):
+                a_high += (((r ** zg_int) - ((r - 1) ** zg_int)) * r)
+            a_roll += zt_int ** zg_int
         first_run = False
     a_ideal += args.m
     if args.L:
         a_drop = ((a_ideal * a_roll) - a_low) / a_roll
+        a_ideal = a_drop
+    elif args.H:
+        a_drop = ((a_ideal * a_roll) - a_high) / a_roll
         a_ideal = a_drop
     for y in range(args.s):
         t_set = 0
@@ -265,6 +282,8 @@ if args.d:
             trim = False
             if args.L and (not args.q):
                 print('Group',repr(x + 1).rjust(g_len), '| Drop Lowest', end = ' ')
+            elif args.H and (not args.q):
+                print('Group',repr(x + 1).rjust(g_len), '| Drop Highest', end = ' ')
             elif not args.q:
                 print('Group',repr(x + 1).rjust(g_len), '|', end = ' ')
             first_run = True
@@ -274,11 +293,15 @@ if args.d:
                 if (isinstance(args.l, int) or isinstance(args.u, int)): #See if either -l or -u are set
                     if args.L and first_run:#Check for first dice run of group and L flag
                         b += d_roll(os.urandom(16), zt_int, zg_int, 0, True)
+                    elif args.H and first_run:#Check for first dice run of group and H flag
+                        b += d_roll(os.urandom(16), zt_int, zg_int, 0, False, True)
                     else:
                         b += d_roll(os.urandom(16), zt_int, zg_int)
                 else:
                     if args.L and first_run:#Check for first dice run of group and L flag
                         r += d_roll(os.urandom(16), zt_int, zg_int, 0, True)
+                    elif args.H and first_run:#Check for first dice run of group and H flag
+                        r += d_roll(os.urandom(16), zt_int, zg_int, 0, False, True)
                     else:
                         r += d_roll(os.urandom(16), zt_int, zg_int)
                 first_run = False
