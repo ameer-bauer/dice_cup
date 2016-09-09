@@ -106,7 +106,7 @@ def h_main():
     print('     \"Drop Lowest\" will appear before each die combination to be modified.')
     print('     i.e. to roll 3[4(d6)+1(d4)], dropping the lowest d6 roll, the following')
     print('     syntax would be appropriate: \'dice_cup -d 6,4 4,1 -g 3 -L\'\n')
-    print('  -H Drop the highest roll of the first dice combination within each Dice Group.')
+    print('  -H Drop the highest roll of the first dice combo within each Dice Group.')
     print('     \"Drop Highest\" will appear before each die combination to be modified.')
     print('     i.e. to roll 5[3(d8)+2(d6)], dropping the highest d8 roll, the following')
     print('     syntax would be appropriate: \'dice_cup -d 8,3 6,2 -g 5 -H\'\n')
