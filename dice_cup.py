@@ -186,7 +186,7 @@ def h_main():
 parser = argparse.ArgumentParser(add_help=False, description='Welcome, dice_cup is a CLI-based die roll simulation engine. It utilizes a cryptographic PRNG to accurately simulate various dice rolls.')
 parser.add_argument("-h", action='store_true', help="Display the help page")
 parser.add_argument("-v", action='store_true', help="Display version information")
-parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quite Mode\'")
+parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quiet Mode\'")
 parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to roll; called a \'Dice Group\'", metavar='#,#')
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
