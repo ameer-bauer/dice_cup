@@ -26,7 +26,7 @@ def d_roll(s, t = 6, c = 1, m = 0, l = False, h = False):
     #s is the seed for the RNG, use at LEAST 8 bytes of random data
     #l is the drop the lowest roll flag
     #h is the drop the highest roll flag
-    #NOTE: either l, or h, may be set, not both; h takes precidence
+    #NOTE: either l, or h, may be set, not both; h takes precedence
     roll = 0
     random.seed(s)
     roll_sample = 0
@@ -189,8 +189,8 @@ parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to
 parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
-parser.add_argument("-L", action='store_true', help="Drop the lowest inital roll in all Dice Groups")
-parser.add_argument("-H", action='store_true', help="Drop the highest inital roll in all Dice Groups")
+parser.add_argument("-L", action='store_true', help="Drop the lowest initial roll in all Dice Groups")
+parser.add_argument("-H", action='store_true', help="Drop the highest initial roll in all Dice Groups")
 parser.add_argument("-g", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Dice Groups\' to roll in a Set", metavar='#')
 parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Define how many \'Sets of Dice Groups\' to roll", metavar='#')
 parser.add_argument("-i", action='store_true', help="Displays statistical information of each Set rolled")
@@ -240,7 +240,7 @@ if args.d:
     a_high = 0
     a_roll = 0
     a_drop = 0
-    #Scan through the -d parameters to calulate the Ideal Average
+    #Scan through the -d parameters to calculate the Ideal Average
     first_run = True
     for z in p_list: #Faster to calculate here, just in case there are multiple groups
         zt_int = int(z[0])
@@ -266,7 +266,9 @@ if args.d:
         t_set = 0
         c_trim = 0
         g_div = 0
+        g_var = 0
         a_set = "DNE"
+        s_dev = 0
         r_high = False
         r_low = False
         if not args.q:
@@ -311,6 +313,7 @@ if args.d:
             if (isinstance(args.l, int) and isinstance(args.u, int)): #See if both -l and -u are set
                 if ((b >= args.l) and (b <= args.u)):
                     r += b
+                    g_var += ((r - a_ideal) ** 2)
                 elif b < args.l:
                     trim = "LB["+str(b)+"]"
                     c_trim += 1
@@ -320,17 +323,20 @@ if args.d:
             elif isinstance(args.l, int):
                 if b >= args.l:
                     r += b
+                    g_var += ((r - a_ideal) ** 2)
                 else:
                     trim = "LB["+str(b)+"]"
                     c_trim += 1
             elif isinstance(args.u, int):
                 if b <= args.u:
                     r += b
+                    g_var += ((r - a_ideal) ** 2)
                 else:
                     trim = "UB["+str(b)+"]"
                     c_trim += 1
             else:
                 r += args.m
+                g_var += ((r - a_ideal) ** 2)
             #Calculate the high and low rolls
             if not r_high:
                 r_high = r
@@ -363,6 +369,7 @@ if args.d:
         g_div = args.g - c_trim 
         if g_div != 0:
             a_set = t_set / g_div #Calculate the Group roll average
+            s_dev = ((g_var / g_div) ** (0.5))
         if args.i and not args.q:
             print('---\nIdeal Average:', a_ideal)
             print('Set Average:', a_set)
@@ -370,10 +377,12 @@ if args.d:
                 print('Set Total: DNE')
                 print('Set High: DNE')
                 print('Set Low: DNE')
+                print('Set Deviation: DNE')
             else:
                 print('Set Total:', t_set)
                 print('Set High:', r_high)
                 print('Set Low:', r_low)
+                print('Set Deviation:', s_dev)
         elif args.i:
             if g_div == 0:
                 print(a_ideal, a_set, 'DNE', 'DNE', 'DNE', sep=',')
