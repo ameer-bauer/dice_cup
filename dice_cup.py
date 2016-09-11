@@ -387,9 +387,9 @@ if args.d:
                 print('Set Deviation:', s_dev)
         elif args.i:
             if g_div == 0:
-                print(a_ideal, a_set, 'DNE', 'DNE', 'DNE', sep=',')
+                print(a_ideal, a_set, 'DNE', 'DNE', 'DNE', 'DNE', sep=',')
             else:
-                print(a_ideal, a_set, t_set, r_high, r_low, sep=',')
+                print(a_ideal, a_set, t_set, r_high, r_low, s_dev, sep=',')
     sys.exit()
 
 parser.print_help()
