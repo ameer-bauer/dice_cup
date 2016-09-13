@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.10
-#Date: 2016-09-08
+#Version: 1.1.11
+#Date: 2016-09-12
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.10"
+version = "1.1.11"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -188,7 +188,8 @@ parser.add_argument("-h", action='store_true', help="Display the help page")
 parser.add_argument("-v", action='store_true', help="Display version information")
 parser.add_argument("-q", action='store_true', help="Only display rolled numbers; called \'Quiet Mode\'")
 parser.add_argument("-d", nargs='+', type=str, help="Define the types of dice to roll; called a \'Dice Group\'", metavar='#,#')
-parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer roll modifier", metavar='#')
+parser.add_argument("-m", nargs='?', const=0, default=0, type=int, help="Add, or subtract, an integer modifier to each Dice Group", metavar='#')
+parser.add_argument("-p", nargs='?', const=0, default=0, type=int, help="Apply an integer percentage modifier to each Dice Group", metavar='%')
 parser.add_argument("-l", nargs='?', type=int, help="Define a lower bound for all Dice Groups", metavar='#')
 parser.add_argument("-u", nargs='?', type=int, help="Define an upper bound for all Dice Groups", metavar='#')
 parser.add_argument("-L", action='store_true', help="Drop the lowest initial roll in all Dice Groups")
@@ -219,10 +220,12 @@ if args.L and args.H:#See if both -L and -H are set
     sys.exit(1)
 
 if args.d:
-    p_list = []
+    d_list = []
     m_str = str(args.m)
+    p_str = str(args.p)
     g_len = len(str(args.g))
     s_len = len(str(args.s))
+    p_val = (args.p / 100)
     for x in args.d:
         d_pair = x.split(',')
         #Check the -d parameter list for input errors...
@@ -236,7 +239,7 @@ if args.d:
         except ValueError:
             d_err()
             sys.exit(1)
-        p_list.append(d_pair) #Store the sane -d parameter list
+        d_list.append(d_pair) #Store the sane -d parameter list
     a_ideal = 0
     a_low = 0
     a_high = 0
@@ -244,7 +247,7 @@ if args.d:
     a_drop = 0
     #Scan through the -d parameters to calculate the Ideal Average
     first_run = True
-    for z in p_list: #Faster to calculate here, just in case there are multiple groups
+    for z in d_list: #Faster to calculate here, just in case there are multiple groups
         zt_int = int(z[0])
         zg_int = int(z[1])
         a_ideal += (zg_int * ((zt_int + 1) / 2))
@@ -258,6 +261,10 @@ if args.d:
             a_roll += zt_int ** zg_int
         first_run = False
     a_ideal += args.m
+    if args.p:
+        a_ideal += (a_ideal * p_val)
+        a_low += (a_low * p_val)
+        a_high += (a_high * p_val)
     if args.L:
         a_drop = ((a_ideal * a_roll) - a_low) / a_roll
         a_ideal = a_drop
@@ -291,7 +298,7 @@ if args.d:
             elif not args.q:
                 print('Group',repr(x + 1).rjust(g_len), '|', end = ' ')
             first_run = True
-            for z in p_list: #Generate the dice roll outcomes of the -d parameters
+            for z in d_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
                 if (isinstance(args.l, int) or isinstance(args.u, int)): #See if either -l or -u are set
@@ -315,6 +322,8 @@ if args.d:
             if (isinstance(args.l, int) and isinstance(args.u, int)): #See if both -l and -u are set
                 if ((b >= args.l) and (b <= args.u)):
                     r += b
+                    if args.p:
+                        r += round((r * p_val))
                     g_var += ((r - a_ideal) ** 2)
                 elif b < args.l:
                     trim = "LB["+str(b)+"]"
@@ -325,6 +334,8 @@ if args.d:
             elif isinstance(args.l, int):
                 if b >= args.l:
                     r += b
+                    if args.p:
+                        r += round((r * p_val))
                     g_var += ((r - a_ideal) ** 2)
                 else:
                     trim = "LB["+str(b)+"]"
@@ -332,12 +343,16 @@ if args.d:
             elif isinstance(args.u, int):
                 if b <= args.u:
                     r += b
+                    if args.p:
+                        r += round((r * p_val))
                     g_var += ((r - a_ideal) ** 2)
                 else:
                     trim = "UB["+str(b)+"]"
                     c_trim += 1
             else:
                 r += args.m
+                if args.p:
+                    r += round((r * p_val))
                 g_var += ((r - a_ideal) ** 2)
             #Calculate the high and low rolls
             if not r_high:
@@ -352,9 +367,15 @@ if args.d:
                     r_low = r
             if not args.q:
                 if trim:
-                    print('('+m_str+') :', trim)
+                    if args.p:
+                        print('('+m_str+') + ('+p_str+'%) :', trim)
+                    else:
+                        print('('+m_str+') :', trim)
                 else:
-                    print('('+m_str+') :', r)
+                    if args.p:
+                        print('('+m_str+') + ('+p_str+'%) :', r)
+                    else:
+                        print('('+m_str+') :', r)
             else:
                 if (x+1) < args.g:
                     if trim:
