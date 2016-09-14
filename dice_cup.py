@@ -368,15 +368,19 @@ if args.d:
                     r_low = r
             if not args.q:
                 if trim:
-                    if args.p:
+                    if args.p and args.m:
                         print('('+m_str+') + ('+p_str+'%) :', trim)
-                    else:
+                    elif args.m:
                         print('('+m_str+') :', trim)
-                else:
-                    if args.p:
-                        print('('+m_str+') + ('+p_str+'%) :', r)
                     else:
+                        print('\b\b:', trim)
+                else:
+                    if args.p and args.m:
+                        print('('+m_str+') + ('+p_str+'%) :', r)
+                    elif args.m:
                         print('('+m_str+') :', r)
+                    else:
+                        print('\b\b:', r)
             else:
                 if (x+1) < args.g:
                     if trim:
