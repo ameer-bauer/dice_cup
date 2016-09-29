@@ -21,7 +21,7 @@ def cli_msg(msg):
 def dc_run():
     hostsys = system()
     if hostsys == 'Windows':
-        dc_out = subprocess.run(['cmd', '/C', './dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
+        dc_out = subprocess.run(['cmd', '/C', 'dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
     else:
         dc_out = subprocess.run(['./dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
     print(hostsys, dc_out)
@@ -59,21 +59,21 @@ def tab_config(self):
     variable = set_val, command = lambda: (cli_msg("The set button has been pressed, see below:"),\
     cli_msg(set_val.get())), selectcolor = "firebrick2")
     sbutton.pack(padx = 13, side = "left")
-    button1 = tk.Button(self, text = "Config 1", command = lambda: cli_msg("You clicked button 1!"))
+    button1 = tk.Button(self, text = "Preset 1", command = lambda: cli_msg("You clicked button 1!"))
     button1.pack(padx = 5, side = "left")
-    button2 = tk.Button(self, text = "Config 2", command = lambda: cli_msg("You clicked button 2!"))
+    button2 = tk.Button(self, text = "Preset 2", command = lambda: cli_msg("You clicked button 2!"))
     button2.pack(padx = 5, side = "left")
-    button3 = tk.Button(self, text = "Config 3", command = lambda: cli_msg("You clicked button 3!"))
+    button3 = tk.Button(self, text = "Preset 3", command = lambda: cli_msg("You clicked button 3!"))
     button3.pack(padx = 5, side = "left")
-    button4 = tk.Button(self, text = "Config 4", command = lambda: cli_msg("You clicked button 4!"))
+    button4 = tk.Button(self, text = "Preset 4", command = lambda: cli_msg("You clicked button 4!"))
     button4.pack(padx = 5, side = "left")
-    button5 = tk.Button(self, text = "Config 5", command = lambda: cli_msg("You clicked button 5!"))
+    button5 = tk.Button(self, text = "Preset 5", command = lambda: cli_msg("You clicked button 5!"))
     button5.pack(padx = 5, side = "left")
-    button6 = tk.Button(self, text = "Config 6", command = lambda: cli_msg("You clicked button 6!"))
+    button6 = tk.Button(self, text = "Preset 6", command = lambda: cli_msg("You clicked button 6!"))
     button6.pack(padx = 5, side = "left")
-    button7 = tk.Button(self, text = "Config 7", command = lambda: cli_msg("You clicked button 7!"))
+    button7 = tk.Button(self, text = "Preset 7", command = lambda: cli_msg("You clicked button 7!"))
     button7.pack(padx = 5, side = "left")
-    button8 = tk.Button(self, text = "Config 8", command = lambda: cli_msg("You clicked button 8!"))
+    button8 = tk.Button(self, text = "Preset 8", command = lambda: cli_msg("You clicked button 8!"))
     button8.pack(padx = 5, side = "left")
 
 class GUITest(tk.Tk):
