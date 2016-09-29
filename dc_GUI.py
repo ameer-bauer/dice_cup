@@ -9,6 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 from time import strftime
+from platform import system
 
 LARGE_FONT = ("Verdana", 12)
 NORMAL_FONT = ("Verdana", 10)
@@ -18,10 +19,15 @@ def cli_msg(msg):
     print(msg)
 
 def dc_run():
-    dc_out = subprocess.run(['./dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
-    print(dc_out)
-    dc_print = str(dc_out).split('stdout=')
-    return strftime("%Y-%m-%d@%H:%M:%S -- ")+dc_print[1].strip('\'b\\n\)')
+    hostsys = system()
+    if hostsys == 'Windows':
+        dc_out = subprocess.run(['cmd', '/C', './dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
+    else:
+        dc_out = subprocess.run(['./dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
+    print(hostsys, dc_out)
+    dc_print = str(dc_out).split('stdout=b')
+    dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
+    return strftime("<%Y-%m-%dT%H:%M:%S> ")+dc_print.strip('\'\)')
 
 def popup_wrn(msg):
     popup = tk.Tk()
@@ -35,10 +41,13 @@ def popup_wrn(msg):
 def tab_config(self):
     set_val = tk.IntVar()
     listbox = tk.Listbox(self)
-    scroll = tk.Scrollbar(self)
-    scroll.config(command = listbox.yview)
-    scroll.pack(side = tk.RIGHT, fill = tk.Y)
-    listbox.config(yscrollcommand = scroll.set, bg = "ghost white")
+    scrolly = tk.Scrollbar(self)
+    scrolly.config(command = listbox.yview)
+    scrolly.pack(side = "right", fill = "y")
+    scrollx = tk.Scrollbar(self)
+    scrollx.config(command = listbox.xview, orient = "horizontal")
+    scrollx.pack(side = "bottom", fill = "x")
+    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "ghost white")
     listbox.pack(fill = "both", expand = 1)
     entry = tk.Entry(self)
     entry.config(bg = "ghost white")
@@ -46,28 +55,26 @@ def tab_config(self):
     rollbutton = tk.Button(self, text = "|--> Roll <--|",\
     command = lambda: (listbox.insert(tk.END, dc_run()), listbox.see(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
-    sbutton = tk.Checkbutton(self, text = "<Set>", indicatoron = 0, offvalue = 0, onvalue = 1,\
+    sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
     variable = set_val, command = lambda: (cli_msg("The set button has been pressed, see below:"),\
     cli_msg(set_val.get())), selectcolor = "firebrick2")
-    sbutton.pack(side = "left")
+    sbutton.pack(padx = 13, side = "left")
     button1 = tk.Button(self, text = "Config 1", command = lambda: cli_msg("You clicked button 1!"))
-    button1.pack(padx = 2, side = "left")
+    button1.pack(padx = 5, side = "left")
     button2 = tk.Button(self, text = "Config 2", command = lambda: cli_msg("You clicked button 2!"))
-    button2.pack(padx = 2, side = "left")
+    button2.pack(padx = 5, side = "left")
     button3 = tk.Button(self, text = "Config 3", command = lambda: cli_msg("You clicked button 3!"))
-    button3.pack(padx = 2, side = "left")
+    button3.pack(padx = 5, side = "left")
     button4 = tk.Button(self, text = "Config 4", command = lambda: cli_msg("You clicked button 4!"))
-    button4.pack(padx = 2, side = "left")
+    button4.pack(padx = 5, side = "left")
     button5 = tk.Button(self, text = "Config 5", command = lambda: cli_msg("You clicked button 5!"))
-    button5.pack(padx = 2, side = "left")
+    button5.pack(padx = 5, side = "left")
     button6 = tk.Button(self, text = "Config 6", command = lambda: cli_msg("You clicked button 6!"))
-    button6.pack(padx = 2, side = "left")
+    button6.pack(padx = 5, side = "left")
     button7 = tk.Button(self, text = "Config 7", command = lambda: cli_msg("You clicked button 7!"))
-    button7.pack(padx = 2, side = "left")
+    button7.pack(padx = 5, side = "left")
     button8 = tk.Button(self, text = "Config 8", command = lambda: cli_msg("You clicked button 8!"))
-    button8.pack(padx = 2, side = "left")
-    button9 = tk.Button(self, text = "Config 9", command = lambda: cli_msg("You clicked button 9!"))
-    button9.pack(padx = 2, side = "left")
+    button8.pack(padx = 5, side = "left")
 
 class GUITest(tk.Tk):
 
@@ -114,7 +121,7 @@ class GUITest(tk.Tk):
         tab_config(note4)
         notebook.add(note5, text='Ledger 5')
         tab_config(note5)
-        notebook.pack(fill = "both", expand = 1)
+        notebook.pack(padx = 5, pady = 5, fill = "both", expand = 1)
 
 app = GUITest()
 app.geometry("800x600")
