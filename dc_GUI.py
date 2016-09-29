@@ -58,7 +58,7 @@ def tab_config(self):
     sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
     variable = set_val, command = lambda: (cli_msg("The set button has been pressed, see below:"),\
     cli_msg(set_val.get())), selectcolor = "firebrick2")
-    sbutton.pack(padx = 13, side = "left")
+    sbutton.pack(padx = 5, side = "left")
     button1 = tk.Button(self, text = "Preset 1", command = lambda: cli_msg("You clicked button 1!"))
     button1.pack(padx = 5, side = "left")
     button2 = tk.Button(self, text = "Preset 2", command = lambda: cli_msg("You clicked button 2!"))
