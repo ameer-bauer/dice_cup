@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.0.1
-#Date: 2016-09-28
+#Version: 0.0.2
+#Date: 2016-09-30
 #----------------
 
 import tkinter as tk
 from tkinter import ttk
 import subprocess
-from time import strftime
+from datetime import datetime
 from platform import system
 
 LARGE_FONT = ("Verdana", 12)
@@ -24,10 +24,11 @@ def dc_run():
         dc_out = subprocess.run(['cmd', '/C', 'dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
     else:
         dc_out = subprocess.run(['./dice_cup.py', '-d 6,3', '-g 3', '-q', '-s 6'], stdout=subprocess.PIPE)
+    now = datetime.now()
     print(hostsys, dc_out)
     dc_print = str(dc_out).split('stdout=b')
     dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
-    return strftime("<%Y-%m-%dT%H:%M:%S> ")+dc_print.strip('\'\)')
+    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+dc_print.strip('\')')
 
 def popup_wrn(msg):
     popup = tk.Tk()
