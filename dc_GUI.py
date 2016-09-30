@@ -23,7 +23,7 @@ def dc_run():
     if hostsys == 'Windows':
         dc_out = subprocess.run(['cmd', '/C', 'dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
     else:
-        dc_out = subprocess.run(['./dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
+        dc_out = subprocess.run(['./dice_cup.py', '-d 6,3', '-g 3', '-q', '-s 6'], stdout=subprocess.PIPE)
     print(hostsys, dc_out)
     dc_print = str(dc_out).split('stdout=b')
     dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
@@ -88,20 +88,28 @@ class GUITest(tk.Tk):
         container.grid_columnconfigure(0, weight = 1)
         
         menubar = tk.Menu(container, relief = "flat")
+        
         filemenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        filemenu.add_command(label = "Import", command = lambda: popup_wrn("Not supported yet."))
-        filemenu.add_command(label = "Export", command = lambda: popup_wrn("Not supported yet."))
+        filemenu.add_command(label = "Open...", command = lambda: popup_wrn("Not supported yet."))
+        filemenu.add_command(label = "Save As...", command = lambda: popup_wrn("Not supported yet."))
+        filemenu.add_command(label = "Save", command = lambda: popup_wrn("Not supported yet."))
         filemenu.add_separator()
         filemenu.add_command(label = "Exit", command = quit)
         
         settingsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        settingsmenu.add_command(label = "Option 1", command = lambda: popup_wrn("Not supported yet."))
-        settingsmenu.add_command(label = "Option 2", command = lambda: popup_wrn("Not supported yet."))
+        settingsmenu.add_command(label = "Import...", command = lambda: popup_wrn("Not supported yet."))
+        settingsmenu.add_command(label = "Export...", command = lambda: popup_wrn("Not supported yet."))
+        settingsmenu.add_command(label = "Load Defaults", command = lambda: popup_wrn("Not supported yet."))
+        
+        toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
+        toolsmenu.add_command(label = "Scratchpad", command = lambda: popup_wrn("Not supported yet."))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "About", command = lambda: popup_wrn("Not supported yet."))
+        
         menubar.add_cascade(label = "File", menu = filemenu)
         menubar.add_cascade(label = "Settings", menu = settingsmenu)
+        menubar.add_cascade(label = "Tools", menu = toolsmenu)
         menubar.add_cascade(label = "Help", menu = helpmenu)
         tk.Tk.config(self, menu = menubar)
         
