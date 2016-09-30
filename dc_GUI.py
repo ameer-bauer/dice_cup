@@ -14,25 +14,33 @@ from platform import system
 LARGE_FONT = ("Verdana", 12)
 NORMAL_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
+HOST_SYS = system()
 
 def cli_msg(msg):
     print(msg)
 
-def dc_run():
-    hostsys = system()
-    if hostsys == 'Windows':
-        dc_out = subprocess.run(['cmd', '/C', 'dice_cup.py', '-d 6,3', '-g 3', '-q'], stdout=subprocess.PIPE)
+def dc_run(*args):
+    str_args = str(args)
+    params = list(args)
+    if HOST_SYS == 'Windows':
+        params.insert(0, 'cmd')
+        params.insert(1, '/C')
+        params.insert(2, 'dice_cup.py')
+        print(params)
+        dc_out = subprocess.run(params, stdout=subprocess.PIPE)
     else:
-        dc_out = subprocess.run(['./dice_cup.py', '-d 6,3', '-g 3', '-q', '-s 6'], stdout=subprocess.PIPE)
+        params.insert(0, './dice_cup.py')
+        dc_out = subprocess.run(params, stdout=subprocess.PIPE)
     now = datetime.now()
-    print(hostsys, dc_out)
+    print('Host operating system:', HOST_SYS)
+    print(dc_out)
     dc_print = str(dc_out).split('stdout=b')
     dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
-    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+dc_print.strip('\')')
+    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str_args+' '+dc_print.strip('\')')
 
-def popup_wrn(msg):
+def popup_wrn(title, msg):
     popup = tk.Tk()
-    popup.wm_title("Warning")
+    popup.wm_title(title)
     label = tk.Label(popup, text = msg, font = NORMAL_FONT)
     label.pack(pady = 10, padx= 30, side = "top", fill="x")
     button = tk.Button(popup, text = "Ok", command = popup.destroy)
@@ -41,6 +49,8 @@ def popup_wrn(msg):
 
 def tab_config(self):
     set_val = tk.IntVar()
+    entry_val = tk.StringVar()
+    
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = listbox.yview)
@@ -48,33 +58,54 @@ def tab_config(self):
     scrollx = tk.Scrollbar(self)
     scrollx.config(command = listbox.xview, orient = "horizontal")
     scrollx.pack(side = "bottom", fill = "x")
-    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "ghost white")
+    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "alice blue")
     listbox.pack(fill = "both", expand = 1)
-    entry = tk.Entry(self)
-    entry.config(bg = "ghost white")
+    
+    entry = tk.Entry(self, textvariable = entry_val)
+    entry.config(bg = "alice blue")
     entry.pack(fill = "x")
+    entry_val.set("Default Value")
+
     rollbutton = tk.Button(self, text = "|--> Roll <--|",\
-    command = lambda: (listbox.insert(tk.END, dc_run()), listbox.see(tk.END)))
+    command = lambda: (listbox.insert(tk.END, dc_run('-d 6,3', '-g 3', '-s 10', '-q')),\
+    listbox.see(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
+    
     sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
-    variable = set_val, command = lambda: (cli_msg("The set button has been pressed, see below:"),\
-    cli_msg(set_val.get())), selectcolor = "firebrick2")
+    variable = set_val, command = lambda: (cli_msg("[Set] button press = "+str(set_val.get()))),\
+    selectcolor = "firebrick2")
     sbutton.pack(padx = 5, side = "left")
-    button1 = tk.Button(self, text = "Preset 1", command = lambda: cli_msg("You clicked button 1!"))
+    
+    button1 = tk.Button(self, text = "Preset 1",\
+    command = lambda: (cli_msg("Button press: Preset 1"), entry_val.set("Preset 1")))
     button1.pack(padx = 5, side = "left")
-    button2 = tk.Button(self, text = "Preset 2", command = lambda: cli_msg("You clicked button 2!"))
+    
+    button2 = tk.Button(self, text = "Preset 2",\
+    command = lambda: (cli_msg("Button press: Preset 2"), entry_val.set("Preset 2")))
     button2.pack(padx = 5, side = "left")
-    button3 = tk.Button(self, text = "Preset 3", command = lambda: cli_msg("You clicked button 3!"))
+    
+    button3 = tk.Button(self, text = "Preset 3",\
+    command = lambda: (cli_msg("Button press: Preset 3"), entry_val.set("Preset 3")))
     button3.pack(padx = 5, side = "left")
-    button4 = tk.Button(self, text = "Preset 4", command = lambda: cli_msg("You clicked button 4!"))
+    
+    button4 = tk.Button(self, text = "Preset 4",\
+    command = lambda: (cli_msg("Button press: Preset 4"), entry_val.set("Preset 4")))
     button4.pack(padx = 5, side = "left")
-    button5 = tk.Button(self, text = "Preset 5", command = lambda: cli_msg("You clicked button 5!"))
+    
+    button5 = tk.Button(self, text = "Preset 5",\
+    command = lambda: (cli_msg("Button press: Preset 5"), entry_val.set("Preset 5")))
     button5.pack(padx = 5, side = "left")
-    button6 = tk.Button(self, text = "Preset 6", command = lambda: cli_msg("You clicked button 6!"))
+    
+    button6 = tk.Button(self, text = "Preset 6",\
+    command = lambda: (cli_msg("Button press: Preset 6"), entry_val.set("Preset 6")))
     button6.pack(padx = 5, side = "left")
-    button7 = tk.Button(self, text = "Preset 7", command = lambda: cli_msg("You clicked button 7!"))
+    
+    button7 = tk.Button(self, text = "Preset 7",\
+    command = lambda: (cli_msg("Button press: Preset 7"), entry_val.set("Preset 7")))
     button7.pack(padx = 5, side = "left")
-    button8 = tk.Button(self, text = "Preset 8", command = lambda: cli_msg("You clicked button 8!"))
+    
+    button8 = tk.Button(self, text = "Preset 8",\
+    command = lambda: (cli_msg("Button press: Preset 8"), entry_val.set("Preset 8")))
     button8.pack(padx = 5, side = "left")
 
 class GUITest(tk.Tk):
@@ -91,22 +122,27 @@ class GUITest(tk.Tk):
         menubar = tk.Menu(container, relief = "flat")
         
         filemenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        filemenu.add_command(label = "Open...", command = lambda: popup_wrn("Not supported yet."))
-        filemenu.add_command(label = "Save As...", command = lambda: popup_wrn("Not supported yet."))
-        filemenu.add_command(label = "Save", command = lambda: popup_wrn("Not supported yet."))
+        filemenu.add_command(label = "Open...", command = lambda: popup_wrn("Open...", "Not supported yet."))
+        filemenu.add_command(label = "Save As...", command = lambda: popup_wrn("Save As...", "Not supported yet."))
+        filemenu.add_command(label = "Save", command = lambda: popup_wrn("Save", "Not supported yet."))
         filemenu.add_separator()
         filemenu.add_command(label = "Exit", command = quit)
         
         settingsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        settingsmenu.add_command(label = "Import...", command = lambda: popup_wrn("Not supported yet."))
-        settingsmenu.add_command(label = "Export...", command = lambda: popup_wrn("Not supported yet."))
-        settingsmenu.add_command(label = "Load Defaults", command = lambda: popup_wrn("Not supported yet."))
+        settingsmenu.add_command(label = "Import...",\
+        command = lambda: popup_wrn("Import...", "Not supported yet."))
+        settingsmenu.add_command(label = "Export...",\
+        command = lambda: popup_wrn("Export...", "Not supported yet."))
+        settingsmenu.add_command(label = "Load Defaults",\
+        command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        toolsmenu.add_command(label = "Scratchpad", command = lambda: popup_wrn("Not supported yet."))
+        toolsmenu.add_command(label = "Scratchpad",\
+        command = lambda: popup_wrn("Scratchpad", "Not supported yet."))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        helpmenu.add_command(label = "About", command = lambda: popup_wrn("Not supported yet."))
+        helpmenu.add_command(label = "About",\
+        command = lambda: popup_wrn("About", "Not supported yet."))
         
         menubar.add_cascade(label = "File", menu = filemenu)
         menubar.add_cascade(label = "Settings", menu = settingsmenu)
