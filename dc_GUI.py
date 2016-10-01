@@ -26,10 +26,12 @@ def dc_run(*args):
         params.insert(0, 'cmd')
         params.insert(1, '/C')
         params.insert(2, 'dice_cup.py')
+        params.insert(3, '-q')
         print(params)
         dc_out = subprocess.run(params, stdout=subprocess.PIPE)
     else:
         params.insert(0, './dice_cup.py')
+        params.insert(1, '-q')
         dc_out = subprocess.run(params, stdout=subprocess.PIPE)
     now = datetime.now()
     print('Host operating system:', HOST_SYS)
@@ -67,7 +69,7 @@ def tab_config(self):
     entry_val.set("Default Value")
 
     rollbutton = tk.Button(self, text = "|--> Roll <--|",\
-    command = lambda: (listbox.insert(tk.END, dc_run('-d 6,3', '-g 3', '-s 10', '-q')),\
+    command = lambda: (listbox.insert(tk.END, dc_run('-d 6,3', '-g 3', '-s 10')),\
     listbox.see(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
     
