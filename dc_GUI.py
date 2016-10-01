@@ -20,8 +20,7 @@ def cli_msg(msg):
     print(msg)
 
 def dc_run(*args):
-    str_args = str(args)
-    params = list(args)
+    params = list(args[0])
     if HOST_SYS == 'Windows':
         params.insert(0, 'cmd')
         params.insert(1, '/C')
@@ -38,7 +37,7 @@ def dc_run(*args):
     print(dc_out)
     dc_print = str(dc_out).split('stdout=b')
     dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
-    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str_args+' '+dc_print.strip('\')')
+    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(args[0])+' '+dc_print.strip('\')')
 
 def popup_wrn(title, msg):
     popup = tk.Tk()
@@ -52,6 +51,7 @@ def popup_wrn(title, msg):
 def tab_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
+    roll_flags = ['-d 6,3', '-g 3', '-s 6']
     
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
@@ -66,10 +66,10 @@ def tab_config(self):
     entry = tk.Entry(self, textvariable = entry_val)
     entry.config(bg = "alice blue")
     entry.pack(fill = "x")
-    entry_val.set("Default Value")
+    entry_val.set(str(roll_flags))
 
     rollbutton = tk.Button(self, text = "|--> Roll <--|",\
-    command = lambda: (listbox.insert(tk.END, dc_run('-d 6,3', '-g 3', '-s 10')),\
+    command = lambda: (listbox.insert(tk.END, dc_run(roll_flags)),\
     listbox.see(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
     
@@ -141,6 +141,8 @@ class GUITest(tk.Tk):
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         toolsmenu.add_command(label = "Scratchpad",\
         command = lambda: popup_wrn("Scratchpad", "Not supported yet."))
+        toolsmenu.add_command(label = "Formula Check",\
+        command = lambda: popup_wrn("Formula Check", "Not supported yet."))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "About",\
