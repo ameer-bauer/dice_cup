@@ -16,7 +16,7 @@ NORMAL_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py', '-q', '-d 6,3', '-g 6']
-NIX_DEFAULT = ['./dice_cup.py', '-q', '-d 6,3', '-g 6']
+NIX_DEFAULT = ['./dice_cup.py', '-q', '-g 6', '-d 6,3']
 
 def cli_msg(msg):
     print(msg)
@@ -24,11 +24,13 @@ def cli_msg(msg):
 def dc_run(params):
     dc_out = subprocess.run(params, stdout=subprocess.PIPE)
     now = datetime.now()
-    print('Host operating system:', HOST_SYS)
     print(dc_out)
     dc_print = str(dc_out).split('stdout=b')
     dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
-    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+dc_print.strip('\')')
+    if HOST_SYS == 'Windows':
+        return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(params[4:])+' '+dc_print.strip('\')')
+    else:
+        return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(params[2:])+' '+dc_print.strip('\')')
 
 def popup_wrn(title, msg):
     popup = tk.Tk()
@@ -37,6 +39,7 @@ def popup_wrn(title, msg):
     label.pack(pady = 10, padx= 30, side = "top", fill="x")
     button = tk.Button(popup, text = "Ok", command = popup.destroy)
     button.pack()
+    popup.geometry("300x100")
     popup.mainloop()
 
 def tab_config(self):
@@ -61,7 +64,10 @@ def tab_config(self):
     entry = tk.Entry(self, textvariable = entry_val)
     entry.config(bg = "alice blue")
     entry.pack(fill = "x")
-    entry_val.set(str(roll_flags))
+    if HOST_SYS == 'Windows':
+        entry_val.set(roll_flags[4:])
+    else:
+        entry_val.set(roll_flags[2:])
 
     rollbutton = tk.Button(self, text = "|--> Roll <--|",\
     command = lambda: (listbox.insert(tk.END, dc_run(roll_flags)),\
@@ -69,7 +75,7 @@ def tab_config(self):
     rollbutton.pack(side = "top", fill = "x")
     
     sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
-    variable = set_val, command = lambda: (cli_msg("[Set] button press = "+str(set_val.get()))),\
+    variable = set_val, command = lambda: (cli_msg("[Set] button press, state = "+str(set_val.get()))),\
     selectcolor = "firebrick2")
     sbutton.pack(padx = 5, side = "left")
     
@@ -136,8 +142,10 @@ class GUITest(tk.Tk):
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         toolsmenu.add_command(label = "Scratchpad",\
         command = lambda: popup_wrn("Scratchpad", "Not supported yet."))
-        toolsmenu.add_command(label = "Formula Check",\
-        command = lambda: popup_wrn("Formula Check", "Not supported yet."))
+        toolsmenu.add_command(label = "Flag Check",\
+        command = lambda: popup_wrn("Flag Check", "Not supported yet."))
+        toolsmenu.add_command(label = "Formula Build",\
+        command = lambda: popup_wrn("Formula Build", "Not supported yet."))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "About",\
@@ -167,6 +175,7 @@ class GUITest(tk.Tk):
         tab_config(note5)
         notebook.pack(padx = 5, pady = 5, fill = "both", expand = 1)
 
+print('Host OS:', HOST_SYS)
 app = GUITest()
 app.geometry("800x600")
 app.mainloop()
