@@ -15,29 +15,20 @@ LARGE_FONT = ("Verdana", 12)
 NORMAL_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
+WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py', '-q', '-d 6,3', '-g 6']
+NIX_DEFAULT = ['./dice_cup.py', '-q', '-d 6,3', '-g 6']
 
 def cli_msg(msg):
     print(msg)
 
-def dc_run(*args):
-    params = list(args[0])
-    if HOST_SYS == 'Windows':
-        params.insert(0, 'cmd')
-        params.insert(1, '/C')
-        params.insert(2, 'dice_cup.py')
-        params.insert(3, '-q')
-        print(params)
-        dc_out = subprocess.run(params, stdout=subprocess.PIPE)
-    else:
-        params.insert(0, './dice_cup.py')
-        params.insert(1, '-q')
-        dc_out = subprocess.run(params, stdout=subprocess.PIPE)
+def dc_run(params):
+    dc_out = subprocess.run(params, stdout=subprocess.PIPE)
     now = datetime.now()
     print('Host operating system:', HOST_SYS)
     print(dc_out)
     dc_print = str(dc_out).split('stdout=b')
     dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
-    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(args[0])+' '+dc_print.strip('\')')
+    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+dc_print.strip('\')')
 
 def popup_wrn(title, msg):
     popup = tk.Tk()
@@ -51,7 +42,11 @@ def popup_wrn(title, msg):
 def tab_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    roll_flags = ['-d 6,3', '-g 3', '-s 6']
+    
+    if HOST_SYS == 'Windows':
+        roll_flags = WIN_DEFAULT
+    else:
+        roll_flags = NIX_DEFAULT
     
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
