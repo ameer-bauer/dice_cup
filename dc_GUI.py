@@ -15,22 +15,23 @@ LARGE_FONT = ("Verdana", 12)
 NORMAL_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
-WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py', '-q', '-d 6,3', '-g 6']
-NIX_DEFAULT = ['./dice_cup.py', '-q', '-g 6', '-d 6,3']
+WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py', '-q']
+NIX_DEFAULT = ['./dice_cup.py', '-q']
 
 def cli_msg(msg):
     print(msg)
 
 def dc_run(params):
-    dc_out = subprocess.run(params, stdout=subprocess.PIPE)
+    print(params)
+    if HOST_SYS == 'Windows':
+        dc_out = subprocess.run(WIN_DEFAULT+params, stdout=subprocess.PIPE)
+    else:
+        dc_out = subprocess.run(NIX_DEFAULT+params, stdout=subprocess.PIPE)
     now = datetime.now()
     print(dc_out)
     dc_print = str(dc_out).split('stdout=b')
     dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
-    if HOST_SYS == 'Windows':
-        return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(params[4:])+' '+dc_print.strip('\')')
-    else:
-        return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(params[2:])+' '+dc_print.strip('\')')
+    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(params)+' '+dc_print.strip('\')')
 
 def popup_wrn(title, msg):
     popup = tk.Tk()
@@ -45,11 +46,7 @@ def popup_wrn(title, msg):
 def tab_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    
-    if HOST_SYS == 'Windows':
-        roll_flags = WIN_DEFAULT
-    else:
-        roll_flags = NIX_DEFAULT
+    default_flags = "-d 6,3;-g 6"
     
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
@@ -64,13 +61,10 @@ def tab_config(self):
     entry = tk.Entry(self, textvariable = entry_val)
     entry.config(bg = "alice blue")
     entry.pack(fill = "x")
-    if HOST_SYS == 'Windows':
-        entry_val.set(roll_flags[4:])
-    else:
-        entry_val.set(roll_flags[2:])
-
+    entry_val.set(default_flags)
+    
     rollbutton = tk.Button(self, text = "|--> Roll <--|",\
-    command = lambda: (listbox.insert(tk.END, dc_run(roll_flags)),\
+    command = lambda: (listbox.insert(tk.END, dc_run(entry_val.get().split(';'))),\
     listbox.see(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
     
@@ -142,8 +136,6 @@ class GUITest(tk.Tk):
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         toolsmenu.add_command(label = "Scratchpad",\
         command = lambda: popup_wrn("Scratchpad", "Not supported yet."))
-        toolsmenu.add_command(label = "Flag Check",\
-        command = lambda: popup_wrn("Flag Check", "Not supported yet."))
         toolsmenu.add_command(label = "Formula Build",\
         command = lambda: popup_wrn("Formula Build", "Not supported yet."))
         
