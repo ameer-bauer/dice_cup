@@ -22,7 +22,6 @@ def cli_msg(msg):
     print(msg)
 
 def dc_run(params):
-    print(params)
     if HOST_SYS == 'Windows':
         dc_out = subprocess.run(WIN_DEFAULT+params, stdout=subprocess.PIPE)
     else:
