@@ -29,8 +29,12 @@ def dc_run(params):
     now = datetime.now()
     print(dc_out)
     dc_print = str(dc_out).split('stdout=b')
-    dc_print = dc_print[1].replace('\\n',' ').replace('\\r', ' ')
-    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str(params)+' '+dc_print.strip('\')')
+    if HOST_SYS == 'Windows':
+        dc_print = dc_print[1].replace('\\n',' ').replace('\\r', '')
+    else:
+        dc_print = dc_print[1].replace('\\n',' ')
+    str_params = str(params).strip('\'[]').replace(' ', '').replace('\',\'', ';')
+    return now.strftime("<%Y-%m-%dT%H:%M:%S.%f> ")+str_params+' '+dc_print.strip('\')')
 
 def popup_wrn(title, msg):
     popup = tk.Tk()
@@ -45,7 +49,7 @@ def popup_wrn(title, msg):
 def tab_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    default_flags = "-d 6,3;-g 6"
+    default_flags = "-d6,3;-g6"
     
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
