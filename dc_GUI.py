@@ -50,14 +50,21 @@ def tab_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
     default_flags = "-d6,3;-g6"
-    preset1 = "-d4,1"
-    preset2 = "-d6,1"
-    preset3 = "-d8,1"
-    preset4 = "-d10,1"
-    preset5 = "-d12,1"
-    preset6 = "-d20,1"
-    preset7 = "-d20,1;-g2"
-    preset8 = "-d100,1"
+    preset1 = ["-d4,1"]
+    preset2 = ["-d6,1"]
+    preset3 = ["-d8,1"]
+    preset4 = ["-d10,1"]
+    preset5 = ["-d12,1"]
+    preset6 = ["-d20,1"]
+    preset7 = ["-d20,1;-g2"]
+    preset8 = ["-d100,1"]
+    
+    def state_check(value):
+        if set_val.get():
+            value[0] = entry_val.get()
+            return str(value).strip('\'[]')
+        else:
+            return str(value).strip('\'[]')
     
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
@@ -85,43 +92,35 @@ def tab_config(self):
     sbutton.pack(padx = 5, side = "left")
     
     button1 = tk.Button(self, text = "Preset 1",\
-    command = lambda: (cli_msg("Button press: Preset 1, State = "+preset1),\
-    entry_val.set(preset1)))
+    command = lambda: (entry_val.set(state_check(preset1)), cli_msg("Button press: Preset 1, State = "+str(preset1))))
     button1.pack(padx = 5, side = "left")
     
     button2 = tk.Button(self, text = "Preset 2",\
-    command = lambda: (cli_msg("Button press: Preset 2, State = "+preset2),\
-    entry_val.set(preset2)))
+    command = lambda: (entry_val.set(state_check(preset2)), cli_msg("Button press: Preset 2, State = "+str(preset2))))
     button2.pack(padx = 5, side = "left")
     
     button3 = tk.Button(self, text = "Preset 3",\
-    command = lambda: (cli_msg("Button press: Preset 3, State = "+preset3),\
-    entry_val.set(preset3)))
+    command = lambda: (entry_val.set(state_check(preset3)), cli_msg("Button press: Preset 3, State = "+str(preset3))))
     button3.pack(padx = 5, side = "left")
     
     button4 = tk.Button(self, text = "Preset 4",\
-    command = lambda: (cli_msg("Button press: Preset 4, State = "+preset4),\
-    entry_val.set(preset4)))
+    command = lambda: (entry_val.set(state_check(preset4)), cli_msg("Button press: Preset 4, State = "+str(preset4))))
     button4.pack(padx = 5, side = "left")
     
     button5 = tk.Button(self, text = "Preset 5",\
-    command = lambda: (cli_msg("Button press: Preset 5, State = "+preset5),\
-    entry_val.set(preset5)))
+    command = lambda: (entry_val.set(state_check(preset5)), cli_msg("Button press: Preset 5, State = "+str(preset5))))
     button5.pack(padx = 5, side = "left")
     
     button6 = tk.Button(self, text = "Preset 6",\
-    command = lambda: (cli_msg("Button press: Preset 6, State = "+preset6),\
-    entry_val.set(preset6)))
+    command = lambda: (entry_val.set(state_check(preset6)), cli_msg("Button press: Preset 6, State = "+str(preset6))))
     button6.pack(padx = 5, side = "left")
     
     button7 = tk.Button(self, text = "Preset 7",\
-    command = lambda: (cli_msg("Button press: Preset 7, State = "+preset7),\
-    entry_val.set(preset7)))
+    command = lambda: (entry_val.set(state_check(preset7)), cli_msg("Button press: Preset 7, State = "+str(preset7))))
     button7.pack(padx = 5, side = "left")
     
     button8 = tk.Button(self, text = "Preset 8",\
-    command = lambda: (cli_msg("Button press: Preset 8, State = "+preset8),\
-    entry_val.set(preset8)))
+    command = lambda: (entry_val.set(state_check(preset8)), cli_msg("Button press: Preset 8, State = "+str(preset8))))
     button8.pack(padx = 5, side = "left")
 
 class GUITest(tk.Tk):
