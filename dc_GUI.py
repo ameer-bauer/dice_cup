@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.0.2
-#Date: 2016-09-30
+#Version: 0.0.3
+#Date: 2016-10-05
 #----------------
 
 import tkinter as tk
@@ -17,6 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py', '-q']
 NIX_DEFAULT = ['./dice_cup.py', '-q']
+VERSION = '0.0.3'
 
 def cli_msg(msg):
     print(msg)
@@ -49,7 +50,7 @@ def popup_wrn(title, msg):
 def tab_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    default_flags = "-d6,3;-g6"
+    default_flags = "-d6,3+4,1;-g6"
     preset1 = ["-d4,1"]
     preset2 = ["-d6,1"]
     preset3 = ["-d8,1"]
@@ -77,7 +78,7 @@ def tab_config(self):
     listbox.pack(fill = "both", expand = 1)
     
     entry = tk.Entry(self, textvariable = entry_val)
-    entry.config(bg = "alice blue")
+    entry.config(bg = "lavender blush")
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
@@ -159,7 +160,7 @@ class GUITest(tk.Tk):
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "About",\
-        command = lambda: popup_wrn("About", "Not supported yet."))
+        command = lambda: popup_wrn("About", "dc_GUI version: "+VERSION))
         
         menubar.add_cascade(label = "File", menu = filemenu)
         menubar.add_cascade(label = "Settings", menu = settingsmenu)
