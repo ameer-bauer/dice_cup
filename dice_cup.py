@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.11
-#Date: 2016-09-12
+#Version: 1.1.12
+#Date: 2016-10-05
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.11"
+version = "1.1.12"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -234,7 +234,14 @@ if args.d:
     s_len = len(str(args.s))
     p_val = (args.p / 100)
     for x in args.d:
-        d_pair = x.split(',')
+        if x.rfind('+') != -1: #Scan for extra whitespace
+            y = x.replace(' ', '')
+            y_list = y.split('+')
+            d_pair = y_list[0].split(',')
+            for z in y_list[1:]:
+                args.d.append(z)
+        else:
+            d_pair = x.split(',')
         #Check the -d parameter list for input errors...
         if len(d_pair) != 2:
             d_err()
