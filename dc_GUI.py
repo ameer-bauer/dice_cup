@@ -68,6 +68,8 @@ def tab_config(self):
         else:
             listbox.insert(tk.END, dc_run(value[0].split(';'))),\
             listbox.see(tk.END)
+            listbox.select_clear(0,tk.END)
+            listbox.select_set(tk.END)
             return value[0]
     
     listbox = tk.Listbox(self)
@@ -87,7 +89,7 @@ def tab_config(self):
     
     rollbutton = tk.Button(self, text = "[Roll Formula]",\
     command = lambda: (listbox.insert(tk.END, dc_run(entry_val.get().split(';'))),\
-    listbox.see(tk.END)))
+    listbox.see(tk.END), listbox.select_clear(0,tk.END), listbox.select_set(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
     
     sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
