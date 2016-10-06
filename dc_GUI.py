@@ -64,9 +64,9 @@ def tab_config(self):
         if set_val.get():
             value[0] = entry_val.get()
             self.config(text = value[0])
-            return str(value).strip('\'[]')
+            return value[0]
         else:
-            return str(value).strip('\'[]')
+            return value[0]
     
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
