@@ -29,13 +29,13 @@ def dc_run(params):
         dc_out = subprocess.run(NIX_DEFAULT+params, stdout=subprocess.PIPE)
     now = datetime.now()
     print(dc_out)
-    dc_print = str(dc_out).split('stdout=b')
+    dc_print = str(dc_out).split('stdout=')
     if HOST_SYS == 'Windows':
         dc_print = dc_print[1].replace('\\n','  ').replace('\\r', '')
     else:
         dc_print = dc_print[1].replace('\\n','  ')
     str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
-    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+dc_print.strip('\')')
+    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+dc_print.strip('b\')')
 
 def popup_wrn(title, msg):
     popup = tk.Tk()
@@ -168,7 +168,7 @@ class GUITest(tk.Tk):
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "About",\
-        command = lambda: popup_wrn("About", "dc_GUI version: "+VERSION))
+        command = lambda: popup_wrn("About", "dc_GUI version "+VERSION))
         
         menubar.add_cascade(label = "File", menu = filemenu)
         menubar.add_cascade(label = "Settings", menu = settingsmenu)
