@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.0.3
-#Date: 2016-10-05
+#Version: 0.0.4
+#Date: 2016-10-06
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py', '-q']
 NIX_DEFAULT = ['./dice_cup.py', '-q']
-VERSION = '0.0.3'
+VERSION = "0.0.4"
 
 def cli_msg(msg):
     print(msg)
@@ -66,6 +66,8 @@ def tab_config(self):
             self.config(text = value[0])
             return value[0]
         else:
+            listbox.insert(tk.END, dc_run(value[0].split(';'))),\
+            listbox.see(tk.END)
             return value[0]
     
     listbox = tk.Listbox(self)
@@ -75,62 +77,54 @@ def tab_config(self):
     scrollx = tk.Scrollbar(self)
     scrollx.config(command = listbox.xview, orient = "horizontal")
     scrollx.pack(side = "bottom", fill = "x")
-    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "alice blue")
+    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "gray90")
     listbox.pack(fill = "both", expand = 1)
     
     entry = tk.Entry(self, textvariable = entry_val)
-    entry.config(bg = "lavender blush")
+    entry.config(bg = "gray90")
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
-    rollbutton = tk.Button(self, text = "|--> Roll <--|",\
+    rollbutton = tk.Button(self, text = "[Roll Formula]",\
     command = lambda: (listbox.insert(tk.END, dc_run(entry_val.get().split(';'))),\
     listbox.see(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
     
     sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
     variable = set_val, command = lambda: (cli_msg("Button press: [Set], State = "+str(set_val.get()))),\
-    selectcolor = "firebrick2")
+    selectcolor = "firebrick1")
     sbutton.pack(padx = 5, side = "left")
     
     button1 = tk.Button(self, text = preset1,\
-    command = lambda: (entry_val.set(state_check(preset1, button1)),\
-    cli_msg("Button press: Preset 1")))
+    command = lambda: (cli_msg("Button press: Preset 1, State = "+state_check(preset1,button1))))
     button1.pack(side = "left")
     
     button2 = tk.Button(self, text = preset2,\
-    command = lambda: (entry_val.set(state_check(preset2, button2)),\
-    cli_msg("Button press: Preset 2")))
+    command = lambda: (cli_msg("Button press: Preset 2, State = "+state_check(preset2,button2))))
     button2.pack(side = "left")
     
     button3 = tk.Button(self, text = preset3,\
-    command = lambda: (entry_val.set(state_check(preset3, button3)),\
-    cli_msg("Button press: Preset 3")))
+    command = lambda: (cli_msg("Button press: Preset 3, State = "+state_check(preset3,button3))))
     button3.pack(side = "left")
     
     button4 = tk.Button(self, text = preset4,\
-    command = lambda: (entry_val.set(state_check(preset4, button4)),\
-    cli_msg("Button press: Preset 4")))
+    command = lambda: (cli_msg("Button press: Preset 4, State = "+state_check(preset4,button4))))
     button4.pack(side = "left")
     
     button5 = tk.Button(self, text = preset5,\
-    command = lambda: (entry_val.set(state_check(preset5, button5)),\
-    cli_msg("Button press: Preset 5")))
+    command = lambda: (cli_msg("Button press: Preset 5, State = "+state_check(preset5,button5))))
     button5.pack(side = "left")
     
     button6 = tk.Button(self, text = preset6,\
-    command = lambda: (entry_val.set(state_check(preset6, button6)),\
-    cli_msg("Button press: Preset 6")))
+    command = lambda: (cli_msg("Button press: Preset 6, State = "+state_check(preset6,button6))))
     button6.pack(side = "left")
     
     button7 = tk.Button(self, text = preset7,\
-    command = lambda: (entry_val.set(state_check(preset7, button7)),\
-    cli_msg("Button press: Preset 7")))
+    command = lambda: (cli_msg("Button press: Preset 7, State = "+state_check(preset7,button7))))
     button7.pack(side = "left")
     
     button8 = tk.Button(self, text = preset8,\
-    command = lambda: (entry_val.set(state_check(preset8, button8)),\
-    cli_msg("Button press: Preset 8")))
+    command = lambda: (cli_msg("Button press: Preset 8, State = "+state_check(preset8,button8))))
     button8.pack(side = "left")
 
 class GUITest(tk.Tk):
