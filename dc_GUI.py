@@ -193,5 +193,5 @@ class GUITest(tk.Tk):
 
 print('Host OS:', HOST_SYS)
 app = GUITest()
-app.geometry("800x600")
+app.geometry("900x500")
 app.mainloop()
