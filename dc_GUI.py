@@ -51,6 +51,7 @@ def tab_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
     default_flags = "-d6,3+4,1;-m2;-g6;-s2"
+    key1 = ["test"]
     preset1 = ["-d4,1"]
     preset2 = ["-d6,1"]
     preset3 = ["-d8,1"]
@@ -74,6 +75,13 @@ def tab_config(self):
             listbox.select_set(tk.END)
             return value[0]
     
+    def key_roll(k_in):
+        k_in[0] = entry_val.get()
+        listbox.insert(tk.END, dc_run(k_in[0].split(';'))),\
+        listbox.see(tk.END)
+        listbox.select_clear(0,tk.END)
+        listbox.select_set(tk.END)
+    
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = listbox.yview)
@@ -86,10 +94,11 @@ def tab_config(self):
     
     entry = tk.Entry(self, textvariable = entry_val)
     entry.config(bg = "gray90")
+    entry.bind("<Return>", lambda k: key_roll(key1))
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
-    rollbutton = tk.Button(self, text = "[Roll Formula]",\
+    rollbutton = tk.Button(self, text = "[Formula Roll]",\
     command = lambda: (listbox.insert(tk.END, dc_run(entry_val.get().split(';'))),\
     listbox.see(tk.END), listbox.select_clear(0,tk.END), listbox.select_set(tk.END)))
     rollbutton.pack(side = "top", fill = "x")
@@ -203,5 +212,5 @@ class GUITest(tk.Tk):
 
 print('Host OS:', HOST_SYS)
 app = GUITest()
-app.geometry("900x500")
+app.geometry("1000x550")
 app.mainloop()
