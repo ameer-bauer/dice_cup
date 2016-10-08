@@ -46,7 +46,7 @@ def dc_run(params):
     print(dc_out)
     dc_print = str(dc_out).split('stdout=')
     if HOST_SYS == 'Windows':
-        dc_print = dc_print[1].replace('\\n', '\n').replace('\\r', '')
+        dc_print = dc_print[1].replace('\\n', '\n').replace('\\r', '').replace('\\x08\\x08', '0')
     else:
         dc_print = dc_print[1].replace('\\n', '\n').replace('\\x08\\x08', '0')
     str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
