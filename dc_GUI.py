@@ -57,7 +57,7 @@ def popup_wrn(title, msg):
     popup.wm_title(title)
     label = tk.Label(popup, text = msg)
     label.pack(pady = 10, padx= 30, side = "top", fill="x")
-    button = tk.Button(popup, text = "Ok", font = NORMAL_FONT, command = popup.destroy)
+    button = tk.Button(popup, text = "Ok",  command = popup.destroy)
     button.pack()
     popup.geometry("250x80")
     popup.mainloop()
@@ -104,61 +104,61 @@ def ledger_config(self):
     scrollx = tk.Scrollbar(self)
     scrollx.config(command = listbox.xview, orient = "horizontal")
     scrollx.pack(side = "bottom", fill = "x")
-    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, font = NORMAL_FONT, bg = "gray90")
+    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set,  bg = "gray90")
     listbox.pack(fill = "both", expand = 1)
     
     entry = tk.Entry(self, textvariable = entry_val)
-    entry.config(bg = "gray90", font = NORMAL_FONT)
+    entry.config(bg = "gray90")
     entry.bind("<Return>", lambda k: key_roll(key1))
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
-    rollbutton = tk.Button(self, text = "[Formula Roll]", font = NORMAL_FONT,\
+    rollbutton = tk.Button(self, text = "[Formula Roll]", \
     command = lambda: key_roll(key1))
     rollbutton.pack(side = "top", fill = "x")
     
     sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
     variable = set_val, command = lambda: (cli_msg("Button press: [Set], State = "+str(set_val.get()))),\
-    selectcolor = "firebrick1", font = NORMAL_FONT)
+    selectcolor = "firebrick1")
     sbutton.pack(padx = 10, side = "left")
     
-    button1 = tk.Button(self, text = preset1, font = NORMAL_FONT,\
+    button1 = tk.Button(self, text = preset1, \
     command = lambda: (cli_msg("Button press: Preset 1, State = "+state_check(button1, preset1))))
     button1.pack(side = "left")
     
-    button2 = tk.Button(self, text = preset2, font = NORMAL_FONT,\
+    button2 = tk.Button(self, text = preset2, \
     command = lambda: (cli_msg("Button press: Preset 2, State = "+state_check(button2, preset2))))
     button2.pack(side = "left")
     
-    button3 = tk.Button(self, text = preset3, font = NORMAL_FONT,\
+    button3 = tk.Button(self, text = preset3, \
     command = lambda: (cli_msg("Button press: Preset 3, State = "+state_check(button3, preset3))))
     button3.pack(side = "left")
     
-    button4 = tk.Button(self, text = preset4, font = NORMAL_FONT,\
+    button4 = tk.Button(self, text = preset4, \
     command = lambda: (cli_msg("Button press: Preset 4, State = "+state_check(button4, preset4))))
     button4.pack(side = "left")
     
-    button5 = tk.Button(self, text = preset5, font = NORMAL_FONT,\
+    button5 = tk.Button(self, text = preset5, \
     command = lambda: (cli_msg("Button press: Preset 5, State = "+state_check(button5, preset5))))
     button5.pack(side = "left")
     
-    button6 = tk.Button(self, text = preset6, font = NORMAL_FONT,\
+    button6 = tk.Button(self, text = preset6, \
     command = lambda: (cli_msg("Button press: Preset 6, State = "+state_check(button6, preset6))))
     button6.pack(side = "left")
     
-    button7 = tk.Button(self, text = preset7, font = NORMAL_FONT,\
+    button7 = tk.Button(self, text = preset7, \
     command = lambda: (cli_msg("Button press: Preset 7, State = "+state_check(button7, preset7))))
     button7.pack(side = "left")
     
-    button8 = tk.Button(self, text = preset8, font = NORMAL_FONT,\
+    button8 = tk.Button(self, text = preset8, \
     command = lambda: (cli_msg("Button press: Preset 8, State = "+state_check(button8, preset8))))
     button8.pack(side = "left")
     
-    button9 = tk.Button(self, text = preset9, font = NORMAL_FONT,\
+    button9 = tk.Button(self, text = preset9, \
     command = lambda: (cli_msg("Button press: Preset 9, State = "+state_check(button9, preset9))))
     button9.pack(side = "left")
     
-    button10 = tk.Button(self, text = preset10, font = NORMAL_FONT,\
+    button10 = tk.Button(self, text = preset10, \
     command = lambda: (cli_msg("Button press: Preset 10, State = "+state_check(button10, preset10))))
     button10.pack(side = "left")
 
@@ -201,61 +201,61 @@ def journal_config(self):
     scrollx.config(command = text.xview, orient = "horizontal")
     scrollx.pack(side = "bottom", fill = "x")
     text.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "gray90",\
-    font = NORMAL_FONT, wrap = "word")
+     wrap = "word")
     text.pack(fill = "both", expand = 1)
     
     entry = tk.Entry(self, textvariable = entry_val)
-    entry.config(bg = "gray90", font = NORMAL_FONT)
+    entry.config(bg = "gray90")
     entry.bind("<Return>", lambda k: key_roll(key1))
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
-    rollbutton = tk.Button(self, text = "[Formula Roll]", font = NORMAL_FONT,\
+    rollbutton = tk.Button(self, text = "[Formula Roll]", \
     command = lambda: key_roll(key1))
     rollbutton.pack(side = "top", fill = "x")
     
     sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
     variable = set_val, command = lambda: (cli_msg("Button press: [Set], State = "+str(set_val.get()))),\
-    selectcolor = "firebrick1", font = NORMAL_FONT)
+    selectcolor = "firebrick1")
     sbutton.pack(padx = 10, side = "left")
     
-    button1 = tk.Button(self, text = preset1, font = NORMAL_FONT,\
+    button1 = tk.Button(self, text = preset1, \
     command = lambda: (cli_msg("Button press: Preset 1, State = "+state_check(button1, preset1))))
     button1.pack(side = "left")
     
-    button2 = tk.Button(self, text = preset2, font = NORMAL_FONT,\
+    button2 = tk.Button(self, text = preset2, \
     command = lambda: (cli_msg("Button press: Preset 2, State = "+state_check(button2, preset2))))
     button2.pack(side = "left")
     
-    button3 = tk.Button(self, text = preset3, font = NORMAL_FONT,\
+    button3 = tk.Button(self, text = preset3, \
     command = lambda: (cli_msg("Button press: Preset 3, State = "+state_check(button3, preset3))))
     button3.pack(side = "left")
     
-    button4 = tk.Button(self, text = preset4, font = NORMAL_FONT,\
+    button4 = tk.Button(self, text = preset4, \
     command = lambda: (cli_msg("Button press: Preset 4, State = "+state_check(button4, preset4))))
     button4.pack(side = "left")
     
-    button5 = tk.Button(self, text = preset5, font = NORMAL_FONT,\
+    button5 = tk.Button(self, text = preset5, \
     command = lambda: (cli_msg("Button press: Preset 5, State = "+state_check(button5, preset5))))
     button5.pack(side = "left")
     
-    button6 = tk.Button(self, text = preset6, font = NORMAL_FONT,\
+    button6 = tk.Button(self, text = preset6, \
     command = lambda: (cli_msg("Button press: Preset 6, State = "+state_check(button6, preset6))))
     button6.pack(side = "left")
     
-    button7 = tk.Button(self, text = preset7, font = NORMAL_FONT,\
+    button7 = tk.Button(self, text = preset7, \
     command = lambda: (cli_msg("Button press: Preset 7, State = "+state_check(button7, preset7))))
     button7.pack(side = "left")
     
-    button8 = tk.Button(self, text = preset8, font = NORMAL_FONT,\
+    button8 = tk.Button(self, text = preset8, \
     command = lambda: (cli_msg("Button press: Preset 8, State = "+state_check(button8, preset8))))
     button8.pack(side = "left")
     
-    button9 = tk.Button(self, text = preset9, font = NORMAL_FONT,\
+    button9 = tk.Button(self, text = preset9, \
     command = lambda: (cli_msg("Button press: Preset 9, State = "+state_check(button9, preset9))))
     button9.pack(side = "left")
     
-    button10 = tk.Button(self, text = preset10, font = NORMAL_FONT,\
+    button10 = tk.Button(self, text = preset10, \
     command = lambda: (cli_msg("Button press: Preset 10, State = "+state_check(button10, preset10))))
     button10.pack(side = "left")
 
@@ -274,42 +274,42 @@ class GUITest(tk.Tk):
         menubar = tk.Menu(container, relief = "flat")
         
         filemenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        filemenu.add_command(label = "Open...", font = NORMAL_FONT,\
+        filemenu.add_command(label = "Open...", \
         command = lambda: popup_wrn("Open...", "Not supported yet."))
-        filemenu.add_command(label = "Save As...", font = NORMAL_FONT,\
+        filemenu.add_command(label = "Save As...", \
         command = lambda: popup_wrn("Save As...", "Not supported yet."))
-        filemenu.add_command(label = "Save", font = NORMAL_FONT,\
+        filemenu.add_command(label = "Save", \
         command = lambda: popup_wrn("Save", "Not supported yet."))
         filemenu.add_separator()
-        filemenu.add_command(label = "Exit", font = NORMAL_FONT,\
+        filemenu.add_command(label = "Exit", \
         command = quit)
         
         settingsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        settingsmenu.add_command(label = "Import...", font = NORMAL_FONT,\
+        settingsmenu.add_command(label = "Import...", \
         command = lambda: popup_wrn("Import...", "Not supported yet."))
-        settingsmenu.add_command(label = "Export...", font = NORMAL_FONT,\
+        settingsmenu.add_command(label = "Export...", \
         command = lambda: popup_wrn("Export...", "Not supported yet."))
-        settingsmenu.add_command(label = "Load Defaults", font = NORMAL_FONT,\
+        settingsmenu.add_command(label = "Load Defaults", \
         command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        toolsmenu.add_command(label = "Scratchpad", font = NORMAL_FONT,\
+        toolsmenu.add_command(label = "Scratchpad", \
         command = lambda: popup_wrn("Scratchpad", "Not supported yet."))
-        toolsmenu.add_command(label = "Formula Build", font = NORMAL_FONT,\
+        toolsmenu.add_command(label = "Formula Build", \
         command = lambda: popup_wrn("Formula Build", "Not supported yet."))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        helpmenu.add_command(label = "About", font = NORMAL_FONT,\
+        helpmenu.add_command(label = "About", \
         command = lambda: popup_wrn("About", "dc_GUI version "+VERSION))
         
-        menubar.add_cascade(label = "File", font = NORMAL_FONT, menu = filemenu)
-        menubar.add_cascade(label = "Settings", font = NORMAL_FONT, menu = settingsmenu)
-        menubar.add_cascade(label = "Tools", font = NORMAL_FONT, menu = toolsmenu)
-        menubar.add_cascade(label = "Help", font = NORMAL_FONT, menu = helpmenu)
+        menubar.add_cascade(label = "File",  menu = filemenu)
+        menubar.add_cascade(label = "Settings",  menu = settingsmenu)
+        menubar.add_cascade(label = "Tools",  menu = toolsmenu)
+        menubar.add_cascade(label = "Help",  menu = helpmenu)
         tk.Tk.config(self, menu = menubar)
         
-        style = ttk.Style()
-        style.configure('.', font = NORMAL_FONT)
+        #style = ttk.Style()
+        #style.configure('.', font = NORMAL_FONT) #Change all default ttk styles
         notebook = ttk.Notebook(container)
         note1 = ttk.Frame(notebook)
         note2 = ttk.Frame(notebook)
