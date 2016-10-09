@@ -298,9 +298,12 @@ if args.d:
             print('=' * (s_len + 4))
             print('Set', repr(y + 1).rjust(s_len))
             print('=' * (s_len + 4))
-            print('Lower Bound =', args.l,)
-            print('Upper Bound =', args.u)
-            print('---')
+            if args.l:
+                print('Lower Bound =', args.l,)
+            if args.u:
+                print('Upper Bound =', args.u)
+            if args.u or args.l:
+                print('---')
         for x in range(args.g):
             r = 0
             b = 0
