@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dice_cup
-#Version: 1.1.12
-#Date: 2016-10-05
+#Version: 1.1.13
+#Date: 2016-10-09
 #----------------
 
 import os
@@ -10,7 +10,7 @@ import sys
 import argparse
 import random
 
-version = "1.1.12"
+version = "1.1.13"
 
 def pos_int(p): #a function for argparse 'type' to call for checking input values
     int_p = int(p)
@@ -298,11 +298,11 @@ if args.d:
             print('=' * (s_len + 4))
             print('Set', repr(y + 1).rjust(s_len))
             print('=' * (s_len + 4))
-            if args.l:
+            if isinstance(args.l, int):
                 print('Lower Bound =', args.l,)
-            if args.u:
+            if isinstance(args.u, int):
                 print('Upper Bound =', args.u)
-            if args.u or args.l:
+            if (isinstance(args.u, int) or isinstance(args.l, int)):
                 print('---')
         for x in range(args.g):
             r = 0
