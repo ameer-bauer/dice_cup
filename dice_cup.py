@@ -206,6 +206,9 @@ parser.add_argument("-s", nargs='?', const=1, default=1, type=pos_int, help="Def
 parser.add_argument("-i", action='store_true', help="Displays statistical information of each Set rolled")
 args = parser.parse_args()
 
+l_check = isinstance(args.l, int)
+u_check = isinstance(args.u, int)
+
 if args.v:
     print('dice_cup version:', version)
     sys.exit()
@@ -214,7 +217,7 @@ if args.h:
     h_main()
     sys.exit()
 
-if (isinstance(args.l, int) and isinstance(args.u, int)):#See if both -l and -u are set and check for errors
+if (l_check and u_check):#See if both -l and -u are set and check for errors
     if args.l >= args.u:
         print('Error: the flags \'-l\' and \'-u\' are set, but -l =', args.l, 'and -u =', args.u)
         print('       i.e. the lower bound is either greater than, or equal, to the')
@@ -298,11 +301,11 @@ if args.d:
             print('=' * (s_len + 4))
             print('Set', repr(y + 1).rjust(s_len))
             print('=' * (s_len + 4))
-            if isinstance(args.l, int):
+            if l_check:
                 print('Lower Bound =', args.l,)
-            if isinstance(args.u, int):
+            if u_check:
                 print('Upper Bound =', args.u)
-            if (isinstance(args.u, int) or isinstance(args.l, int)):
+            if (u_check or l_check):
                 print('---')
         for x in range(args.g):
             r = 0
@@ -318,7 +321,7 @@ if args.d:
             for z in d_list: #Generate the dice roll outcomes of the -d parameters
                 zt_int = int(z[0])
                 zg_int = int(z[1])
-                if (isinstance(args.l, int) or isinstance(args.u, int)): #See if either -l or -u are set
+                if (l_check or u_check): #See if either -l or -u are set
                     if args.L and first_run:#Check for first dice run of group and L flag
                         b += d_roll(os.urandom(16), zt_int, zg_int, 0, True)
                     elif args.H and first_run:#Check for first dice run of group and H flag
@@ -336,7 +339,7 @@ if args.d:
                 if not args.q:
                     print(z[1]+'(d'+z[0]+') +', end = ' ')
             b += args.m
-            if (isinstance(args.l, int) and isinstance(args.u, int)): #See if both -l and -u are set
+            if (l_check and u_check): #See if both -l and -u are set
                 if ((b >= args.l) and (b <= args.u)):
                     r += b
                     if args.p:
@@ -348,7 +351,7 @@ if args.d:
                 else:
                     trim = "UB["+str(b)+"]"
                     c_trim += 1
-            elif isinstance(args.l, int):
+            elif l_check:
                 if b >= args.l:
                     r += b
                     if args.p:
@@ -357,7 +360,7 @@ if args.d:
                 else:
                     trim = "LB["+str(b)+"]"
                     c_trim += 1
-            elif isinstance(args.u, int):
+            elif u_check:
                 if b <= args.u:
                     r += b
                     if args.p:
