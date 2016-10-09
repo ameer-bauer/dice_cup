@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.0.5
-#Date: 2016-10-07
+#Version: 0.0.6
+#Date: 2016-10-09
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.0.5"
+VERSION = "0.0.6"
 
 def cli_msg(msg):
     print(msg)
@@ -346,5 +346,5 @@ class GUITest(tk.Tk):
 
 print('Host OS:', HOST_SYS)
 app = GUITest()
-app.geometry("1000x600")
+app.geometry("1000x650")
 app.mainloop()
