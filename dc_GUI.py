@@ -201,7 +201,7 @@ def journal_config(self):
     scrollx.config(command = text.xview, orient = "horizontal")
     scrollx.pack(side = "bottom", fill = "x")
     text.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "gray90",\
-     wrap = "word")
+    wrap = "word")
     text.pack(fill = "both", expand = 1)
     
     entry = tk.Entry(self, textvariable = entry_val)
@@ -322,26 +322,44 @@ class GUITest(tk.Tk):
         note9 = ttk.Frame(notebook)
         note10 = ttk.Frame(notebook)
         
+        note_popup = tk.Menu(notebook, tearoff = 0)
+        note_popup.add_command(label = "Rename",\
+        command = lambda: notebook.tab(notebook.select(), text = "Default"))
+        note_popup.add_separator()
+        note_popup.add_command(label = "Cancel")
+        notebook.bind("<Button-3>",\
+        lambda c: note_popup.post(container.winfo_pointerx(), container.winfo_pointery()))
+        
         notebook.add(note1, text = "Ledger 1")
         ledger_config(note1)
+        
         notebook.add(note2, text = "Ledger 2")
         ledger_config(note2)
+        
         notebook.add(note3, text = "Ledger 3")
         ledger_config(note3)
+        
         notebook.add(note4, text = "Ledger 4")
         ledger_config(note4)
+        
         notebook.add(note5, text = "Ledger 5")
         ledger_config(note5)
+        
         notebook.add(note6, text = "Journal 1")
         journal_config(note6)
+        
         notebook.add(note7, text = "Journal 2")
         journal_config(note7)
+        
         notebook.add(note8, text = "Journal 3")
         journal_config(note8)
+        
         notebook.add(note9, text = "Journal 4")
         journal_config(note9)
+        
         notebook.add(note10, text = "Journal 5")
         journal_config(note10)
+        
         notebook.pack(fill = "both", expand = 1)
 
 print('Host OS:', HOST_SYS)
