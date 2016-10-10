@@ -326,8 +326,12 @@ class GUITest(tk.Tk):
         command = lambda: notebook.tab(notebook.select(), text = "Default"))
         note_popup.add_separator()
         note_popup.add_command(label = "Cancel")
-        notebook.bind("<Button-3>",\
-        lambda c: note_popup.post(container.winfo_pointerx(), container.winfo_pointery()))
+        if HOST_SYS == 'Darwin':
+            notebook.bind("<Button-2>",\
+            lambda c: note_popup.post(container.winfo_pointerx(), container.winfo_pointery()))
+        else:
+            notebook.bind("<Button-3>",\
+            lambda c: note_popup.post(container.winfo_pointerx(), container.winfo_pointery()))
         
         notebook.add(note1, text = "Ledger 1")
         ledger_config(note1)
