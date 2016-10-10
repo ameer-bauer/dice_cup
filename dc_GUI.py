@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.0.6
+#Version: 0.0.7
 #Date: 2016-10-09
 #----------------
 
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.0.6"
+VERSION = "0.0.7"
 
 def cli_msg(msg):
     print(msg)
@@ -53,13 +53,27 @@ def dc_run(params):
     return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'\n'+dc_print.strip('b\')')+'\n'
 
 def popup_wrn(title, msg):
-    popup = tk.Tk()
+    popup = tk.Toplevel()
     popup.wm_title(title)
     label = tk.Label(popup, text = msg)
     label.pack(pady = 10, padx= 30, side = "top", fill="x")
-    button = tk.Button(popup, text = "Ok",  command = popup.destroy)
-    button.pack()
+    button1 = tk.Button(popup, text = "Ok",  command = popup.destroy)
+    button1.pack(padx = 5, pady = 5)
     popup.geometry("250x80")
+    popup.mainloop()
+
+def popup_get(title):
+    popup_val = tk.StringVar()
+    popup = tk.Toplevel()
+    popup.wm_title(title)
+    entry = tk.Entry(popup, textvariable = popup_val)
+    entry.pack(padx = 10, pady = 10, fill = "x")
+    popup_val.set("New Name")
+    button1 = tk.Button(popup, text = "Ok",  command = lambda: print("Value: ", popup_val.get()))
+    button1.pack(padx = 10, side = 'left')
+    button2 = tk.Button(popup, text = "Close",  command = popup.destroy)
+    button2.pack(padx = 10, side = 'right')
+    popup.geometry("200x80")
     popup.mainloop()
 
 def ledger_config(self):
@@ -324,6 +338,8 @@ class GUITest(tk.Tk):
         note_popup = tk.Menu(notebook, tearoff = 0)
         note_popup.add_command(label = "Rename",\
         command = lambda: notebook.tab(notebook.select(), text = "Default"))
+        note_popup.add_command(label = "Test",\
+        command = lambda: popup_get("Enter Name"))
         note_popup.add_separator()
         note_popup.add_command(label = "Cancel")
         if HOST_SYS == 'Darwin':
