@@ -259,7 +259,6 @@ def journal_config(self):
     command = lambda: (cli_msg("Button press: Preset 10, State = "+state_check(button10, preset10))))
     button10.pack(side = "left")
 
-
 class GUITest(tk.Tk):
 
     def __init__(self, *args, **kwargs):
