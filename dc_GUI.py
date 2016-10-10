@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.0.7
-#Date: 2016-10-09
+#Version: 0.0.8
+#Date: 2016-10-10
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.0.7"
+VERSION = "0.0.8"
 
 def cli_msg(msg):
     print(msg)
@@ -62,18 +62,21 @@ def popup_wrn(title, msg):
     popup.geometry("250x80")
     popup.mainloop()
 
-def popup_get(title):
+def popup_get(title, msg):
     popup_val = tk.StringVar()
     popup = tk.Toplevel()
     popup.wm_title(title)
+    label = tk.Label(popup, text = msg)
+    label.pack(padx = 10, pady= 10, side = "top", fill="x")
     entry = tk.Entry(popup, textvariable = popup_val)
-    entry.pack(padx = 10, pady = 10, fill = "x")
-    popup_val.set("New Name")
+    entry.config(bg = "gray90")
+    entry.pack(padx = 10, pady = 5, fill = "x")
+    popup_val.set("Default")
     button1 = tk.Button(popup, text = "Ok",  command = lambda: print("Value: ", popup_val.get()))
-    button1.pack(padx = 10, side = 'left')
+    button1.pack(padx = 10, pady = 5, side = 'left')
     button2 = tk.Button(popup, text = "Close",  command = popup.destroy)
-    button2.pack(padx = 10, side = 'right')
-    popup.geometry("200x80")
+    button2.pack(padx = 10, pady = 5, side = 'right')
+    #popup.geometry("250x100")
     popup.mainloop()
 
 def ledger_config(self):
@@ -335,11 +338,25 @@ class GUITest(tk.Tk):
         note9 = ttk.Frame(notebook)
         note10 = ttk.Frame(notebook)
         
+        def n_popup_get(title):
+            popup_val = tk.StringVar()
+            popup = tk.Toplevel()
+            popup.wm_title(title)
+            entry = tk.Entry(popup, textvariable = popup_val)
+            entry.config(bg = "gray90")
+            entry.pack(padx = 10, pady = 10, fill = "x")
+            popup_val.set("New Name")
+            button1 = tk.Button(popup, text = "Ok",  command =\
+            lambda: notebook.tab(notebook.select(), text = popup_val.get()))
+            button1.pack(padx = 10, side = 'left')
+            button2 = tk.Button(popup, text = "Close",  command = popup.destroy)
+            button2.pack(padx = 10, side = 'right')
+            popup.geometry("200x80")
+            popup.mainloop()
+        
         note_popup = tk.Menu(notebook, tearoff = 0)
         note_popup.add_command(label = "Rename",\
-        command = lambda: notebook.tab(notebook.select(), text = "Default"))
-        note_popup.add_command(label = "Test",\
-        command = lambda: popup_get("Enter Name"))
+        command = lambda: n_popup_get("Enter Name"))
         note_popup.add_separator()
         note_popup.add_command(label = "Cancel")
         if HOST_SYS == 'Darwin':
