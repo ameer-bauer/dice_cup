@@ -133,7 +133,7 @@ def ledger_config(self):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.pack(padx = 10, pady = 5, fill = "x")
-        popup_val.set("New Name")
+        popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
         command = lambda: self.configure(text = popup_val.get()))
         button1.pack(padx = 10, pady = 5, side = 'left')
@@ -282,7 +282,7 @@ def journal_config(self):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.pack(padx = 10, pady = 5, fill = "x")
-        popup_val.set("New Name")
+        popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
         command = lambda: self.configure(text = popup_val.get()))
         button1.pack(padx = 10, pady = 5, side = 'left')
@@ -450,7 +450,7 @@ class GUITest(tk.Tk):
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
             entry.pack(padx = 10, pady = 10, fill = "x")
-            popup_val.set("New Name")
+            popup_val.set(notebook.tab(notebook.select(), 'text'))
             button1 = tk.Button(popup, text = "Ok",  command =\
             lambda: notebook.tab(notebook.select(), text = popup_val.get()))
             button1.pack(padx = 10, side = 'left')
@@ -505,5 +505,5 @@ class GUITest(tk.Tk):
 
 print('Host OS:', HOST_SYS)
 app = GUITest()
-app.geometry("1000x650")
+#app.geometry("1000x650")
 app.mainloop()
