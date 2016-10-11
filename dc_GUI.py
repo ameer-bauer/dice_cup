@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.0.8
+#Version: 0.1.0
 #Date: 2016-10-10
 #----------------
 
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.0.8"
+VERSION = "0.1.0"
 
 def cli_msg(msg):
     print(msg)
@@ -83,7 +83,7 @@ def ledger_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
     default_flags = "-d6,3+4,1;-m2;-g6;-s2"
-    key1 = ["test"]
+    key1 = ["Default"]
     preset1 = ["-d4,1"]
     preset2 = ["-d6,1"]
     preset3 = ["-d8,1"]
@@ -95,17 +95,29 @@ def ledger_config(self):
     preset9 = ["-d20,2;-L"]
     preset10 = ["-d20,2;-H"]
     
-    def state_check(self, value):
-        if set_val.get():
-            value[0] = entry_val.get()
-            self.config(text = value[0])
-            return value[0]
+    def button_press(value):
+        listbox.insert(tk.END, dc_run_q(value[0].split(';'))),\
+        listbox.see(tk.END)
+        listbox.select_clear(0,tk.END)
+        listbox.select_set(tk.END)
+        return value[0]
+    
+    def b_menu(self, name, value):
+        button_popup = tk.Menu(self, tearoff = 0)
+        button_popup.add_command(label = value[0],\
+        command = lambda: button_press(value))
+        button_popup.add_separator()
+        button_popup.add_command(label = "Rename",\
+        command = lambda: b_popup_rename(self, "Rename "+name))
+        button_popup.add_command(label = "Revalue",\
+        command = lambda: b_popup_revalue(button_popup, "Enter Value", value))
+        button_popup.add_command(label = "Cancel")
+        if HOST_SYS == 'Darwin':
+            self.bind("<Button-2>",\
+            lambda e: button_popup.post(e.x_root, e.y_root))
         else:
-            listbox.insert(tk.END, dc_run_q(value[0].split(';'))),\
-            listbox.see(tk.END)
-            listbox.select_clear(0,tk.END)
-            listbox.select_set(tk.END)
-            return value[0]
+            self.bind("<Button-3>",\
+            lambda e: button_popup.post(e.x_root, e.y_root))
     
     def key_roll(k_in):
         k_in[0] = entry_val.get()
@@ -113,6 +125,42 @@ def ledger_config(self):
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
         listbox.select_set(tk.END)
+    
+    def b_popup_rename(self, title):
+        popup_val = tk.StringVar()
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        entry = tk.Entry(popup, textvariable = popup_val)
+        entry.config(bg = "gray90")
+        entry.pack(padx = 10, pady = 5, fill = "x")
+        popup_val.set("New Name")
+        button1 = tk.Button(popup, text = "Ok",\
+        command = lambda: self.configure(text = popup_val.get()))
+        button1.pack(padx = 10, pady = 5, side = 'left')
+        button2 = tk.Button(popup, text = "Close",  command = popup.destroy)
+        button2.pack(padx = 10, pady = 5, side = 'right')
+        popup.geometry("250x80")
+        popup.mainloop()
+    
+    def b_popup_revalue(self, title, value):
+        popup_val = tk.StringVar()
+        def setvalue(self_in, value_in):
+            value_in[0] = popup_val.get()
+            self_in.entryconfigure(0, label = value[0])
+            return value_in[0]
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        entry = tk.Entry(popup, textvariable = popup_val)
+        entry.config(bg = "gray90")
+        entry.pack(padx = 10, pady = 5, fill = "x")
+        popup_val.set(value[0])
+        button1 = tk.Button(popup, text = "Ok",\
+        command = lambda: print("Revalue = "+setvalue(self, value)))
+        button1.pack(padx = 10, pady = 5, side = 'left')
+        button2 = tk.Button(popup, text = "Close",  command = popup.destroy)
+        button2.pack(padx = 10, pady = 5, side = 'right')
+        popup.geometry("200x80")
+        popup.mainloop()
     
     listbox = tk.Listbox(self)
     scrolly = tk.Scrollbar(self)
@@ -134,50 +182,55 @@ def ledger_config(self):
     command = lambda: key_roll(key1))
     rollbutton.pack(side = "top", fill = "x")
     
-    sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
-    variable = set_val, command = lambda: (cli_msg("Button press: [Set], State = "+str(set_val.get()))),\
-    selectcolor = "firebrick1")
-    sbutton.pack(padx = 10, side = "left")
-    
-    button1 = tk.Button(self, text = preset1, \
-    command = lambda: (cli_msg("Button press: Preset 1, State = "+state_check(button1, preset1))))
+    button1 = tk.Button(self, text = "1d4", \
+    command = lambda: (cli_msg("Button 1 Press, Value = "+button_press(preset1))))
     button1.pack(side = "left")
+    b_menu(button1, "Button 1", preset1)
     
-    button2 = tk.Button(self, text = preset2, \
-    command = lambda: (cli_msg("Button press: Preset 2, State = "+state_check(button2, preset2))))
+    button2 = tk.Button(self, text = "1d6", \
+    command = lambda: (cli_msg("Button 2 Press, Value = "+button_press(preset2))))
     button2.pack(side = "left")
+    b_menu(button2, "Button 2", preset2)
     
-    button3 = tk.Button(self, text = preset3, \
-    command = lambda: (cli_msg("Button press: Preset 3, State = "+state_check(button3, preset3))))
+    button3 = tk.Button(self, text = "1d8", \
+    command = lambda: (cli_msg("Button 3 Press, Value = "+button_press(preset3))))
     button3.pack(side = "left")
+    b_menu(button3, "Button 3", preset3)
     
-    button4 = tk.Button(self, text = preset4, \
-    command = lambda: (cli_msg("Button press: Preset 4, State = "+state_check(button4, preset4))))
+    button4 = tk.Button(self, text = "1d10", \
+    command = lambda: (cli_msg("Button 4 Press, Value = "+button_press(preset4))))
     button4.pack(side = "left")
+    b_menu(button4, "Button 4", preset4)
     
-    button5 = tk.Button(self, text = preset5, \
-    command = lambda: (cli_msg("Button press: Preset 5, State = "+state_check(button5, preset5))))
+    button5 = tk.Button(self, text = "1d12", \
+    command = lambda: (cli_msg("Button 5 Press, Value = "+button_press(preset5))))
     button5.pack(side = "left")
+    b_menu(button5, "Button 5", preset5)
     
-    button6 = tk.Button(self, text = preset6, \
-    command = lambda: (cli_msg("Button press: Preset 6, State = "+state_check(button6, preset6))))
+    button6 = tk.Button(self, text = "1d20", \
+    command = lambda: (cli_msg("Button 6 Press, Value = "+button_press(preset6))))
     button6.pack(side = "left")
+    b_menu(button6, "Button 6", preset6)
     
-    button7 = tk.Button(self, text = preset7, \
-    command = lambda: (cli_msg("Button press: Preset 7, State = "+state_check(button7, preset7))))
+    button7 = tk.Button(self, text = "1d100", \
+    command = lambda: (cli_msg("Button 7 Press, Value = "+button_press(preset7))))
     button7.pack(side = "left")
+    b_menu(button7, "Button 7", preset7)
     
-    button8 = tk.Button(self, text = preset8, \
-    command = lambda: (cli_msg("Button press: Preset 8, State = "+state_check(button8, preset8))))
+    button8 = tk.Button(self, text = "2*1d20", \
+    command = lambda: (cli_msg("Button 8 Press, Value = "+button_press(preset8))))
     button8.pack(side = "left")
+    b_menu(button8, "Button 8", preset8)
     
-    button9 = tk.Button(self, text = preset9, \
-    command = lambda: (cli_msg("Button press: Preset 9, State = "+state_check(button9, preset9))))
+    button9 = tk.Button(self, text = "2d20 Drop Low", \
+    command = lambda: (cli_msg("Button 9 Press, Value = "+button_press(preset9))))
     button9.pack(side = "left")
+    b_menu(button9, "Button 9", preset9)
     
-    button10 = tk.Button(self, text = preset10, \
-    command = lambda: (cli_msg("Button press: Preset 10, State = "+state_check(button10, preset10))))
+    button10 = tk.Button(self, text = "2d20 Drop High", \
+    command = lambda: (cli_msg("Button 10 Press, Value = "+button_press(preset10))))
     button10.pack(side = "left")
+    b_menu(button10, "Button 10", preset10)
 
 def journal_config(self):
     set_val = tk.IntVar()
@@ -195,20 +248,68 @@ def journal_config(self):
     preset9 = ["-d20,2;-L"]
     preset10 = ["-d20,2;-H"]
     
-    def state_check(self, value):
-        if set_val.get():
-            value[0] = entry_val.get()
-            self.config(text = value[0])
-            return value[0]
+    def button_press(value):
+        text.insert(tk.END, dc_run(value[0].split(';'))),\
+        text.see(tk.END)
+        return value[0]
+    
+    def b_menu(self, name, value):
+        button_popup = tk.Menu(self, tearoff = 0)
+        button_popup.add_command(label = value[0],\
+        command = lambda: button_press(value))
+        button_popup.add_separator()
+        button_popup.add_command(label = "Rename",\
+        command = lambda: b_popup_rename(self, "Rename "+name))
+        button_popup.add_command(label = "Revalue",\
+        command = lambda: b_popup_revalue(button_popup, "Enter Value", value))
+        button_popup.add_command(label = "Cancel")
+        if HOST_SYS == 'Darwin':
+            self.bind("<Button-2>",\
+            lambda e: button_popup.post(e.x_root, e.y_root))
         else:
-            text.insert(tk.END, dc_run(value[0].split(';'))),\
-            text.see(tk.END)
-            return value[0]
+            self.bind("<Button-3>",\
+            lambda e: button_popup.post(e.x_root, e.y_root))
     
     def key_roll(k_in):
         k_in[0] = entry_val.get()
         text.insert(tk.END, dc_run(k_in[0].split(';'))),\
         text.see(tk.END)
+    
+    def b_popup_rename(self, title):
+        popup_val = tk.StringVar()
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        entry = tk.Entry(popup, textvariable = popup_val)
+        entry.config(bg = "gray90")
+        entry.pack(padx = 10, pady = 5, fill = "x")
+        popup_val.set("New Name")
+        button1 = tk.Button(popup, text = "Ok",\
+        command = lambda: self.configure(text = popup_val.get()))
+        button1.pack(padx = 10, pady = 5, side = 'left')
+        button2 = tk.Button(popup, text = "Close",  command = popup.destroy)
+        button2.pack(padx = 10, pady = 5, side = 'right')
+        popup.geometry("250x80")
+        popup.mainloop()
+    
+    def b_popup_revalue(self, title, value):
+        popup_val = tk.StringVar()
+        def setvalue(self_in, value_in):
+            value_in[0] = popup_val.get()
+            self_in.entryconfigure(0, label = value[0])
+            return value_in[0]
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        entry = tk.Entry(popup, textvariable = popup_val)
+        entry.config(bg = "gray90")
+        entry.pack(padx = 10, pady = 5, fill = "x")
+        popup_val.set(value[0])
+        button1 = tk.Button(popup, text = "Ok",\
+        command = lambda: print("Revalue = "+setvalue(self, value)))
+        button1.pack(padx = 10, pady = 5, side = 'left')
+        button2 = tk.Button(popup, text = "Close",  command = popup.destroy)
+        button2.pack(padx = 10, pady = 5, side = 'right')
+        popup.geometry("200x80")
+        popup.mainloop()
     
     text = tk.Text(self)
     scrolly = tk.Scrollbar(self)
@@ -231,53 +332,57 @@ def journal_config(self):
     command = lambda: key_roll(key1))
     rollbutton.pack(side = "top", fill = "x")
     
-    sbutton = tk.Checkbutton(self, text = "[Set]", indicatoron = 0, offvalue = 0, onvalue = 1,\
-    variable = set_val, command = lambda: (cli_msg("Button press: [Set], State = "+str(set_val.get()))),\
-    selectcolor = "firebrick1")
-    sbutton.pack(padx = 10, side = "left")
-    
-    button1 = tk.Button(self, text = preset1, \
-    command = lambda: (cli_msg("Button press: Preset 1, State = "+state_check(button1, preset1))))
+    button1 = tk.Button(self, text = "1d4", \
+    command = lambda: (cli_msg("Button 1 Press, Value = "+button_press(preset1))))
     button1.pack(side = "left")
+    b_menu(button1, "Button 1", preset1)
     
-    button2 = tk.Button(self, text = preset2, \
-    command = lambda: (cli_msg("Button press: Preset 2, State = "+state_check(button2, preset2))))
+    button2 = tk.Button(self, text = "1d6", \
+    command = lambda: (cli_msg("Button 2 Press, Value = "+button_press(preset2))))
     button2.pack(side = "left")
+    b_menu(button2, "Button 2", preset2)
     
-    button3 = tk.Button(self, text = preset3, \
-    command = lambda: (cli_msg("Button press: Preset 3, State = "+state_check(button3, preset3))))
+    button3 = tk.Button(self, text = "1d8", \
+    command = lambda: (cli_msg("Button 3 Press, Value = "+button_press(preset3))))
     button3.pack(side = "left")
+    b_menu(button3, "Button 3", preset3)
     
-    button4 = tk.Button(self, text = preset4, \
-    command = lambda: (cli_msg("Button press: Preset 4, State = "+state_check(button4, preset4))))
+    button4 = tk.Button(self, text = "1d10", \
+    command = lambda: (cli_msg("Button 4 Press, Value = "+button_press(preset4))))
     button4.pack(side = "left")
+    b_menu(button4, "Button 4", preset4)
     
-    button5 = tk.Button(self, text = preset5, \
-    command = lambda: (cli_msg("Button press: Preset 5, State = "+state_check(button5, preset5))))
+    button5 = tk.Button(self, text = "1d12", \
+    command = lambda: (cli_msg("Button 5 Press, Value = "+button_press(preset5))))
     button5.pack(side = "left")
+    b_menu(button5, "Button 5", preset5)
     
-    button6 = tk.Button(self, text = preset6, \
-    command = lambda: (cli_msg("Button press: Preset 6, State = "+state_check(button6, preset6))))
+    button6 = tk.Button(self, text = "1d20", \
+    command = lambda: (cli_msg("Button 6 Press, Value = "+button_press(preset6))))
     button6.pack(side = "left")
+    b_menu(button6, "Button 6", preset6)
     
-    button7 = tk.Button(self, text = preset7, \
-    command = lambda: (cli_msg("Button press: Preset 7, State = "+state_check(button7, preset7))))
+    button7 = tk.Button(self, text = "1d100", \
+    command = lambda: (cli_msg("Button 7 Press, Value = "+button_press(preset7))))
     button7.pack(side = "left")
+    b_menu(button7, "Button 7", preset7)
     
-    button8 = tk.Button(self, text = preset8, \
-    command = lambda: (cli_msg("Button press: Preset 8, State = "+state_check(button8, preset8))))
+    button8 = tk.Button(self, text = "2*1d20", \
+    command = lambda: (cli_msg("Button 8 Press, Value = "+button_press(preset8))))
     button8.pack(side = "left")
+    b_menu(button8, "Button 8", preset8)
     
-    button9 = tk.Button(self, text = preset9, \
-    command = lambda: (cli_msg("Button press: Preset 9, State = "+state_check(button9, preset9))))
+    button9 = tk.Button(self, text = "2d20 Drop Low", \
+    command = lambda: (cli_msg("Button 9 Press, Value = "+button_press(preset9))))
     button9.pack(side = "left")
+    b_menu(button9, "Button 9", preset9)
     
-    button10 = tk.Button(self, text = preset10, \
-    command = lambda: (cli_msg("Button press: Preset 10, State = "+state_check(button10, preset10))))
+    button10 = tk.Button(self, text = "2d20 Drop High", \
+    command = lambda: (cli_msg("Button 10 Press, Value = "+button_press(preset10))))
     button10.pack(side = "left")
+    b_menu(button10, "Button 10", preset10)
 
 class GUITest(tk.Tk):
-
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, "dc_GUI")
@@ -357,14 +462,14 @@ class GUITest(tk.Tk):
         note_popup = tk.Menu(notebook, tearoff = 0)
         note_popup.add_command(label = "Rename",\
         command = lambda: n_popup_get("Enter Name"))
-        note_popup.add_separator()
+        #note_popup.add_separator()
         note_popup.add_command(label = "Cancel")
         if HOST_SYS == 'Darwin':
             notebook.bind("<Button-2>",\
-            lambda c: note_popup.post(container.winfo_pointerx(), container.winfo_pointery()))
+            lambda n: note_popup.post(n.x_root, n.y_root))
         else:
             notebook.bind("<Button-3>",\
-            lambda c: note_popup.post(container.winfo_pointerx(), container.winfo_pointery()))
+            lambda n: note_popup.post(n.x_root, n.y_root))
         
         notebook.add(note1, text = "Ledger 1")
         ledger_config(note1)
