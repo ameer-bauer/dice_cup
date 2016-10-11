@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.0
+#Version: 0.1.1
 #Date: 2016-10-10
 #----------------
 
@@ -17,10 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.0"
-
-def cli_msg(msg):
-    print(msg)
+VERSION = "0.1.1"
 
 def dc_run_q(params):
     if HOST_SYS == 'Windows':
@@ -57,8 +54,8 @@ def popup_wrn(title, msg):
     popup.wm_title(title)
     label = tk.Label(popup, text = msg)
     label.pack(pady = 10, padx= 30, side = "top", fill="x")
-    button1 = tk.Button(popup, text = "Ok",  command = popup.destroy())
-    button1.pack(padx = 5, pady = 5)
+    button1 = tk.Button(popup, text = "Ok",  command = popup.destroy)
+    button1.pack(pady = 5)
     popup.geometry("250x80")
     popup.mainloop()
 
@@ -179,52 +176,52 @@ def ledger_config(self):
     rollbutton.pack(side = "top", fill = "x")
     
     button1 = tk.Button(self, text = "1d4", \
-    command = lambda: (cli_msg("Button 1 Press, Value = "+button_press(preset1))))
+    command = lambda: (print(button1.cget("text"), "Press, Value = "+button_press(preset1))))
     button1.pack(side = "left")
     b_menu(button1, "Button 1", preset1)
     
     button2 = tk.Button(self, text = "1d6", \
-    command = lambda: (cli_msg("Button 2 Press, Value = "+button_press(preset2))))
+    command = lambda: (print(button2.cget("text"), "Press, Value = "+button_press(preset2))))
     button2.pack(side = "left")
     b_menu(button2, "Button 2", preset2)
     
     button3 = tk.Button(self, text = "1d8", \
-    command = lambda: (cli_msg("Button 3 Press, Value = "+button_press(preset3))))
+    command = lambda: (print(button3.cget("text"), "Press, Value = "+button_press(preset3))))
     button3.pack(side = "left")
     b_menu(button3, "Button 3", preset3)
     
     button4 = tk.Button(self, text = "1d10", \
-    command = lambda: (cli_msg("Button 4 Press, Value = "+button_press(preset4))))
+    command = lambda: (print(button4.cget("text"), "Press, Value = "+button_press(preset4))))
     button4.pack(side = "left")
     b_menu(button4, "Button 4", preset4)
     
     button5 = tk.Button(self, text = "1d12", \
-    command = lambda: (cli_msg("Button 5 Press, Value = "+button_press(preset5))))
+    command = lambda: (print(button5.cget("text"), "Press, Value = "+button_press(preset5))))
     button5.pack(side = "left")
     b_menu(button5, "Button 5", preset5)
     
     button6 = tk.Button(self, text = "1d20", \
-    command = lambda: (cli_msg("Button 6 Press, Value = "+button_press(preset6))))
+    command = lambda: (print(button6.cget("text"), "Press, Value = "+button_press(preset6))))
     button6.pack(side = "left")
     b_menu(button6, "Button 6", preset6)
     
     button7 = tk.Button(self, text = "1d100", \
-    command = lambda: (cli_msg("Button 7 Press, Value = "+button_press(preset7))))
+    command = lambda: (print(button7.cget("text"), "Press, Value = "+button_press(preset7))))
     button7.pack(side = "left")
     b_menu(button7, "Button 7", preset7)
     
-    button8 = tk.Button(self, text = "2*1d20", \
-    command = lambda: (cli_msg("Button 8 Press, Value = "+button_press(preset8))))
+    button8 = tk.Button(self, text = "Two Single d20s", \
+    command = lambda: (print(button8.cget("text"), "Press, Value = "+button_press(preset8))))
     button8.pack(side = "left")
     b_menu(button8, "Button 8", preset8)
     
     button9 = tk.Button(self, text = "2d20 Drop Low", \
-    command = lambda: (cli_msg("Button 9 Press, Value = "+button_press(preset9))))
+    command = lambda: (print(button9.cget("text"), "Press, Value = "+button_press(preset9))))
     button9.pack(side = "left")
     b_menu(button9, "Button 9", preset9)
     
     button10 = tk.Button(self, text = "2d20 Drop High", \
-    command = lambda: (cli_msg("Button 10 Press, Value = "+button_press(preset10))))
+    command = lambda: (print(button10.cget("text"), "Press, Value = "+button_press(preset10))))
     button10.pack(side = "left")
     b_menu(button10, "Button 10", preset10)
 
@@ -325,52 +322,52 @@ def journal_config(self):
     rollbutton.pack(side = "top", fill = "x")
     
     button1 = tk.Button(self, text = "1d4", \
-    command = lambda: (cli_msg("Button 1 Press, Value = "+button_press(preset1))))
+    command = lambda: (print(button1.cget("text"), "Press, Value = "+button_press(preset1))))
     button1.pack(side = "left")
     b_menu(button1, "Button 1", preset1)
     
     button2 = tk.Button(self, text = "1d6", \
-    command = lambda: (cli_msg("Button 2 Press, Value = "+button_press(preset2))))
+    command = lambda: (print(button2.cget("text"), "Press, Value = "+button_press(preset2))))
     button2.pack(side = "left")
     b_menu(button2, "Button 2", preset2)
     
     button3 = tk.Button(self, text = "1d8", \
-    command = lambda: (cli_msg("Button 3 Press, Value = "+button_press(preset3))))
+    command = lambda: (print(button3.cget("text"), "Press, Value = "+button_press(preset3))))
     button3.pack(side = "left")
     b_menu(button3, "Button 3", preset3)
     
     button4 = tk.Button(self, text = "1d10", \
-    command = lambda: (cli_msg("Button 4 Press, Value = "+button_press(preset4))))
+    command = lambda: (print(button4.cget("text"), "Press, Value = "+button_press(preset4))))
     button4.pack(side = "left")
     b_menu(button4, "Button 4", preset4)
     
     button5 = tk.Button(self, text = "1d12", \
-    command = lambda: (cli_msg("Button 5 Press, Value = "+button_press(preset5))))
+    command = lambda: (print(button5.cget("text"), "Press, Value = "+button_press(preset5))))
     button5.pack(side = "left")
     b_menu(button5, "Button 5", preset5)
     
     button6 = tk.Button(self, text = "1d20", \
-    command = lambda: (cli_msg("Button 6 Press, Value = "+button_press(preset6))))
+    command = lambda: (print(button6.cget("text"), "Press, Value = "+button_press(preset6))))
     button6.pack(side = "left")
     b_menu(button6, "Button 6", preset6)
     
     button7 = tk.Button(self, text = "1d100", \
-    command = lambda: (cli_msg("Button 7 Press, Value = "+button_press(preset7))))
+    command = lambda: (print(button7.cget("text"), "Press, Value = "+button_press(preset7))))
     button7.pack(side = "left")
     b_menu(button7, "Button 7", preset7)
     
-    button8 = tk.Button(self, text = "2*1d20", \
-    command = lambda: (cli_msg("Button 8 Press, Value = "+button_press(preset8))))
+    button8 = tk.Button(self, text = "Two Single d20s", \
+    command = lambda: (print(button8.cget("text"), "Press, Value = "+button_press(preset8))))
     button8.pack(side = "left")
     b_menu(button8, "Button 8", preset8)
     
     button9 = tk.Button(self, text = "2d20 Drop Low", \
-    command = lambda: (cli_msg("Button 9 Press, Value = "+button_press(preset9))))
+    command = lambda: (print(button9.cget("text"), "Press, Value = "+button_press(preset9))))
     button9.pack(side = "left")
     b_menu(button9, "Button 9", preset9)
     
     button10 = tk.Button(self, text = "2d20 Drop High", \
-    command = lambda: (cli_msg("Button 10 Press, Value = "+button_press(preset10))))
+    command = lambda: (print(button10.cget("text"), "Press, Value = "+button_press(preset10))))
     button10.pack(side = "left")
     b_menu(button10, "Button 10", preset10)
 
