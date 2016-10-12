@@ -237,7 +237,7 @@ if args.d:
     s_len = len(str(args.s))
     p_val = (args.p / 100)
     for x in args.d:
-        if x.rfind('+') != -1: #Scan for extra whitespace
+        if x.find('+') != -1: #Scan for extra whitespace
             y = x.replace(' ', '')
             y_list = y.split('+')
             d_pair = y_list[0].split(',')
