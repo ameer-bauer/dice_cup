@@ -76,6 +76,28 @@ def popup_get(title, msg):
     #popup.geometry("250x100")
     popup.mainloop()
 
+def formula_parse(param_str):
+    foo = []
+    if params_str.find('+') != -1:
+        a = True
+        v = params_str.split('+')
+    if params_str.find('-') != -1:
+        m = True
+        w = params_str.split('+')
+    if params_str.find('*') != -1:
+        g = True
+        x = params_str.split('+')
+    if params_str.find('^') != -1:
+        s = True
+        y = params_str.split('+')
+    if params_str.find('%') != -1:
+        p = True
+        z = params_str.split('+')
+    if (not (a and m and g and s and p)) and (param_str.find('d') != -1):
+        params = param_str.split('d')
+    print("params:", params)
+    return params
+
 def ledger_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
@@ -157,7 +179,7 @@ def ledger_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
-    listbox = tk.Listbox(self)
+    listbox = tk.Listbox(self, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = listbox.yview)
     scrolly.pack(side = "right", fill = "y")
@@ -304,7 +326,7 @@ def journal_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
-    text = tk.Text(self)
+    text = tk.Text(self, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = text.yview)
     scrolly.pack(side = "right", fill = "y")
