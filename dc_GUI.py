@@ -427,6 +427,13 @@ class GUITest(tk.Tk):
         command = lambda: popup_wrn("Export...", "Not supported yet."))
         settingsmenu.add_command(label = "Load Defaults", \
         command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
+        settingsmenu.add_separator()
+        settingsmenu.add_command(label = "Add Journal", \
+        command = lambda: popup_wrn("Add Journal", "Not supported yet."))
+        settingsmenu.add_command(label = "Add Ledger", \
+        command = lambda: popup_wrn("Add Ledger", "Not supported yet."))
+        settingsmenu.add_command(label = "Delete Tab", \
+        command = lambda: popup_wrn("Delete Tab", "Not supported yet."))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         toolsmenu.add_command(label = "Scratchpad", \
