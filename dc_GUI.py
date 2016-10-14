@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.1
-#Date: 2016-10-10
+#Version: 0.1.2
+#Date: 2016-10-14
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 def dc_run_q(params):
     if HOST_SYS == 'Windows':
