@@ -69,10 +69,8 @@ def popup_get(title, msg):
     entry.config(bg = "gray90")
     entry.pack(padx = 10, pady = 5, fill = "x")
     popup_val.set("Default")
-    button1 = tk.Button(popup, text = "Ok",  command = lambda: print("Value: ", popup_val.get()))
-    button1.pack(padx = 10, pady = 5, side = 'left')
-    button2 = tk.Button(popup, text = "Close",  command = popup.destroy())
-    button2.pack(padx = 10, pady = 5, side = 'right')
+    button1 = tk.Button(popup, text = "Ok",  command = lambda: (popup.destroy(), print("Value: ", popup_val.get())))
+    button1.pack(pady = 5, side = 'left')
     #popup.geometry("250x100")
     popup.mainloop()
 
@@ -407,6 +405,52 @@ class GUITest(tk.Tk):
         container.grid_rowconfigure(0, weight = 1)
         container.grid_columnconfigure(0, weight = 1)
         
+        def n_popup_ladd(self, title):
+            def new_ltab(n_title):
+                new_ledger = ttk.Frame(self)
+                notebook.add(new_ledger, text = n_title)
+                ledger_config(new_ledger)
+            popup_val = tk.StringVar()
+            popup = tk.Toplevel()
+            popup.wm_title(title)
+            entry = tk.Entry(popup, textvariable = popup_val)
+            entry.config(bg = "gray90")
+            entry.pack(padx = 20, pady = 10, fill = "x")
+            popup_val.set("New Ledger")
+            button1 = tk.Button(popup, text = "Ok",  command =\
+            lambda: (popup.destroy(), new_ltab(popup_val.get())))
+            button1.pack(pady = 5)
+            popup.mainloop()
+        
+        def n_popup_jadd(self, title):
+            def new_jtab(n_title):
+                new_journal = ttk.Frame(self)
+                notebook.add(new_journal, text = n_title)
+                journal_config(new_journal)
+            popup_val = tk.StringVar()
+            popup = tk.Toplevel()
+            popup.wm_title(title)
+            entry = tk.Entry(popup, textvariable = popup_val)
+            entry.config(bg = "gray90")
+            entry.pack(padx = 20, pady = 10, fill = "x")
+            popup_val.set("New Journal")
+            button1 = tk.Button(popup, text = "Ok",  command =\
+            lambda: (popup.destroy(), new_jtab(popup_val.get())))
+            button1.pack(pady = 5)
+            popup.mainloop()
+        
+        def n_popup_forget(title):
+            popup_val = tk.StringVar()
+            popup = tk.Toplevel()
+            popup.wm_title(title)
+            label = tk.Label(popup, text = "Delete "+notebook.tab(notebook.select(), 'text')+"?")
+            label.pack(pady = 10, padx= 10, side = "top", fill="x")
+            button1 = tk.Button(popup, text = "Ok",  command =\
+            lambda: (popup.destroy(), notebook.forget(notebook.select())))
+            button1.pack(pady = 5)
+            popup.geometry("250x80")
+            popup.mainloop()
+        
         menubar = tk.Menu(container, relief = "flat")
         
         filemenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
@@ -429,11 +473,11 @@ class GUITest(tk.Tk):
         command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
         settingsmenu.add_separator()
         settingsmenu.add_command(label = "Add Journal", \
-        command = lambda: popup_wrn("Add Journal", "Not supported yet."))
+        command = lambda: n_popup_jadd(notebook, "Add Journal"))
         settingsmenu.add_command(label = "Add Ledger", \
-        command = lambda: popup_wrn("Add Ledger", "Not supported yet."))
+        command = lambda: n_popup_ladd(notebook, "Add Ledger"))
         settingsmenu.add_command(label = "Delete Tab", \
-        command = lambda: popup_wrn("Delete Tab", "Not supported yet."))
+        command = lambda: n_popup_forget("Delete Tab"))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         toolsmenu.add_command(label = "Scratchpad", \
@@ -459,11 +503,6 @@ class GUITest(tk.Tk):
         note3 = ttk.Frame(notebook)
         note4 = ttk.Frame(notebook)
         note5 = ttk.Frame(notebook)
-        note6 = ttk.Frame(notebook)
-        note7 = ttk.Frame(notebook)
-        note8 = ttk.Frame(notebook)
-        note9 = ttk.Frame(notebook)
-        note10 = ttk.Frame(notebook)
         
         def n_popup_get(title):
             popup_val = tk.StringVar()
@@ -497,29 +536,14 @@ class GUITest(tk.Tk):
         notebook.add(note2, text = "Ledger 2")
         ledger_config(note2)
         
-        notebook.add(note3, text = "Ledger 3")
-        ledger_config(note3)
+        notebook.add(note3, text = "Journal 1")
+        journal_config(note3)
         
-        notebook.add(note4, text = "Ledger 4")
-        ledger_config(note4)
+        notebook.add(note4, text = "Journal 2")
+        journal_config(note4)
         
-        notebook.add(note5, text = "Ledger 5")
-        ledger_config(note5)
-        
-        notebook.add(note6, text = "Journal 1")
-        journal_config(note6)
-        
-        notebook.add(note7, text = "Journal 2")
-        journal_config(note7)
-        
-        notebook.add(note8, text = "Journal 3")
-        journal_config(note8)
-        
-        notebook.add(note9, text = "Journal 4")
-        journal_config(note9)
-        
-        notebook.add(note10, text = "Journal 5")
-        journal_config(note10)
+        notebook.add(note5, text = "Journal 3")
+        journal_config(note5)
         
         notebook.pack(fill = "both", expand = 1)
 
