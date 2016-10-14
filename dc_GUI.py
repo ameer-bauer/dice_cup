@@ -521,6 +521,8 @@ class GUITest(tk.Tk):
         note_popup = tk.Menu(notebook, tearoff = 0)
         note_popup.add_command(label = "Rename",\
         command = lambda: n_popup_get("Rename Tab"))
+        note_popup.add_command(label = "Delete",\
+        command = lambda: n_popup_forget("Delete Tab"))
         #note_popup.add_separator()
         note_popup.add_command(label = "Cancel")
         if HOST_SYS == 'Darwin':
