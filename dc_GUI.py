@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.3
+#Version: 0.1.4
 #Date: 2016-10-15
 #----------------
 
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 
 def dc_run_q(params):
     if HOST_SYS == 'Windows':
@@ -27,8 +27,8 @@ def dc_run_q(params):
     now = datetime.now()
     str_dc_out = str(dc_out)
     str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
-    print(dc_out)
     if str_dc_out.find('returncode=0') == -1:
+        print('!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n',dc_out)
         return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+\
         "!!ERROR!!  Please check your \'Roll Formula\' syntax."
     dc_print = str_dc_out.split('stdout=')
@@ -46,9 +46,9 @@ def dc_run(params):
     now = datetime.now()
     str_dc_out = str(dc_out)
     str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
-    print(dc_out)
     dc_print = str(dc_out).split('stdout=')
     if str_dc_out.find('returncode=0') == -1:
+        print('!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n', dc_out)
         return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'\n'+\
         "!!ERROR!!  Please check your \'Roll Formula\' syntax.\n\n"
     if HOST_SYS == 'Windows':
