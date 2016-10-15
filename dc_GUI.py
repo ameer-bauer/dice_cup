@@ -25,14 +25,18 @@ def dc_run_q(params):
     else:
         dc_out = subprocess.run(NIX_DEFAULT+params+['-q'], stdout=subprocess.PIPE)
     now = datetime.now()
+    str_dc_out = str(dc_out)
+    str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     print(dc_out)
-    dc_print = str(dc_out).split('stdout=')
+    if str_dc_out.find('returncode=0') == -1:
+        return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+\
+        "!!ERROR!!  Please check your \'Roll Formula\' syntax."
+    dc_print = str_dc_out.split('stdout=')
     if HOST_SYS == 'Windows':
         dc_print = dc_print[1].replace('\\n', '  ').replace('\\r', '')
     else:
         dc_print = dc_print[1].replace('\\n', '  ')
-    str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
-    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+dc_print.strip('b\')')
+    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+dc_print.strip('b\')')[:2048]
 
 def dc_run(params):
     if HOST_SYS == 'Windows':
@@ -40,13 +44,17 @@ def dc_run(params):
     else:
         dc_out = subprocess.run(NIX_DEFAULT+params, stdout=subprocess.PIPE)
     now = datetime.now()
+    str_dc_out = str(dc_out)
+    str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     print(dc_out)
     dc_print = str(dc_out).split('stdout=')
+    if str_dc_out.find('returncode=0') == -1:
+        return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'\n'+\
+        "!!ERROR!!  Please check your \'Roll Formula\' syntax.\n\n"
     if HOST_SYS == 'Windows':
         dc_print = dc_print[1].replace('\\n', '\n').replace('\\r', '').replace('\\x08\\x08', '0')
     else:
         dc_print = dc_print[1].replace('\\n', '\n').replace('\\x08\\x08', '0')
-    str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'\n'+dc_print.strip('b\')')+'\n'
 
 def popup_wrn(title, msg):
@@ -75,7 +83,7 @@ def popup_get(title, msg):
     popup.mainloop()
 
 def formula_parse(param_str):
-    foo = []
+    params = []
     if params_str.find('+') != -1:
         a = True
         v = params_str.split('+')
@@ -91,8 +99,12 @@ def formula_parse(param_str):
     if params_str.find('%') != -1:
         p = True
         z = params_str.split('+')
+    if params_str.find('L'):
+        params.append('-L')
+    if params_str.find('H'):
+        params.append('-H')
     if (not (a and m and g and s and p)) and (param_str.find('d') != -1):
-        params = param_str.split('d')
+        params.append(param_str.split('d'))
     print("params:", params)
     return params
 
@@ -102,7 +114,7 @@ def ledger_config(self):
     default_flags = "-d6,3+4,1;-m2;-g6;-s2"
     key1 = ["Default"]
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
-    "2x 1d20", "2d20 Drop Low", "2d20 Drop High"]
+    "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
     preset1 = ["-d4,1"]
     preset2 = ["-d6,1"]
     preset3 = ["-d8,1"]
@@ -152,11 +164,11 @@ def ledger_config(self):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), self.configure(text = popup_val.get())))
+        lambda k: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), self.configure(text = popup_val.get())))
+        command = lambda: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
         button1.pack(pady = 5)
         #popup.geometry("250x80")
         popup.mainloop()
@@ -181,7 +193,7 @@ def ledger_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
-    listbox = tk.Listbox(self, width = 80, height = 30)
+    listbox = tk.Listbox(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = listbox.yview)
     scrolly.pack(side = "right", fill = "y")
@@ -197,7 +209,7 @@ def ledger_config(self):
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
-    rollbutton = tk.Button(self, text = "[Formula Roll]", \
+    rollbutton = tk.Button(self, text = "[Execute Roll Formula]", \
     command = lambda: key_roll(key1))
     rollbutton.pack(side = "top", fill = "x")
     
@@ -256,7 +268,7 @@ def journal_config(self):
     entry_val = tk.StringVar()
     default_flags = "-d6,3+4,1;-m2;-g6;-s2"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
-    "2x 1d20", "2d20 Drop Low", "2d20 Drop High"]
+    "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
     key1 = ["test"]
     preset1 = ["-d4,1"]
     preset2 = ["-d6,1"]
@@ -303,11 +315,11 @@ def journal_config(self):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), self.configure(text = popup_val.get())))
+        lambda k: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), self.configure(text = popup_val.get())))
+        command = lambda: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
         button1.pack(pady = 5)
         #popup.geometry("250x80")
         popup.mainloop()
@@ -332,7 +344,7 @@ def journal_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
-    text = tk.Text(self, width = 80, height = 30)
+    text = tk.Text(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = text.yview)
     scrolly.pack(side = "right", fill = "y")
@@ -424,11 +436,11 @@ class GUITest(tk.Tk):
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
             entry.bind("<Return>", \
-            lambda k: (popup.destroy(), new_ltab(popup_val.get())))
+            lambda k: (popup.destroy(), new_ltab(popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set("New Ledger")
             button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), new_ltab(popup_val.get())))
+            lambda: (popup.destroy(), new_ltab(popup_val.get()[:30])))
             button1.pack(pady = 5)
             popup.mainloop()
         
@@ -443,11 +455,11 @@ class GUITest(tk.Tk):
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
             entry.bind("<Return>", \
-            lambda k: (popup.destroy(), new_jtab(popup_val.get())))
+            lambda k: (popup.destroy(), new_jtab(popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set("New Journal")
             button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), new_jtab(popup_val.get())))
+            lambda: (popup.destroy(), new_jtab(popup_val.get()[:30])))
             button1.pack(pady = 5)
             popup.mainloop()
         
@@ -516,25 +528,25 @@ class GUITest(tk.Tk):
         note4 = ttk.Frame(notebook)
         note5 = ttk.Frame(notebook)
         
-        def n_popup_get(title, target):
+        def n_popup_rename(title, target):
             popup_val = tk.StringVar()
             popup = tk.Toplevel()
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
             entry.bind("<Return>", \
-            lambda k: (popup.destroy(), notebook.tab(target, text = popup_val.get())))
+            lambda k: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set(notebook.tab(notebook.select(), 'text'))
             button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), notebook.tab(target, text = popup_val.get())))
+            lambda: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
             button1.pack(pady = 5)
             #popup.geometry("200x80")
             popup.mainloop()
         
         note_rc_popup = tk.Menu(notebook, tearoff = 0)
         note_rc_popup.add_command(label = "Rename",\
-        command = lambda: n_popup_get("Rename Tab", notebook.select()))
+        command = lambda: n_popup_rename("Rename Tab", notebook.select()))
         note_rc_popup.add_command(label = "Delete",\
         command = lambda: n_popup_forget("Delete Tab", notebook.select()))
         #note_popup.add_separator()
