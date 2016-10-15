@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.2
-#Date: 2016-10-14
+#Version: 0.1.3
+#Date: 2016-10-15
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 
 def dc_run_q(params):
     if HOST_SYS == 'Windows':
@@ -122,21 +122,21 @@ def ledger_config(self):
         return value[0]
     
     def b_menu(self, name, value):
-        button_popup = tk.Menu(self, tearoff = 0)
-        button_popup.add_command(label = value[0],\
+        button_rc_popup = tk.Menu(self, tearoff = 0)
+        button_rc_popup.add_command(label = value[0],\
         command = lambda: button_press(value))
-        button_popup.add_separator()
-        button_popup.add_command(label = "Rename",\
+        button_rc_popup.add_separator()
+        button_rc_popup.add_command(label = "Rename",\
         command = lambda: b_popup_rename(self, "Rename Button"))
-        button_popup.add_command(label = "Revalue",\
-        command = lambda: b_popup_revalue(button_popup, "Enter New Value", value, self))
-        button_popup.add_command(label = "Cancel")
+        button_rc_popup.add_command(label = "Revalue",\
+        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
+        button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             self.bind("<Button-2>",\
-            lambda e: button_popup.post(e.x_root, e.y_root))
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
         else:
             self.bind("<Button-3>",\
-            lambda e: button_popup.post(e.x_root, e.y_root))
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def key_roll(k_in):
         k_in[0] = entry_val.get()
@@ -151,6 +151,8 @@ def ledger_config(self):
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
+        entry.bind("<Return>", \
+        lambda k: (popup.destroy(), self.configure(text = popup_val.get())))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
@@ -169,6 +171,8 @@ def ledger_config(self):
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
+        entry.bind("<Return>", \
+        lambda k: (popup.destroy(), print(parent.cget("text"), ": Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
         button1 = tk.Button(popup, text = "Ok",\
@@ -271,21 +275,21 @@ def journal_config(self):
         return value[0]
     
     def b_menu(self, name, value):
-        button_popup = tk.Menu(self, tearoff = 0)
-        button_popup.add_command(label = value[0],\
+        button_rc_popup = tk.Menu(self, tearoff = 0)
+        button_rc_popup.add_command(label = value[0],\
         command = lambda: button_press(value))
-        button_popup.add_separator()
-        button_popup.add_command(label = "Rename",\
+        button_rc_popup.add_separator()
+        button_rc_popup.add_command(label = "Rename",\
         command = lambda: b_popup_rename(self, "Rename Button"))
-        button_popup.add_command(label = "Revalue", \
-        command = lambda: b_popup_revalue(button_popup, "Enter New Value", value, self))
-        button_popup.add_command(label = "Cancel")
+        button_rc_popup.add_command(label = "Revalue", \
+        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
+        button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             self.bind("<Button-2>",\
-            lambda e: button_popup.post(e.x_root, e.y_root))
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
         else:
             self.bind("<Button-3>",\
-            lambda e: button_popup.post(e.x_root, e.y_root))
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def key_roll(k_in):
         k_in[0] = entry_val.get()
@@ -298,6 +302,8 @@ def journal_config(self):
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
+        entry.bind("<Return>", \
+        lambda k: (popup.destroy(), self.configure(text = popup_val.get())))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
@@ -316,6 +322,8 @@ def journal_config(self):
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
+        entry.bind("<Return>", \
+        lambda k: (popup.destroy(), print(parent.cget("text"), ": Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
         button1 = tk.Button(popup, text = "Ok",\
@@ -415,6 +423,8 @@ class GUITest(tk.Tk):
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
+            entry.bind("<Return>", \
+            lambda k: (popup.destroy(), new_ltab(popup_val.get())))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set("New Ledger")
             button1 = tk.Button(popup, text = "Ok",  command =\
@@ -432,6 +442,8 @@ class GUITest(tk.Tk):
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
+            entry.bind("<Return>", \
+            lambda k: (popup.destroy(), new_jtab(popup_val.get())))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set("New Journal")
             button1 = tk.Button(popup, text = "Ok",  command =\
@@ -439,14 +451,14 @@ class GUITest(tk.Tk):
             button1.pack(pady = 5)
             popup.mainloop()
         
-        def n_popup_forget(title):
+        def n_popup_forget(title, target):
             popup_val = tk.StringVar()
             popup = tk.Toplevel()
             popup.wm_title(title)
-            label = tk.Label(popup, text = "Delete "+notebook.tab(notebook.select(), 'text')+"?")
+            label = tk.Label(popup, text = "Delete "+notebook.tab(target, 'text')+"?")
             label.pack(pady = 10, padx= 10, side = "top", fill="x")
             button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), notebook.forget(notebook.select())))
+            lambda: (popup.destroy(), notebook.forget(target)))
             button1.pack(pady = 5)
             popup.geometry("250x80")
             popup.mainloop()
@@ -477,7 +489,7 @@ class GUITest(tk.Tk):
         settingsmenu.add_command(label = "Add Ledger", \
         command = lambda: n_popup_ladd(notebook, "Add Ledger"))
         settingsmenu.add_command(label = "Delete Tab", \
-        command = lambda: n_popup_forget("Delete Tab"))
+        command = lambda: n_popup_forget("Delete Tab", notebook.select()))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         toolsmenu.add_command(label = "Scratchpad", \
@@ -504,33 +516,35 @@ class GUITest(tk.Tk):
         note4 = ttk.Frame(notebook)
         note5 = ttk.Frame(notebook)
         
-        def n_popup_get(title):
+        def n_popup_get(title, target):
             popup_val = tk.StringVar()
             popup = tk.Toplevel()
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
+            entry.bind("<Return>", \
+            lambda k: (popup.destroy(), notebook.tab(target, text = popup_val.get())))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set(notebook.tab(notebook.select(), 'text'))
             button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), notebook.tab(notebook.select(), text = popup_val.get())))
+            lambda: (popup.destroy(), notebook.tab(target, text = popup_val.get())))
             button1.pack(pady = 5)
             #popup.geometry("200x80")
             popup.mainloop()
         
-        note_popup = tk.Menu(notebook, tearoff = 0)
-        note_popup.add_command(label = "Rename",\
-        command = lambda: n_popup_get("Rename Tab"))
-        note_popup.add_command(label = "Delete",\
+        note_rc_popup = tk.Menu(notebook, tearoff = 0)
+        note_rc_popup.add_command(label = "Rename",\
+        command = lambda: n_popup_get("Rename Tab", notebook.select()))
+        note_rc_popup.add_command(label = "Delete",\
         command = lambda: n_popup_forget("Delete Tab"))
         #note_popup.add_separator()
-        note_popup.add_command(label = "Cancel")
+        note_rc_popup.bind("<Leave>", lambda p: note_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             notebook.bind("<Button-2>",\
-            lambda n: note_popup.post(n.x_root, n.y_root))
+            lambda n: note_rc_popup.post(n.x_root, n.y_root))
         else:
             notebook.bind("<Button-3>",\
-            lambda n: note_popup.post(n.x_root, n.y_root))
+            lambda n: note_rc_popup.post(n.x_root, n.y_root))
         
         notebook.add(note1, text = "Ledger 1")
         ledger_config(note1)
