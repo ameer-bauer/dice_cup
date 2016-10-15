@@ -101,8 +101,8 @@ def ledger_config(self):
     entry_val = tk.StringVar()
     default_flags = "-d6,3+4,1;-m2;-g6;-s2"
     key1 = ["Default"]
-    b_names = ["One d4", "One d6", "One d8", "One d10", "One d12", "One d20", "One d100", \
-    "Two Single d20s", "Two d20s Drop Low", "Two d20s Drop High"]
+    b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
+    "2x 1d20", "2d20 Drop Low", "2d20 Drop High"]
     preset1 = ["-d4,1"]
     preset2 = ["-d6,1"]
     preset3 = ["-d8,1"]
@@ -181,7 +181,7 @@ def ledger_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
-    listbox = tk.Listbox(self, height = 30)
+    listbox = tk.Listbox(self, width = 80, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = listbox.yview)
     scrolly.pack(side = "right", fill = "y")
@@ -255,8 +255,8 @@ def journal_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
     default_flags = "-d6,3+4,1;-m2;-g6;-s2"
-    b_names = ["One d4", "One d6", "One d8", "One d10", "One d12", "One d20", "One d100", \
-    "Two Single d20s", "Two d20s Drop Low", "Two d20s Drop High"]
+    b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
+    "2x 1d20", "2d20 Drop Low", "2d20 Drop High"]
     key1 = ["test"]
     preset1 = ["-d4,1"]
     preset2 = ["-d6,1"]
@@ -332,7 +332,7 @@ def journal_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
-    text = tk.Text(self, height = 30)
+    text = tk.Text(self, width = 80, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = text.yview)
     scrolly.pack(side = "right", fill = "y")
@@ -536,7 +536,7 @@ class GUITest(tk.Tk):
         note_rc_popup.add_command(label = "Rename",\
         command = lambda: n_popup_get("Rename Tab", notebook.select()))
         note_rc_popup.add_command(label = "Delete",\
-        command = lambda: n_popup_forget("Delete Tab"))
+        command = lambda: n_popup_forget("Delete Tab", notebook.select()))
         #note_popup.add_separator()
         note_rc_popup.bind("<Leave>", lambda p: note_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
