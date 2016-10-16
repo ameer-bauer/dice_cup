@@ -28,7 +28,7 @@ def dc_run_q(params):
     str_dc_out = str(dc_out)
     str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     if str_dc_out.find('returncode=0') == -1:
-        print('!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n',dc_out)
+        print('\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n',dc_out, sep = '\n')
         return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+\
         "!!ERROR!!  Please check your \'Roll Formula\' syntax."
     dc_print = str_dc_out.split('stdout=')
@@ -48,7 +48,7 @@ def dc_run(params):
     str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     dc_print = str(dc_out).split('stdout=')
     if str_dc_out.find('returncode=0') == -1:
-        print('!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n', dc_out)
+        print('\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n', dc_out, sep = '\n')
         return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'\n'+\
         "!!ERROR!!  Please check your \'Roll Formula\' syntax.\n\n"
     if HOST_SYS == 'Windows':
