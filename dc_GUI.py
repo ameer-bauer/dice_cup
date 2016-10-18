@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.4
-#Date: 2016-10-15
+#Version: 0.1.5
+#Date: 2016-10-17
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 
 def dc_run_q(params):
     if HOST_SYS == 'Windows':
@@ -84,28 +84,42 @@ def popup_get(title, msg):
 
 def formula_parse(param_str):
     params = []
+    if params_str.find('^') != -1:
+        s = True
+        y = params_str.split('^', maxsplit = 1)
+        if y[0].isnumeric():
+            params.append('-s'+y[0])
+        else:
+            print("Set Error:", y[0])
+    if params_str.find('*') != -1:
+        g = True
+        x = params_str.split('*', maxsplit = 1)
+        if s:
+            x2 = y[1].split('*', maxsplit = 1)
+            if x2[0].isnumeric():
+                params.append('-g'+x2[0])
+            else:
+                print("Group Error:", x2[0])
+        else:
+            if x[0].isnumeric():
+                params.append('-g'+x[0])
+            else:
+                print("Group Error:", x[0])
+    if params_str.find('%') != -1:
+        p = True
+        z = params_str.rsplit('%', maxsplit = 1)
     if params_str.find('+') != -1:
         a = True
         v = params_str.split('+')
     if params_str.find('-') != -1:
         m = True
-        w = params_str.split('+')
-    if params_str.find('*') != -1:
-        g = True
-        x = params_str.split('+')
-    if params_str.find('^') != -1:
-        s = True
-        y = params_str.split('+')
-    if params_str.find('%') != -1:
-        p = True
-        z = params_str.split('+')
+        w = params_str.split('-')
     if params_str.find('L'):
         params.append('-L')
     if params_str.find('H'):
         params.append('-H')
-    if (not (a and m and g and s and p)) and (param_str.find('d') != -1):
-        params.append(param_str.split('d'))
-    print("params:", params)
+    
+    print("formula_parse params:", params)
     return params
 
 def ledger_config(self):
@@ -465,7 +479,7 @@ class GUITest(tk.Tk):
             button1.pack(pady = 5)
             popup.mainloop()
         
-        def n_popup_forget(title, target):
+        def n_popup_tdel(title, target):
             popup_val = tk.StringVar()
             popup = tk.Toplevel()
             popup.wm_title(title)
@@ -497,13 +511,6 @@ class GUITest(tk.Tk):
         command = lambda: popup_wrn("Export...", "Not supported yet."))
         settingsmenu.add_command(label = "Load Defaults", \
         command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
-        settingsmenu.add_separator()
-        settingsmenu.add_command(label = "Add Journal", \
-        command = lambda: n_popup_jadd(notebook, "Add Journal"))
-        settingsmenu.add_command(label = "Add Ledger", \
-        command = lambda: n_popup_ladd(notebook, "Add Ledger"))
-        settingsmenu.add_command(label = "Delete Tab", \
-        command = lambda: n_popup_forget("Delete Tab", notebook.select()))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         toolsmenu.add_command(label = "Scratchpad", \
@@ -549,9 +556,13 @@ class GUITest(tk.Tk):
         note_rc_popup = tk.Menu(notebook, tearoff = 0)
         note_rc_popup.add_command(label = "Rename",\
         command = lambda: n_popup_rename("Rename Tab", notebook.select()))
+        note_rc_popup.add_command(label = "Add Ledger",\
+        command = lambda: n_popup_ladd(notebook, "Add Ledger"))
+        note_rc_popup.add_command(label = "Add Journal",\
+        command = lambda: n_popup_jadd(notebook, "Add Journal"))
+        #note_rc_popup.add_separator()
         note_rc_popup.add_command(label = "Delete",\
-        command = lambda: n_popup_forget("Delete Tab", notebook.select()))
-        #note_popup.add_separator()
+        command = lambda: n_popup_tdel("Delete Tab", notebook.select()))
         note_rc_popup.bind("<Leave>", lambda p: note_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             notebook.bind("<Button-2>",\
