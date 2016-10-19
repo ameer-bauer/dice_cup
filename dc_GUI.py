@@ -77,34 +77,61 @@ def popup_get(title, msg):
     entry.config(bg = "gray90")
     entry.pack(padx = 10, pady = 5, fill = "x")
     popup_val.set("Default")
-    button1 = tk.Button(popup, text = "Ok",  command = lambda: (popup.destroy(), print("Value: ", popup_val.get())))
-    button1.pack(pady = 5, side = 'left')
+    button1 = tk.Button(popup, text = "Ok", \
+    command = lambda: (popup.destroy(), print("Value: ", popup_val.get())))
+    button1.pack(pady = 5)
     #popup.geometry("250x100")
     popup.mainloop()
 
-def formula_parse(param_str):
+def formula_get(title, msg):
+    popup_val = tk.StringVar()
+    popup = tk.Toplevel()
+    popup.wm_title(title)
+    label = tk.Label(popup, text = msg)
+    label.pack(padx = 10, pady= 10, side = "top", fill="x")
+    entry = tk.Entry(popup, textvariable = popup_val)
+    entry.config(bg = "gray90")
+    entry.bind("<Return>", \
+    lambda k: (popup.destroy(), formula_parse(popup_val.get())))
+    entry.pack(padx = 10, pady = 5, fill = "x")
+    popup_val.set("Default")
+    button1 = tk.Button(popup, text = "Ok", \
+    command = lambda: (popup.destroy(), formula_parse(popup_val.get())))
+    button1.pack(pady = 5)
+    #popup.geometry("250x100")
+    popup.mainloop()
+
+def formula_parse(params_str):
     params = []
+    s = False
+    g = False
+    p = False
+    a = False
+    m = False
     if params_str.find('^') != -1:
         s = True
         y = params_str.split('^', maxsplit = 1)
         if y[0].isnumeric():
             params.append('-s'+y[0])
+            print("Sets Defined:", params)
         else:
-            print("Set Error:", y[0])
-    if params_str.find('*') != -1:
+            print("Set Input Error:", y[0])
+    if s and y[1].find('*') != -1:
+        g = True
+        x = y[1].split('*', maxsplit = 1)
+        if x[0].isnumeric():
+            params.append('-g'+x[0])
+            print("Sets True, Groups Defined:", params)
+        else:
+            print("Group Error:", x[0])
+    elif params_str.find('*') != -1:
         g = True
         x = params_str.split('*', maxsplit = 1)
-        if s:
-            x2 = y[1].split('*', maxsplit = 1)
-            if x2[0].isnumeric():
-                params.append('-g'+x2[0])
-            else:
-                print("Group Error:", x2[0])
+        if x[0].isnumeric():
+            params.append('-g'+x[0])
+            print("Groups Defined:", params)
         else:
-            if x[0].isnumeric():
-                params.append('-g'+x[0])
-            else:
-                print("Group Error:", x[0])
+            print("Group Input Error:", x[0])
     if params_str.find('%') != -1:
         p = True
         z = params_str.rsplit('%', maxsplit = 1)
@@ -114,9 +141,9 @@ def formula_parse(param_str):
     if params_str.find('-') != -1:
         m = True
         w = params_str.split('-')
-    if params_str.find('L'):
+    if params_str.find('L') != -1:
         params.append('-L')
-    if params_str.find('H'):
+    if params_str.find('H') != -1:
         params.append('-H')
     
     print("formula_parse params:", params)
@@ -438,8 +465,6 @@ class GUITest(tk.Tk):
         
         container = tk.Frame(self)
         container.pack(side = "top", fill = "both", expand = True)
-        container.grid_rowconfigure(0, weight = 1)
-        container.grid_columnconfigure(0, weight = 1)
         
         def n_popup_ladd(self, title):
             def new_ltab(n_title):
@@ -516,7 +541,8 @@ class GUITest(tk.Tk):
         toolsmenu.add_command(label = "Scratchpad", \
         command = lambda: popup_wrn("Scratchpad", "Not supported yet."))
         toolsmenu.add_command(label = "Formula Build", \
-        command = lambda: popup_wrn("Formula Build", "Not supported yet."))
+        #command = lambda: popup_wrn("Formula Build", "Not supported yet."))
+        command = lambda: formula_get("Formula Build", "Enter a Roll Formula"))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "About", \
