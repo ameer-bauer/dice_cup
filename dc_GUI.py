@@ -93,7 +93,7 @@ def formula_get(title, msg):
     entry.config(bg = "gray90")
     entry.bind("<Return>", \
     lambda k: (popup.destroy(), formula_parse(popup_val.get())))
-    entry.pack(padx = 10, pady = 5, fill = "x")
+    entry.pack(padx = 20, pady = 5, fill = "x")
     popup_val.set("Default")
     button1 = tk.Button(popup, text = "Ok", \
     command = lambda: (popup.destroy(), formula_parse(popup_val.get())))
@@ -108,30 +108,53 @@ def formula_parse(params_str):
     p = False
     a = False
     m = False
+    L = False
+    H = False
+    l = False
+    u = False
+    i = False
+    
+    if params_str.find('L') != -1:
+        L = True
+        params.append('-L')
+        print("Roll Formula Drop Lowest Enabled:", params)
+
+    if (params_str.find('H') != -1):
+        if not L:
+            H = True
+            params.append('-H')
+            print("Roll Formula Drop Highest Enabled:", params)
+        else:
+            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n")
+            print("Roll Formula has both Drop Lowest and Drop Highest enabled:", params_str)
+            print("Please check your Roll Formula syntax.\n")
     if params_str.find('^') != -1:
         s = True
         y = params_str.split('^', maxsplit = 1)
         if y[0].isnumeric():
             params.append('-s'+y[0])
-            print("Sets Defined:", params)
+            print("Roll Formula Set Defined:", params)
         else:
-            print("Set Input Error:", y[0])
+            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\nRoll Formula Set syntax error:", y[0])
+            print("Please check your Roll Formula syntax.\n")
     if s and y[1].find('*') != -1:
         g = True
         x = y[1].split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Sets True, Groups Defined:", params)
+            print("Roll Formula Set and Group Defined:", params)
         else:
-            print("Group Error:", x[0])
+            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\nRoll Formula Group syntax error:", x[0])
+            print("Please check your Roll Formula syntax.\n")
     elif params_str.find('*') != -1:
         g = True
         x = params_str.split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Groups Defined:", params)
+            print("Roll Formula Group Defined:", params)
         else:
-            print("Group Input Error:", x[0])
+            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\nRoll Formula Group syntax error:", x[0])
+            print("Please check your Roll Formula syntax.\n")
     if params_str.find('%') != -1:
         p = True
         z = params_str.rsplit('%', maxsplit = 1)
@@ -141,11 +164,7 @@ def formula_parse(params_str):
     if params_str.find('-') != -1:
         m = True
         w = params_str.split('-')
-    if params_str.find('L') != -1:
-        params.append('-L')
-    if params_str.find('H') != -1:
-        params.append('-H')
-    
+        
     print("formula_parse params:", params)
     return params
 
