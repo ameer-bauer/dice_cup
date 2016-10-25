@@ -118,7 +118,7 @@ def formula_parse(params_str):
         L = True
         params.append('-L')
         print("Roll Formula Drop Lowest Enabled:", params)
-
+    
     if (params_str.find('H') != -1):
         if not L:
             H = True
@@ -128,6 +128,7 @@ def formula_parse(params_str):
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n")
             print("Roll Formula has both Drop Lowest and Drop Highest enabled:", params_str)
             print("Please check your Roll Formula syntax.\n")
+    
     if params_str.find('^') != -1:
         s = True
         y = params_str.split('^', maxsplit = 1)
@@ -137,6 +138,7 @@ def formula_parse(params_str):
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\nRoll Formula Set syntax error:", y[0])
             print("Please check your Roll Formula syntax.\n")
+    
     if s and y[1].find('*') != -1:
         g = True
         x = y[1].split('*', maxsplit = 1)
@@ -155,17 +157,20 @@ def formula_parse(params_str):
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\nRoll Formula Group syntax error:", x[0])
             print("Please check your Roll Formula syntax.\n")
+    
     if params_str.find('%') != -1:
         p = True
         z = params_str.rsplit('%', maxsplit = 1)
+    
     if params_str.find('+') != -1:
         a = True
         v = params_str.split('+')
+    
     if params_str.find('-') != -1:
         m = True
         w = params_str.split('-')
-        
-    print("formula_parse params:", params)
+    
+    print("formula_parse parameter list:", params)
     return params
 
 def ledger_config(self):
