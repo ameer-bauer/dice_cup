@@ -26,7 +26,7 @@ def d_roll(s, t = 6, c = 1, m = 0, l = False, h = False):
     #s is the seed for the RNG, use at LEAST 8 bytes of random data
     #l is the drop the lowest roll flag
     #h is the drop the highest roll flag
-    #NOTE: either l, or h, may be set, not both; h takes precedence
+    #NOTE: either l, or h, may be set, not both; l takes precedence
     roll = 0
     random.seed(s)
     roll_sample = 0
