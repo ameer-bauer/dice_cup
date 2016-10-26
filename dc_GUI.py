@@ -94,14 +94,14 @@ def formula_get(title, msg):
     entry.bind("<Return>", \
     lambda k: (popup.destroy(), formula_parse(popup_val.get())))
     entry.pack(padx = 20, pady = 5, fill = "x")
-    popup_val.set("Default")
+    popup_val.set("2^5*3d6")
     button1 = tk.Button(popup, text = "Ok", \
     command = lambda: (popup.destroy(), formula_parse(popup_val.get())))
     button1.pack(pady = 5)
     #popup.geometry("250x100")
     popup.mainloop()
 
-def formula_parse(params_str):
+def formula_parse(params_in):
     params = []
     s = False
     g = False
@@ -113,6 +113,8 @@ def formula_parse(params_str):
     l = False
     u = False
     i = False
+    
+    params_str = params_in.replace(' ', '') #Strip spaces out
     
     if params_str.find('L') != -1:
         L = True
@@ -208,7 +210,8 @@ def ledger_config(self):
     
     def formula_roll():
         k_in = ["Test"]
-        k_in[0] = entry_val.get()
+        str_in = entry_val.get()
+        k_in[0] = str_in.replace(' ', '') #Strip spaces out
         listbox.insert(tk.END, dc_run_q(k_in[0].split(';'))),\
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
@@ -234,7 +237,8 @@ def ledger_config(self):
     def b_popup_revalue(self, title, value, parent):
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
-            value_in[0] = popup_val.get()
+            str_in = popup_val.get()
+            value_in[0] = str_in.replace(' ', '') #Strip spaces out
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
         popup = tk.Toplevel()
@@ -354,7 +358,8 @@ def journal_config(self):
     
     def formula_roll():
         k_in = ["Test"]
-        k_in[0] = entry_val.get()
+        str_in = entry_val.get()
+        k_in[0] = str_in.replace(' ', '') #Strip spaces out
         text.insert(tk.END, dc_run(k_in[0].split(';'))),\
         text.see(tk.END)
         return k_in[0]
@@ -378,7 +383,8 @@ def journal_config(self):
     def b_popup_revalue(self, title, value, parent):
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
-            value_in[0] = popup_val.get()
+            str_in = popup_val.get()
+            value_in[0] = str_in.replace(' ', '') #Strip spaces out
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
         popup = tk.Toplevel()
