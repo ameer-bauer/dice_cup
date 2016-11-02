@@ -96,41 +96,41 @@ def formula_get(title, msg):
     entry.pack(padx = 20, pady = 5, fill = "x")
     popup_val.set("2^5*3d6")
     button1 = tk.Button(popup, text = "Ok", \
-    command = lambda: (popup.destroy(), formula_parse(popup_val.get())))
+    command = lambda: (popup.destroy(), formula_parse(popup_val.get()[:150])))
     button1.pack(pady = 5)
     #popup.geometry("250x100")
     popup.mainloop()
 
 def formula_parse(params_in):
     ###########################################################################
-    #Basic syntax for this parser is as follows:
+    #SYNTAX
+    #  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <u >l L|H I
     #
-    #  s^ g* c1dt1 ± c2dt2 ± ... ± cndtn ±m ±p% <u >l L|H I
-    #
-    #Input is limited to 100 characters.
-    ###########################################################################
-    #NOTE: All inputs are either integers {NUM}, or flags {FLAG} which can be
+    #NOTE: All input variables are either INTEGERS, or FLAGS which can be
     #      present or omitted.
     #
-    #The variables listed in the syntax above are defined as follows:
-    #  s = dice Set {NUM}
-    #  g = dice Group {NUM}
-    #  c1 ... cn = the Number of corresponding dice {NUM}
-    #  t1 ... tn = the Type of corresponding dice {NUM}
-    #  m = Modifier {NUM}
-    #  p = Percentage {NUM}
-    #  u = Upper Bound {NUM}
-    #  l = Lower Bound {NUM}
-    #  L = drop the Lowest c1dt1 single die roll in the combination {FLAG}
-    #  H = drop the Highest c1dt1 single die roll in the combination {FLAG}
-    #  I = include Statistical Information {FLAG}
+    #  INTEGERS
+    #    s = dice Set
+    #    g = dice Group
+    #    c1, c2, ... cn = the Number(s) of corresponding die Types to roll
+    #    t1, t2, ... tn = the Type(s) of dice to roll
+    #    m = Modifier
+    #    p = Percentage
+    #    u = Upper Bound
+    #    l = Lower Bound
     #
-    #NOTE:Either L or H can be set, but not both.
+    #  FLAGS
+    #    L = drop the Lowest c1dt1 single die roll in the combination
+    #    H = drop the Highest c1dt1 single die roll in the combination
+    #        NOTE: Either L or H can be set, but not both.
+    #    I = include Statistical Information
+    #
     #
     #Please see the dice_cup help page for detailed definition and examples.
     ###########################################################################
-    #Examples of Input
+    #NOTE: formula_parse input is limited to 100 characters.
     ###########################################################################
+    #EXAMPLES
     #--Roll three six-sided dice:
     #    3d6
     #
