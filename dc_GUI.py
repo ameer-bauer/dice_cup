@@ -105,7 +105,7 @@ def formula_parse(params_in):
     ###########################################################################
     #Basic syntax for this parser is as follows:
     #
-    #  s^g*c1dt1+/-c2dt2+/-...+/-cndtn+/-m+/-p%<u>lH|LI
+    #  s^ g* c1dt1 ± c2dt2 ± ... ± cndtn ±m ±p% <u >l L|H I
     #
     #Input is limited to 100 characters.
     ###########################################################################
