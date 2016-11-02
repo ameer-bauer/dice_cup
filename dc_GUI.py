@@ -2,7 +2,7 @@
 #----------------
 #Name: dc_GUI.py
 #Version: 0.1.5
-#Date: 2016-10-26
+#Date: 2016-11-01
 #----------------
 
 import tkinter as tk
@@ -102,20 +102,62 @@ def formula_get(title, msg):
     popup.mainloop()
 
 def formula_parse(params_in):
+    #######################################################
+    #Basic syntax for this parser is as follows:
+    #
+    #  s^g*c1dt1+/-c2dt2+/-...+/-cndtn+/-m+/-p%<u>lH|LI
+    #
+    #All inputs are either integers {NUM} or 
+    #binary flags {FLAG}, which are input or omitted.
+    #######################################################
+    #The variables above are defined as follows:
+    #  s = Sets {NUM}
+    #  g = Groups {NUM}
+    #  c1 ... cx = the Number of corresponding dice {NUM}
+    #  t1 ... tx = the Type of corresponding dice {NUM}
+    #  m = Modifier {NUM}
+    #  p = Percentage {NUM}
+    #  u = Upper Bound {NUM}
+    #  l = Lower Bound {NUM}
+    #  L = drop the Lowest c1dt1 dice combination {FLAG}
+    #  H = drop the Highest c1dt1 dice combination {FLAG}
+    #  NOTE:Either L or H can be set, not both
+    #  I = include Statistical Information {FLAG}
+    #######################################################
+    #Examples of Input
+    #######################################################
+    #--Roll three six-sided dice:
+    #    3d6
+    #--Roll two Groups of three six-sided dice, plus one
+    #  four-sided die, minus five:
+    #    2*3d6+1d4-5
+    #--Roll five Sets of six Groups of four six-sided dice,
+    #  plus fifteen percent, drop the lowest single
+    #  six-sided die from each Group, including statistical
+    #  information:
+    #    5^6*4d6+15%LI
+    #--Roll twenty Groups of ten eight-sided dice, plus 
+    #  seven, with an upper boundary of sixty five, a lower 
+    #  boundary of eighteen, dropping the highest
+    #  eight-sided die from each Group:
+    #    20*10d8+7<65>18H
+    #######################################################
+    
     params = []
     params_str = params_in.replace(' ', '') #Strip spaces out
     
     error_str = "!!ERROR!!  Please check your \'Roll Formula\' syntax."
+    
     s = False
     g = False
     p = False
     a = False
     m = False
-    L = False
-    H = False
     l = False
     u = False
-    i = False
+    L = False
+    H = False
+    I = False
     
     if params_str.find('L') != -1:
         L = True
@@ -134,9 +176,15 @@ def formula_parse(params_in):
             print("\'Roll Formula\' has both \'Drop Lowest\' and \'Drop Highest\' enabled:", params_str)
             print("Please check your \'Roll Formula\' syntax.\n")
             return error_str
+    
     if params_str.find('^') != -1:
         s = True
-        y = params_str.split('^', maxsplit = 1)
+        if L:
+            y = params_str_L.split('^', maxsplit = 1)
+        elif H:
+            y = params_str_H.split('^', maxsplit = 1)
+        else:
+            y = params_str.split('^', maxsplit = 1)
         if y[0].isnumeric():
             params.append('-s'+y[0])
             print("Roll Formula Set Defined:", params)
@@ -157,7 +205,12 @@ def formula_parse(params_in):
             return error_str
     elif params_str.find('*') != -1:
         g = True
-        x = params_str.split('*', maxsplit = 1)
+        if L:
+            x = params_str_L.split('*', maxsplit = 1)
+        elif H:
+            x = params_str_H.split('*', maxsplit = 1)
+        else:
+            x = params_str.split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
             print("Roll Formula Group Defined:", params)
