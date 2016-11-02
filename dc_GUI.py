@@ -125,8 +125,7 @@ def formula_parse(params_in):
     #        NOTE: Either L or H can be set, but not both.
     #    I = include Statistical Information
     #
-    #
-    #Please see the dice_cup help page for detailed definition and examples.
+    #Please see the dice_cup help page for detailed definitions and examples.
     ###########################################################################
     #NOTE: formula_parse input is limited to 100 characters.
     ###########################################################################
