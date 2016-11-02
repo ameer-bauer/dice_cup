@@ -107,44 +107,49 @@ def formula_parse(params_in):
     #
     #  s^g*c1dt1+/-c2dt2+/-...+/-cndtn+/-m+/-p%<u>lH|LI
     #
-    #All inputs are either integers {NUM} or flags {FLAG}, which are can be
-    #present or omitted.
+    #Input is limited to 100 characters.
     ###########################################################################
-    #The variables above are defined as follows:
+    #NOTE: All inputs are either integers {NUM}, or flags {FLAG} which can be
+    #      present or omitted.
+    #
+    #The variables listed in the syntax above are defined as follows:
     #  s = dice Set {NUM}
     #  g = dice Group {NUM}
-    #  c1 ... cx = the Number of corresponding dice {NUM}
-    #  t1 ... tx = the Type of corresponding dice {NUM}
+    #  c1 ... cn = the Number of corresponding dice {NUM}
+    #  t1 ... tn = the Type of corresponding dice {NUM}
     #  m = Modifier {NUM}
     #  p = Percentage {NUM}
     #  u = Upper Bound {NUM}
     #  l = Lower Bound {NUM}
-    #  L = drop the Lowest c1dt1 dice combination {FLAG}
-    #  H = drop the Highest c1dt1 dice combination {FLAG}
+    #  L = drop the Lowest c1dt1 single die roll in the combination {FLAG}
+    #  H = drop the Highest c1dt1 single die roll in the combination {FLAG}
     #  I = include Statistical Information {FLAG}
+    #
     #NOTE:Either L or H can be set, but not both.
+    #
     #Please see the dice_cup help page for detailed definition and examples.
     ###########################################################################
     #Examples of Input
     ###########################################################################
     #--Roll three six-sided dice:
     #    3d6
+    #
     #--Roll two Groups of three six-sided dice, plus one
     #  four-sided die, and subtract a modifier of five:
     #    2*3d6+1d4-5
+    #
     #--Roll five Sets of six Groups of four six-sided dice, add a Percentage of
     #  fifteen, drop the lowest single six-sided die from each Group, and
     #  include Statistical Information:
     #    5^6*4d6+15%LI
+    #
     #--Roll twenty Groups of ten eight-sided dice, add a Modifier of seven, with
     #  an upper boundary of sixty five, a lower boundary of eighteen, and drop
     #  the highest single eight-sided die from each dice Group:
     #    20*10d8+7<65>18H
     ###########################################################################
-    
     params = []
-    params_str = params_in.replace(' ', '') #Strip spaces out
-    
+    params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input
     error_str = "!!ERROR!!  Please check your \'Roll Formula\' syntax."
     
     s = False
