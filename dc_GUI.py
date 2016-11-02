@@ -159,18 +159,30 @@ def formula_parse(params_in):
     H = False
     I = False
     
+    if params_str.find('I') != -1:
+        I = True
+        params_str_I = params_str.replace('I', '')
+        params.append('-i')
+        print("Roll Formula Statistical Information Enabled")
+    
     if params_str.find('L') != -1:
         L = True
-        params_str_L = params_str.replace('L', '')
+        if I:
+            params_str_L = params_str_I.replace('L', '')
+        else:
+            params_str_L = params_str.replace('L', '')
         params.append('-L')
-        print("Roll Formula Drop Lowest Enabled:", params)
+        print("Roll Formula Drop Lowest Enabled")
     
     if (params_str.find('H') != -1):
         if not L:
             H = True
-            params_str_H = params_str.replace('H', '')
+            if I:
+                params_str_H = params_str_I.replace('H', '')
+            else:
+                params_str_H = params_str.replace('H', '')
             params.append('-H')
-            print("Roll Formula Drop Highest Enabled:", params)
+            print("Roll Formula Drop Highest Enabled")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!")
             print("\'Roll Formula\' has both \'Drop Lowest\' and \'Drop Highest\' enabled:", params_str)
@@ -183,11 +195,13 @@ def formula_parse(params_in):
             y = params_str_L.split('^', maxsplit = 1)
         elif H:
             y = params_str_H.split('^', maxsplit = 1)
+        elif I:
+            y = params_str_I.split('^', maxsplit = 1)
         else:
             y = params_str.split('^', maxsplit = 1)
         if y[0].isnumeric():
             params.append('-s'+y[0])
-            print("Roll Formula Set Defined:", params)
+            print("Roll Formula Set Defined")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Set\' syntax error:", y[0])
             print("Please check your \'Roll Formula\' syntax.\n")
@@ -198,7 +212,7 @@ def formula_parse(params_in):
         x = y[1].split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Roll Formula Set and Group Defined:", params)
+            print("Roll Formula Group Defined")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Group\' syntax error:", x[0])
             print("Please check your \'Roll Formula\' syntax.\n")
@@ -209,11 +223,13 @@ def formula_parse(params_in):
             x = params_str_L.split('*', maxsplit = 1)
         elif H:
             x = params_str_H.split('*', maxsplit = 1)
+        elif I:
+            x = params_str_I.split('*', maxsplit = 1)
         else:
             x = params_str.split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Roll Formula Group Defined:", params)
+            print("Roll Formula Group Defined")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Group\' syntax error:", x[0])
             print("Please check your \'Roll Formula\' syntax.\n")
