@@ -102,17 +102,17 @@ def formula_get(title, msg):
     popup.mainloop()
 
 def formula_parse(params_in):
-    #######################################################
+    ###########################################################################
     #Basic syntax for this parser is as follows:
     #
     #  s^g*c1dt1+/-c2dt2+/-...+/-cndtn+/-m+/-p%<u>lH|LI
     #
-    #All inputs are either integers {NUM} or 
-    #binary flags {FLAG}, which are input or omitted.
-    #######################################################
+    #All inputs are either integers {NUM} or flags {FLAG}, which are can be
+    #present or omitted.
+    ###########################################################################
     #The variables above are defined as follows:
-    #  s = Sets {NUM}
-    #  g = Groups {NUM}
+    #  s = dice Set {NUM}
+    #  g = dice Group {NUM}
     #  c1 ... cx = the Number of corresponding dice {NUM}
     #  t1 ... tx = the Type of corresponding dice {NUM}
     #  m = Modifier {NUM}
@@ -121,27 +121,26 @@ def formula_parse(params_in):
     #  l = Lower Bound {NUM}
     #  L = drop the Lowest c1dt1 dice combination {FLAG}
     #  H = drop the Highest c1dt1 dice combination {FLAG}
-    #  NOTE:Either L or H can be set, not both
     #  I = include Statistical Information {FLAG}
-    #######################################################
+    #NOTE:Either L or H can be set, but not both.
+    #Please see the dice_cup help page for detailed definition and examples.
+    ###########################################################################
     #Examples of Input
-    #######################################################
+    ###########################################################################
     #--Roll three six-sided dice:
     #    3d6
     #--Roll two Groups of three six-sided dice, plus one
-    #  four-sided die, minus five:
+    #  four-sided die, and subtract a modifier of five:
     #    2*3d6+1d4-5
-    #--Roll five Sets of six Groups of four six-sided dice,
-    #  plus fifteen percent, drop the lowest single
-    #  six-sided die from each Group, including statistical
-    #  information:
+    #--Roll five Sets of six Groups of four six-sided dice, add a Percentage of
+    #  fifteen, drop the lowest single six-sided die from each Group, and
+    #  include Statistical Information:
     #    5^6*4d6+15%LI
-    #--Roll twenty Groups of ten eight-sided dice, plus 
-    #  seven, with an upper boundary of sixty five, a lower 
-    #  boundary of eighteen, dropping the highest
-    #  eight-sided die from each Group:
+    #--Roll twenty Groups of ten eight-sided dice, add a Modifier of seven, with
+    #  an upper boundary of sixty five, a lower boundary of eighteen, and drop
+    #  the highest single eight-sided die from each dice Group:
     #    20*10d8+7<65>18H
-    #######################################################
+    ###########################################################################
     
     params = []
     params_str = params_in.replace(' ', '') #Strip spaces out
@@ -163,7 +162,7 @@ def formula_parse(params_in):
         I = True
         params_str_I = params_str.replace('I', '')
         params.append('-i')
-        print("Roll Formula Statistical Information Enabled")
+        print("Roll Formula: Statistical Information Enabled")
     
     if params_str.find('L') != -1:
         L = True
@@ -172,7 +171,7 @@ def formula_parse(params_in):
         else:
             params_str_L = params_str.replace('L', '')
         params.append('-L')
-        print("Roll Formula Drop Lowest Enabled")
+        print("Roll Formula: Drop Lowest Enabled")
     
     if (params_str.find('H') != -1):
         if not L:
@@ -182,7 +181,7 @@ def formula_parse(params_in):
             else:
                 params_str_H = params_str.replace('H', '')
             params.append('-H')
-            print("Roll Formula Drop Highest Enabled")
+            print("Roll Formula: Drop Highest Enabled")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!")
             print("\'Roll Formula\' has both \'Drop Lowest\' and \'Drop Highest\' enabled:", params_str)
@@ -201,7 +200,7 @@ def formula_parse(params_in):
             y = params_str.split('^', maxsplit = 1)
         if y[0].isnumeric():
             params.append('-s'+y[0])
-            print("Roll Formula Set Defined")
+            print("Roll Formula: Dice Set Defined")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Set\' syntax error:", y[0])
             print("Please check your \'Roll Formula\' syntax.\n")
@@ -212,7 +211,7 @@ def formula_parse(params_in):
         x = y[1].split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Roll Formula Group Defined")
+            print("Roll Formula: Dice Group Defined")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Group\' syntax error:", x[0])
             print("Please check your \'Roll Formula\' syntax.\n")
@@ -229,7 +228,7 @@ def formula_parse(params_in):
             x = params_str.split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Roll Formula Group Defined")
+            print("Roll Formula: Dice Group Defined")
         else:
             print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Group\' syntax error:", x[0])
             print("Please check your \'Roll Formula\' syntax.\n")
@@ -247,7 +246,7 @@ def formula_parse(params_in):
         m = True
         w = params_str.split('-')
     
-    print("formula_parse parameter list:", params)
+    print("Parameter List:", params)
     return params
 
 def ledger_config(self):
