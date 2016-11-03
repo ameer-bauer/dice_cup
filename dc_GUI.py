@@ -98,7 +98,7 @@ def formula_get(title, msg):
     button1 = tk.Button(popup, text = "Ok", \
     command = lambda: (popup.destroy(), formula_parse(popup_val.get()[:150])))
     button1.pack(pady = 5)
-    #popup.geometry("250x100")
+    popup.geometry("250x110")
     popup.mainloop()
 
 def formula_parse(params_in):
@@ -149,7 +149,9 @@ def formula_parse(params_in):
     ###########################################################################
     params = []
     params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input
-    error_str = "!!ERROR!!  Please check your \'Roll Formula\' syntax."
+    error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!"
+    error_str = "!!ERROR!!  Please check your Roll Formula syntax."
+    error_cli = "Please check your Roll Formula syntax.\n"
     
     s = False
     g = False
@@ -187,9 +189,9 @@ def formula_parse(params_in):
             params.append('-H')
             print("Roll Formula: Drop Highest Enabled")
         else:
-            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!")
-            print("\'Roll Formula\' has both \'Drop Lowest\' and \'Drop Highest\' enabled:", params_str)
-            print("Please check your \'Roll Formula\' syntax.\n")
+            print(error_blk)
+            print("Both \'Drop Lowest\' and \'Drop Highest\' Flags Enabled:", params_str)
+            print(error_cli)
             return error_str
     
     if params_str.find('^') != -1:
@@ -206,8 +208,9 @@ def formula_parse(params_in):
             params.append('-s'+y[0])
             print("Roll Formula: Dice Set Defined")
         else:
-            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Set\' syntax error:", y[0])
-            print("Please check your \'Roll Formula\' syntax.\n")
+            print(error_blk)
+            print("Roll Formula \'Set\' Syntax Error:", y[0])
+            print(error_cli)
             return error_str
     
     if s and y[1].find('*') != -1:
@@ -217,8 +220,9 @@ def formula_parse(params_in):
             params.append('-g'+x[0])
             print("Roll Formula: Dice Group Defined")
         else:
-            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Group\' syntax error:", x[0])
-            print("Please check your \'Roll Formula\' syntax.\n")
+            print(error_blk)
+            print("Roll Formula \'Group\' Syntax Error:", x[0])
+            print(error_cli)
             return error_str
     elif params_str.find('*') != -1:
         g = True
@@ -234,8 +238,9 @@ def formula_parse(params_in):
             params.append('-g'+x[0])
             print("Roll Formula: Dice Group Defined")
         else:
-            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n\'Roll Formula\' \'Group\' syntax error:", x[0])
-            print("Please check your \'Roll Formula\' syntax.\n")
+            print(error_blk)
+            print("Roll Formula \'Group\' Syntax Error:", x[0])
+            print(error_cli)
             return error_str
     
     if params_str.find('%') != -1:
@@ -250,7 +255,7 @@ def formula_parse(params_in):
         m = True
         w = params_str.split('-')
     
-    print("Parameter List:", params)
+    print("Parsed Parameter List:", params)
     return params
 
 def ledger_config(self):
@@ -630,11 +635,9 @@ class GUITest(tk.Tk):
         command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        toolsmenu.add_command(label = "Scratchpad", \
-        command = lambda: popup_wrn("Scratchpad", "Not supported yet."))
-        toolsmenu.add_command(label = "Formula Build", \
+        toolsmenu.add_command(label = "Roll Formula Builder", \
         #command = lambda: popup_wrn("Formula Build", "Not supported yet."))
-        command = lambda: formula_get("Formula Build", "Enter a Roll Formula"))
+        command = lambda: formula_get("Roll Formula Builder", "Enter a test Roll Formula:"))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "About", \
