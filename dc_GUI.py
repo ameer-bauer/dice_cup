@@ -110,10 +110,10 @@ def formula_parse(params_in):
     #      present or omitted.
     #
     #  INTEGERS
-    #    s = dice Set
-    #    g = dice Group
-    #    c1, c2, ... cn = the Number(s) of corresponding die Types to roll
-    #    t1, t2, ... tn = the Type(s) of dice to roll
+    #    s = dice Set [POSITIVE ONLY]
+    #    g = dice Group 
+    #    c1, c2, ... cn = the Number/Combo of corresponding die Types to roll
+    #    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]
     #    m = Modifier
     #    p = Percentage
     #    u = Upper Bound
@@ -125,7 +125,7 @@ def formula_parse(params_in):
     #        NOTE: Either L or H can be set, but not both.
     #    I = include Statistical Information
     #
-    #Please see the dice_cup help page for detailed definitions and examples.
+    #NOTE: See the dice_cup help page for detailed definitions and examples.
     ###########################################################################
     #NOTE: formula_parse input is limited to 100 characters.
     ###########################################################################
@@ -142,10 +142,10 @@ def formula_parse(params_in):
     #  include Statistical Information:
     #    5^6*4d6+15%LI
     #
-    #--Roll twenty Groups of ten eight-sided dice, add a Modifier of seven, an
-    #  upper boundary of sixty five, a lower boundary of eighteen, and drop the
-    #  highest single eight-sided die from each dice Group:
-    #    20*10d8+7<65>18H
+    #--Roll twenty Groups of ten eight-sided dice, minus a Modifier of seven,
+    #  an upper boundary of sixty five, a lower boundary of negative ten, and
+    #  and drop the highest single eight-sided die from each dice Group:
+    #    20*10d8-17<65>-10H
     ###########################################################################
     params = []
     params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input
@@ -192,9 +192,31 @@ def formula_parse(params_in):
             print(error_cli)
             return error_str
     
-    #upperbound logic here
+    if params_str.rfind('>') != -1:
+        l = True
+        if L:
+            lb = params_str_L.rsplit('>', maxsplit = 1)
+        elif H:
+            lb = params_str_H.rsplit('>', maxsplit = 1)
+        elif I:
+            lb = params_str_I.rsplit('>', maxsplit = 1)
+        else:
+            lb = params_str.rsplit('>', maxsplit = 1)
+        print("Roll Formula: Lower Boundary Defined")
     
-    #lowerbound logic here
+    if params_str.rfind('<') != -1:
+        u = True
+        if l:
+            ub = lb[0].rsplit('<', maxsplit = 1)
+        elif L:
+            ub = params_str_L.rsplit('<', maxsplit = 1)
+        elif H:
+            ub = params_str_H.rsplit('<', maxsplit = 1)
+        elif I:
+            ub = params_str_I.rsplit('<', maxsplit = 1)
+        else:
+            ub = params_str.rsplit('<', maxsplit = 1)
+        print("Roll Formula: Upper Boundary Defined")
     
     if params_str.rfind('%') != -1:
         p = True
@@ -292,7 +314,7 @@ def formula_parse(params_in):
         print(error_cli)
         return error_str
     
-    print("Parsed Parameter List:", params)
+    print("Parsed dice_cup Parameter List:", params)
     return params
 
 def ledger_config(self):
