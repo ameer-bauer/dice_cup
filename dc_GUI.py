@@ -138,13 +138,13 @@ def formula_parse(params_in):
     #    2*3d6+1d4-5
     #
     #--Roll five Sets of six Groups of four six-sided dice, add a Percentage of
-    #  fifteen, drop the lowest single six-sided die from each Group, and
+    #  fifteen (15%), drop the lowest single six-sided die from each Group, and
     #  include Statistical Information:
     #    5^6*4d6+15%LI
     #
-    #--Roll twenty Groups of ten eight-sided dice, add a Modifier of seven, with
-    #  an upper boundary of sixty five, a lower boundary of eighteen, and drop
-    #  the highest single eight-sided die from each dice Group:
+    #--Roll twenty Groups of ten eight-sided dice, add a Modifier of seven, an
+    #  upper boundary of sixty five, a lower boundary of eighteen, and drop the
+    #  highest single eight-sided die from each dice Group:
     #    20*10d8+7<65>18H
     ###########################################################################
     params = []
@@ -156,21 +156,19 @@ def formula_parse(params_in):
     s = False
     g = False
     p = False
-    a = False
-    m = False
     l = False
     u = False
     L = False
     H = False
     I = False
     
-    if params_str.find('I') != -1:
+    if params_str.rfind('I') != -1:
         I = True
         params_str_I = params_str.replace('I', '')
         params.append('-i')
         print("Roll Formula: Statistical Information Enabled")
     
-    if params_str.find('L') != -1:
+    if params_str.rfind('L') != -1:
         L = True
         if I:
             params_str_L = params_str_I.replace('L', '')
@@ -179,7 +177,7 @@ def formula_parse(params_in):
         params.append('-L')
         print("Roll Formula: Drop Lowest Enabled")
     
-    if (params_str.find('H') != -1):
+    if params_str.rfind('H') != -1:
         if not L:
             H = True
             if I:
@@ -193,6 +191,45 @@ def formula_parse(params_in):
             print("Both \'Drop Lowest\' and \'Drop Highest\' Flags Enabled:", params_str)
             print(error_cli)
             return error_str
+    
+    #upperbound logic here
+    
+    #lowerbound logic here
+    
+    if params_str.rfind('%') != -1:
+        p = True
+        if L:
+            v = params_str_L.rsplit('%', maxsplit = 1)
+        elif H:
+            v = params_str_H.rsplit('%', maxsplit = 1)
+        elif I:
+            v = params_str_I.rsplit('%', maxsplit = 1)
+        else:
+            v = params_str.rsplit('%', maxsplit = 1)
+        if v[0].rfind('+') != -1:
+            w = v[0].rsplit('+', maxsplit = 1)
+            if w[1].isnumeric():
+                params.append('-p'+w[1])
+            else:
+                print(error_blk)
+                print("Roll Formula \'Percentage\' Syntax Error:", '+'+w[1]+'%')
+                print(error_cli)
+                return error_str
+        elif v[0].rfind('-') != -1:
+            w = v[0].rsplit('-', maxsplit = 1)
+            if w[1].isnumeric():
+                params.append('-p-'+w[1])
+            else:
+                print(error_blk)
+                print("Roll Formula \'Percentage\' Syntax Error:", '-'+w[1]+'%')
+                print(error_cli)
+                return error_str
+        else:
+            print(error_blk)
+            print("Roll Formula \'Percentage\' Syntax Error:", v[0]+'%')
+            print(error_cli)
+            return error_str
+        print("Roll Formula: Percentage Modifier Defined")
     
     if params_str.find('^') != -1:
         s = True
@@ -243,17 +280,17 @@ def formula_parse(params_in):
             print(error_cli)
             return error_str
     
-    if params_str.find('%') != -1:
-        p = True
-        z = params_str.rsplit('%', maxsplit = 1)
-    
-    if params_str.find('+') != -1:
-        a = True
-        v = params_str.split('+')
-    
-    if params_str.find('-') != -1:
-        m = True
-        w = params_str.split('-')
+    if g and x[1].find('d') != -1:
+        print("dice group and possibly sets")
+    elif s and y[1].find('d') != -1:
+        print("dice sets only")
+    elif params_str.find('d') != -1:
+        print("dice only")
+    else:
+        print(error_blk)
+        print("Roll Formula \'Dice\' Syntax Error:", params_str)
+        print(error_cli)
+        return error_str
     
     print("Parsed Parameter List:", params)
     return params
