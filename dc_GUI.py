@@ -67,6 +67,47 @@ def popup_wrn(title, msg):
     popup.geometry("250x80")
     popup.mainloop()
 
+def popup_rfhlp(title):
+    popup = tk.Toplevel()
+    popup.wm_title(title)
+    text = tk.Text(popup, width = 80, height = 30)
+    scroll = tk.Scrollbar(popup)
+    text.insert(tk.END, "A \'Roll Formula\' is a flexible input mechanism for simulating various dice\n")
+    text.insert(tk.END, "rolls.  It is designed to be intuitive and predictable in structure.  Below you\n")
+    text.insert(tk.END, "will find the syntactical and variable definitions along with some examples.\n")
+    text.insert(tk.END, "Please note that verbose error messages are printed to the CLI window; if your\n")
+    text.insert(tk.END, "input syntax has an error.  Roll Formulae have a maximum size of 100 characters.\n\n")
+    text.insert(tk.END, "SYNTAX\n  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <±u >±l L|H I\n\n")
+    text.insert(tk.END, "  NOTE: All input variables are either INTEGERS, or FLAGS which can be\n")
+    text.insert(tk.END, "        present or omitted; empty spaces are optional.\n\n")
+    text.insert(tk.END, "  INTEGERS\n    s = dice Set [POSITIVE ONLY]\n    g = dice Group [POSITIVE ONLY]\n")
+    text.insert(tk.END, "    c1, c2, ... cn = the Number/Combo of corresponding die Types to roll\n")
+    text.insert(tk.END, "    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]\n")
+    text.insert(tk.END, "    m = Modifier\n    p = Percentage\n    u = Upper Boundary\n    l = Lower Boundary\n\n")
+    text.insert(tk.END, "  FLAGS\n    L = drop the Lowest c1dt1 single die roll in the combination\n")
+    text.insert(tk.END, "    H = drop the Highest c1dt1 single die roll in the combination\n")
+    text.insert(tk.END, "    I = include Statistical Information\n\n")
+    text.insert(tk.END, "    NOTE: Either L or H can be set, but not both.\n\n")
+    text.insert(tk.END, "EXAMPLES\n  1) Roll three six-sided dice.\n     Roll Formula Syntax: 3d6\n\n")
+    text.insert(tk.END, "  2) Roll two Groups of three six-sided dice, plus one four-sided die, and\n")
+    text.insert(tk.END, "     subtract a modifier of five.\n")
+    text.insert(tk.END, "     Roll Formula Syntax: 2*3d6+1d4-5\n\n")
+    text.insert(tk.END, "  3) Roll five Sets of six Groups of four six-sided dice, add a Percentage of\n")
+    text.insert(tk.END, "     fifteen (15%), drop the lowest single six-sided die from each Group, and\n")
+    text.insert(tk.END, "     include Statistical Information.\n     Roll Formula Syntax: 5^6*4d6+15%LI\n\n")
+    text.insert(tk.END, "  4) Roll twenty Groups of ten eight-sided dice, minus a Modifier of seventeen,\n")
+    text.insert(tk.END, "     an upper boundary of sixty five, a lower boundary of negative ten, and drop\n")
+    text.insert(tk.END, "     the highest single eight-sided die from each dice Group.\n")
+    text.insert(tk.END, "     Roll Formula Syntax: 20*10d8-17<65>-10H\n\n")
+    scroll.config(command = text.yview)
+    scroll.pack(side = "right", fill = "y")
+    text.config(state = "disabled", yscrollcommand = scroll.set)
+    text.pack(padx= 5, side = "top", fill="x")
+    button1 = tk.Button(popup, text = "OK",  command = popup.destroy)
+    button1.pack(pady = 5)
+    popup.mainloop()
+
+
 def popup_get(title, msg):
     popup_val = tk.StringVar()
     popup = tk.Toplevel()
@@ -111,7 +152,7 @@ def formula_parse(params_in):
     #
     #  INTEGERS
     #    s = dice Set [POSITIVE ONLY]
-    #    g = dice Group 
+    #    g = dice Group [POSITIVE ONLY]
     #    c1, c2, ... cn = the Number/Combo of corresponding die Types to roll
     #    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]
     #    m = Modifier
@@ -142,9 +183,9 @@ def formula_parse(params_in):
     #  include Statistical Information:
     #    5^6*4d6+15%LI
     #
-    #--Roll twenty Groups of ten eight-sided dice, minus a Modifier of seven,
-    #  an upper boundary of sixty five, a lower boundary of negative ten, and
-    #  and drop the highest single eight-sided die from each dice Group:
+    #--Roll twenty Groups of ten eight-sided dice, minus a Modifier of
+    #  seventeen, an upper boundary of sixty five, a lower boundary of negative
+    #  ten, and drop the highest single eight-sided die from each dice Group:
     #    20*10d8-17<65>-10H
     ###########################################################################
     params = []
@@ -841,6 +882,8 @@ class GUITest(tk.Tk):
         command = lambda: formula_get("Roll Formula Builder", "Enter a test Roll Formula:"))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
+        helpmenu.add_command(label = "Roll Formula", \
+        command = lambda: popup_rfhlp("Roll Formula Help Topics"))
         helpmenu.add_command(label = "About", \
         command = lambda: popup_wrn("About", "dc_GUI version "+VERSION))
         
