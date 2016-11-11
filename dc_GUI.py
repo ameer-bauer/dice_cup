@@ -2,7 +2,7 @@
 #----------------
 #Name: dc_GUI.py
 #Version: 0.1.5
-#Date: 2016-11-01
+#Date: 2016-11-10
 #----------------
 
 import tkinter as tk
@@ -104,7 +104,7 @@ def formula_get(title, msg):
 def formula_parse(params_in):
     ###########################################################################
     #SYNTAX
-    #  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <u >l L|H I
+    #  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <±u >±l L|H I
     #
     #NOTE: All input variables are either INTEGERS, or FLAGS which can be
     #      present or omitted.
@@ -116,8 +116,8 @@ def formula_parse(params_in):
     #    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]
     #    m = Modifier
     #    p = Percentage
-    #    u = Upper Bound
-    #    l = Lower Bound
+    #    u = Upper Boundary
+    #    l = Lower Boundary
     #
     #  FLAGS
     #    L = drop the Lowest c1dt1 single die roll in the combination
@@ -150,17 +150,26 @@ def formula_parse(params_in):
     params = []
     params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!"
-    error_str = "!!ERROR!!  Please check your Roll Formula syntax."
-    error_cli = "Please check your Roll Formula syntax.\n"
+    error_str = "ERROR"
+    error_cli = "Please verify your Roll Formula's syntax.\n"
     
     s = False
     g = False
     p = False
     l = False
     u = False
+    lu = False
+    ul = False
     L = False
     H = False
     I = False
+    
+    if params_str.find('d') == -1:
+       print(error_blk)
+       print("Roll Formula Syntax Error:", params_str)
+       print("No \'Dice\' are defined within the Roll Formula.")
+       print(error_cli)
+       return error_str
     
     if params_str.rfind('I') != -1:
         I = True
@@ -188,35 +197,165 @@ def formula_parse(params_in):
             print("Roll Formula: Drop Highest Enabled")
         else:
             print(error_blk)
-            print("Both \'Drop Lowest\' and \'Drop Highest\' Flags Enabled:", params_str)
+            print("Roll Formula Syntax Error:", params_str)
+            print("Both \'Drop Lowest\' and \'Drop Highest\' flags are enabled.")
+            print("Please choose either the \'Drop Lowest\' or \'Drop Highest\' flag.")
             print(error_cli)
             return error_str
     
-    if params_str.rfind('>') != -1:
-        l = True
-        if L:
-            lb = params_str_L.rsplit('>', maxsplit = 1)
-        elif H:
-            lb = params_str_H.rsplit('>', maxsplit = 1)
-        elif I:
-            lb = params_str_I.rsplit('>', maxsplit = 1)
-        else:
-            lb = params_str.rsplit('>', maxsplit = 1)
-        print("Roll Formula: Lower Boundary Defined")
+    if params_str.rfind('>') > params_str.rfind('<'):#<u >l syntax order
+        ul = True
+        if params_str.rfind('>') != -1:
+            l = True
+            if L:
+                lb = params_str_L.rsplit('>', maxsplit = 1)
+            elif H:
+                lb = params_str_H.rsplit('>', maxsplit = 1)
+            elif I:
+                lb = params_str_I.rsplit('>', maxsplit = 1)
+            else:
+                lb = params_str.rsplit('>', maxsplit = 1)
+            if lb[1].rfind('+') != -1:
+                lbv = lb[1].rsplit('+', maxsplit = 1)
+                if lbv[1].isnumeric():
+                    params.append('-l'+lbv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Lower Boundary\' Syntax Error:", '>+'+lbv[1])
+                    print(error_cli)
+                    return error_str
+            elif lb[1].rfind('-') != -1:
+                lbv = lb[1].rsplit('-', maxsplit = 1)
+                if lbv[1].isnumeric():
+                    params.append('-l-'+lbv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Lower Boundary\' Syntax Error:", '>-'+lbv[1])
+                    print(error_cli)
+                    return error_str
+            elif lb[1].isnumeric():#Assume positive number
+                params.append('-l'+lb[1])
+            else:
+                print(error_blk)
+                print("Roll Formula \'Lower Boundary\' Syntax Error:", '>'+lb[1])
+                print(error_cli)
+                return error_str
+            print("Roll Formula: Lower Boundary Defined")
+        if params_str.rfind('<') != -1:
+            u = True
+            if l:
+                ub = lb[0].rsplit('<', maxsplit = 1)
+            elif L:
+                ub = params_str_L.rsplit('<', maxsplit = 1)
+            elif H:
+                ub = params_str_H.rsplit('<', maxsplit = 1)
+            elif I:
+                ub = params_str_I.rsplit('<', maxsplit = 1)
+            else:
+                ub = params_str.rsplit('<', maxsplit = 1)
+            if ub[1].rfind('+') != -1:
+                ubv = ub[1].rsplit('+', maxsplit = 1)
+                if ubv[1].isnumeric():
+                    params.append('-u'+ubv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Upper Boundary\' Syntax Error:", '<+'+ubv[1])
+                    print(error_cli)
+                    return error_str
+            elif ub[1].rfind('-') != -1:
+                ubv = ub[1].rsplit('-', maxsplit = 1)
+                if ubv[1].isnumeric():
+                    params.append('-u-'+ubv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Upper Boundary\' Syntax Error:", '<-'+ubv[1])
+                    print(error_cli)
+                    return error_str
+            elif ub[1].isnumeric():#Assume positive number
+                params.append('-u'+ub[1])
+            else:
+                print(error_blk)
+                print("Roll Formula \'Upper Boundary\' Syntax Error:", '<'+ub[1])
+                print(error_cli)
+                return error_str
+            print("Roll Formula: Upper Boundary Defined")
     
-    if params_str.rfind('<') != -1:
-        u = True
-        if l:
-            ub = lb[0].rsplit('<', maxsplit = 1)
-        elif L:
-            ub = params_str_L.rsplit('<', maxsplit = 1)
-        elif H:
-            ub = params_str_H.rsplit('<', maxsplit = 1)
-        elif I:
-            ub = params_str_I.rsplit('<', maxsplit = 1)
-        else:
-            ub = params_str.rsplit('<', maxsplit = 1)
-        print("Roll Formula: Upper Boundary Defined")
+    if params_str.rfind('>') < params_str.rfind('<'):#>l <u syntax order
+        lu = True
+        if params_str.rfind('<') != -1:
+            u = True
+            if L:
+                ub = params_str_L.rsplit('<', maxsplit = 1)
+            elif H:
+                ub = params_str_H.rsplit('<', maxsplit = 1)
+            elif I:
+                ub = params_str_I.rsplit('<', maxsplit = 1)
+            else:
+                ub = params_str.rsplit('<', maxsplit = 1)
+            if ub[1].rfind('+') != -1:
+                ubv = ub[1].rsplit('+', maxsplit = 1)
+                if ubv[1].isnumeric():
+                    params.append('-u'+ubv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Upper Boundary\' Syntax Error:", '<+'+ubv[1])
+                    print(error_cli)
+                    return error_str
+            elif ub[1].rfind('-') != -1:
+                ubv = ub[1].rsplit('-', maxsplit = 1)
+                if ubv[1].isnumeric():
+                    params.append('-u-'+ubv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Upper Boundary\' Syntax Error:", '<-'+ubv[1])
+                    print(error_cli)
+                    return error_str
+            elif ub[1].isnumeric():#Assume positive number
+                params.append('-u'+ub[1])
+            else:
+                print(error_blk)
+                print("Roll Formula \'Upper Boundary\' Syntax Error:", '<'+ub[1])
+                print(error_cli)
+                return error_str
+            print("Roll Formula: Upper Boundary Defined")
+        if params_str.rfind('>') != -1:
+            l = True
+            if u:
+                lb = ub[0].rsplit('>', maxsplit = 1)
+            elif L:
+                lb = params_str_L.rsplit('>', maxsplit = 1)
+            elif H:
+                lb = params_str_H.rsplit('>', maxsplit = 1)
+            elif I:
+                lb = params_str_I.rsplit('>', maxsplit = 1)
+            else:
+                lb = params_str.rsplit('>', maxsplit = 1)
+            if lb[1].rfind('+') != -1:
+                lbv = lb[1].rsplit('+', maxsplit = 1)
+                if lbv[1].isnumeric():
+                    params.append('-l'+lbv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Lower Boundary\' Syntax Error:", '>+'+lbv[1])
+                    print(error_cli)
+                    return error_str
+            elif lb[1].rfind('-') != -1:
+                lbv = lb[1].rsplit('-', maxsplit = 1)
+                if lbv[1].isnumeric():
+                    params.append('-l-'+lbv[1])
+                else:
+                    print(error_blk)
+                    print("Roll Formula \'Lower Boundary\' Syntax Error:", '>-'+lbv[1])
+                    print(error_cli)
+                    return error_str
+            elif lb[1].isnumeric():#Assume positive number
+                params.append('-l'+lb[1])
+            else:
+                print(error_blk)
+                print("Roll Formula \'Lower Boundary\' Syntax Error:", '>'+lb[1])
+                print(error_cli)
+                return error_str
+            print("Roll Formula: Lower Boundary Defined")
     
     if params_str.rfind('%') != -1:
         p = True
@@ -303,7 +442,10 @@ def formula_parse(params_in):
             return error_str
     
     if g and x[1].find('d') != -1:
-        print("dice group and possibly sets")
+        if s:
+            print("dice groups and sets")
+        else:
+            print("groups only")
     elif s and y[1].find('d') != -1:
         print("dice sets only")
     elif params_str.find('d') != -1:
