@@ -400,7 +400,11 @@ def formula_parse(params_in):
     
     if params_str.rfind('%') != -1:
         p = True
-        if L:
+        if (ul and u) or (lu and not l):
+            v = ub[0].rsplit('%', maxsplit = 1)
+        elif (lu and l) or (ul and not u):
+            v = lb[0].rsplit('%', maxsplit = 1)
+        elif L:
             v = params_str_L.rsplit('%', maxsplit = 1)
         elif H:
             v = params_str_H.rsplit('%', maxsplit = 1)
