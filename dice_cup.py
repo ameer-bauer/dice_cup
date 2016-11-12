@@ -220,7 +220,7 @@ if args.h:
 if (l_check and u_check):#See if both -l and -u are set and check for errors
     if args.l >= args.u:
         print('Error: the flags \'-l\' and \'-u\' are set, but -l =', args.l, 'and -u =', args.u)
-        print('       i.e. the lower bound is either greater than, or equal, to the')
+        print('       i.e. the lower bound is either greater than, or equal to, the')
         print('       upper bound.  Please enter new boundary values so that \'-l\' < \'-u\'.')
         sys.exit(1)
 
