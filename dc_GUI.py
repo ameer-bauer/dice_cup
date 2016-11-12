@@ -76,7 +76,8 @@ def popup_rfhlp(title):
     text.insert(tk.END, "rolls.  It is designed to be intuitive and predictable in structure.  Below you\n")
     text.insert(tk.END, "will find the syntactical and variable definitions along with some examples.\n")
     text.insert(tk.END, "Please note that verbose error messages are printed to the CLI window; if your\n")
-    text.insert(tk.END, "input syntax has an error.  Roll Formulae have a maximum size of 100 characters.\n\n")
+    text.insert(tk.END, "input syntax has an error.  Roll Formulae have a maximum size of 100 characters.\n")
+    text.insert(tk.END, "At least one combination of dice must be defined to form a valid Roll Formula.\n\n")
     text.insert(tk.END, "SYNTAX\n  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <±u >±l L|H I\n\n")
     text.insert(tk.END, "  NOTE: All input variables are either INTEGERS, or FLAGS which can be\n")
     text.insert(tk.END, "        present or omitted; empty spaces are optional.\n\n")
@@ -412,7 +413,7 @@ def formula_parse(params_in):
             v = params_str_I.rsplit('%', maxsplit = 1)
         else:
             v = params_str.rsplit('%', maxsplit = 1)
-        if v[0].rfind('+') != -1:
+        if v[0].rfind('+') > v[0].rfind('-'):
             w = v[0].rsplit('+', maxsplit = 1)
             if w[1].isnumeric():
                 params.append('-p'+w[1])
@@ -421,7 +422,7 @@ def formula_parse(params_in):
                 print("Roll Formula \'Percentage\' Syntax Error:", '+'+w[1]+'%')
                 print(error_cli)
                 return error_str
-        elif v[0].rfind('-') != -1:
+        elif v[0].rfind('+') < v[0].rfind('-'):
             w = v[0].rsplit('-', maxsplit = 1)
             if w[1].isnumeric():
                 params.append('-p-'+w[1])
@@ -439,7 +440,13 @@ def formula_parse(params_in):
     
     if params_str.find('^') != -1:
         s = True
-        if L:
+        if p:
+            y = w[0].split('^', maxsplit = 1)
+        elif (ul and u) or (lu and not l):
+            y = ub[0].split('^', maxsplit = 1)
+        elif (lu and l) or (ul and not u):
+            y = lb[0].split('^', maxsplit = 1)
+        elif L:
             y = params_str_L.split('^', maxsplit = 1)
         elif H:
             y = params_str_H.split('^', maxsplit = 1)
@@ -452,24 +459,21 @@ def formula_parse(params_in):
             print("Roll Formula: Dice Set Defined")
         else:
             print(error_blk)
-            print("Roll Formula \'Set\' Syntax Error:", y[0])
+            print("Roll Formula \'Set\' Syntax Error:", y[0]+'^')
             print(error_cli)
             return error_str
     
-    if s and y[1].find('*') != -1:
+    if params_str.find('*') != -1:
         g = True
-        x = y[1].split('*', maxsplit = 1)
-        if x[0].isnumeric():
-            params.append('-g'+x[0])
-            print("Roll Formula: Dice Group Defined")
-        else:
-            print(error_blk)
-            print("Roll Formula \'Group\' Syntax Error:", x[0])
-            print(error_cli)
-            return error_str
-    elif params_str.find('*') != -1:
-        g = True
-        if L:
+        if s:
+            x = y[1].split('*', maxsplit = 1)
+        elif p:
+            x = w[0].split('*', maxsplit = 1)
+        elif (ul and u) or (lu and not l):
+            x = ub[0].split('*', maxsplit = 1)
+        elif (lu and l) or (ul and not u):
+            x = lb[0].split('*', maxsplit = 1)
+        elif L:
             x = params_str_L.split('*', maxsplit = 1)
         elif H:
             x = params_str_H.split('*', maxsplit = 1)
@@ -479,22 +483,33 @@ def formula_parse(params_in):
             x = params_str.split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Roll Formula: Dice Group Defined")
+            print("Roll Formula: Dice Group Defined", x)
         else:
             print(error_blk)
-            print("Roll Formula \'Group\' Syntax Error:", x[0])
+            print("Roll Formula \'Group\' Syntax Error:", x[0]+'*')
             print(error_cli)
             return error_str
     
-    if g and x[1].find('d') != -1:
-        if s:
-            print("dice groups and sets")
+    if params_str.find('d') != -1:
+        if g:
+            z = x[1].split('d')
+        elif s:
+            z = y[1].split('d')
+        elif p:
+            z = w[0].split('d')
+        elif (ul and u) or (lu and not l):
+            z = ub[0].split('*')
+        elif (lu and l) or (ul and not u):
+            z = lb[0].split('*')
+        elif L:
+            z = params_str_L.split('d')
+        elif H:
+            z = params_str_H.split('d')
+        elif I:
+            z = params_str_I.split('d')
         else:
-            print("groups only")
-    elif s and y[1].find('d') != -1:
-        print("dice sets only")
-    elif params_str.find('d') != -1:
-        print("dice only")
+            z = params_str.split('d')
+        print("**d condition:", z)
     else:
         print(error_blk)
         print("Roll Formula \'Dice\' Syntax Error:", params_str)
