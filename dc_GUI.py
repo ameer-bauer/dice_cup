@@ -84,11 +84,12 @@ def popup_rfhlp(title):
     text.insert(tk.END, "  INTEGERS\n    s = dice Set [POSITIVE ONLY]\n    g = dice Group [POSITIVE ONLY]\n")
     text.insert(tk.END, "    c1, c2, ... cn = the Combination of corresponding die Types to roll\n")
     text.insert(tk.END, "    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]\n")
+    text.insert(tk.END, "        NOTE: c1dt1 can not be preceded by a \'+\' or a \'-\' symbol.\n")
     text.insert(tk.END, "    m = Modifier\n    p = Percentage\n    u = Upper Boundary\n    l = Lower Boundary\n\n")
     text.insert(tk.END, "  FLAGS\n    L = drop the Lowest c1dt1 single die roll in the combination\n")
     text.insert(tk.END, "    H = drop the Highest c1dt1 single die roll in the combination\n")
-    text.insert(tk.END, "    I = include Statistical Information\n\n")
-    text.insert(tk.END, "    NOTE: Either L or H can be set, but not both.\n\n")
+    text.insert(tk.END, "    I = include Statistical Information\n")
+    text.insert(tk.END, "        NOTE: Either L or H can be set, but not both.\n\n")
     text.insert(tk.END, "EXAMPLES\n  1) Roll three six-sided dice.\n     Roll Formula Syntax: 3d6\n\n")
     text.insert(tk.END, "  2) Roll two Groups of three six-sided dice, plus one four-sided die, and\n")
     text.insert(tk.END, "     subtract a modifier of five.\n")
@@ -386,7 +387,7 @@ def formula_parse(params_in):
                 return error_str
             print("Roll Formula: Upper Boundary Defined")
     
-    #Upper Bound and Lower Bound handling comdbo 2
+    #Upper Bound and Lower Bound handling combo 2
     if params_str.rfind('>') < params_str.rfind('<'):#>l <u syntax order
         lu = True
         u = True
@@ -573,7 +574,7 @@ def formula_parse(params_in):
             print(error_blk)
             print("Roll Formula \'Dice Combination\' Syntax Error:", z_err[1])
             if (z_err[1][0] == '+') or (z_err[1][0] == '-'):
-                print("The first \'Dice Combination\' can not be preceeded by a \'+\' or \'-\' symbol.")
+                print("The first \'Dice Combination\' can not be preceded by a \'+\' or \'-\' symbol.")
             print(error_cli)
             return error_str
         else:
