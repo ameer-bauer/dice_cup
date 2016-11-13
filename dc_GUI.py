@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.5
-#Date: 2016-11-10
+#Version: 0.1.6
+#Date: 2016-11-12
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.5"
+VERSION = "0.1.6"
 
 def dc_run_q(params):
     if HOST_SYS == 'Windows':
@@ -82,7 +82,7 @@ def popup_rfhlp(title):
     text.insert(tk.END, "  NOTE: All input variables are either INTEGERS, or FLAGS which can be\n")
     text.insert(tk.END, "        present or omitted; empty spaces are optional.\n\n")
     text.insert(tk.END, "  INTEGERS\n    s = dice Set [POSITIVE ONLY]\n    g = dice Group [POSITIVE ONLY]\n")
-    text.insert(tk.END, "    c1, c2, ... cn = the Number/Combo of corresponding die Types to roll\n")
+    text.insert(tk.END, "    c1, c2, ... cn = the Combination of corresponding die Types to roll\n")
     text.insert(tk.END, "    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]\n")
     text.insert(tk.END, "    m = Modifier\n    p = Percentage\n    u = Upper Boundary\n    l = Lower Boundary\n\n")
     text.insert(tk.END, "  FLAGS\n    L = drop the Lowest c1dt1 single die roll in the combination\n")
@@ -193,7 +193,7 @@ def formula_parse(params_in):
     params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!"
     error_str = "ERROR"
-    error_cli = "Please verify your Roll Formula's syntax.\n"
+    error_cli = "Please verify the input Roll Formula's syntax.\n"
     
     d = True
     s = False
@@ -211,30 +211,62 @@ def formula_parse(params_in):
         d_str = ""
         z_tmp = []
         first_run = True
-        m_present = False
-        if '+' in str_in:
-           if '-' in str_in:
-               print("**negative stuff")
-           else:
-               z_add = str_in.split('+')
-           for a in z_add:
-               if 'd' in a:
-                   z_tmp = a.split('d', maxsplit = 1)
-                   if z_tmp[0].isnumeric() and z_tmp[1].isnumeric():
-                       if first_run:
-                           d_str += z_tmp[1]+','+z_tmp[0]
-                           first_run = False
-                       else:
-                           d_str += '+'+z_tmp[1]+','+z_tmp[0]
-                   else:
-                       print(error_blk)
-                       print("Roll Formula \'Dice\' Syntax Error:", x[1])
-                       print(error_cli)
-                       return error_str
-        elif ('-' in str_in) and first_run:
-            z_sub = str_in.split('-')
-            #for b in z_sub:
-        else:
+        dp = False
+        dm = False
+        mp = False
+        mm = False
+        if (str_in[0] == '+' or str_in[0] == '-'):
+            return "ERROR:"+str_in
+        if '+' in str_in:#Positive Modifier handling
+            dp = True
+            z_add_m = str_in.split('+')
+            if ('d' not in z_add_m[-1]) and (z_add_m[-1].isnumeric()):
+                mp = True
+                print("Roll Formula: Modifier Defined")
+                params.append('-m'+z_add_m[-1])
+        if '-' in str_in:#Negative Modifier handling
+            dm = True
+            z_sub_m = str_in.split('-')
+            if ('d' not in z_sub_m[-1]) and (z_sub_m[-1].isnumeric()):
+                mm = True
+                print("Roll Formula: Modifier Defined")
+                params.append('-m-'+z_sub_m[-1])
+        if dp:
+            if mp:
+                z_add = z_add_m[:-1]
+            elif mm:
+                z_add = z_sub_m[:-1]
+            else:
+                z_add = z_add_m
+            for a in z_add:
+                if 'd' in a:
+                    z_tmp = a.split('d', maxsplit = 1)
+                    if z_tmp[0].isnumeric() and z_tmp[1].isnumeric():
+                        if first_run:#Assume first dice combo is positive
+                            d_str += z_tmp[1]+','+z_tmp[0]
+                            first_run = False
+                        else:
+                            d_str += '+'+z_tmp[1]+','+z_tmp[0]
+                    elif z_tmp[0].isnumeric() and ('-' in z_tmp[1]):
+                        z_tmp_s = z_tmp[1].split('-', maxsplit = 1)
+                        if z_tmp_s[0].isnumeric():
+                            if first_run:
+                                d_str += z_tmp_s[0]+','+z_tmp[0]
+                                first_run = False
+                            else:
+                                d_str += '+'+z_tmp_s[0]+','+z_tmp[0]
+                        else:
+                            return "ERROR:"+str_in
+                    else:
+                        return "ERROR:"+str_in
+        if dm:
+            if mp:
+                z_sub = z_add_m[:-1]
+            elif mm:
+                z_sub = z_sub_m[:-1]
+            else:
+                z_sub = z_sub_m
+        if not (dp or dm):
             z_add = str_in.split('d')
             if z_add[0].isnumeric() and z_add[1].isnumeric():
                 d_str += z_add[1]+','+z_add[0]
@@ -244,19 +276,20 @@ def formula_parse(params_in):
     
     #Initial sanity check
     if 'd' not in params_str:
-    #if params_str.find('d') == -1:
-       d = False
-       print(error_blk)
-       print("Roll Formula Syntax Error:", params_str)
-       print("No \'Dice\' are defined within the Roll Formula.")
-       print(error_cli)
-       return error_str
+        d = False
+        print(error_blk)
+        print("Roll Formula Syntax Error:", params_str)
+        print("No \'Dice Combination\' is defined within the Roll Formula.")
+        print(error_cli)
+        return error_str
+    
     #Statistical flag handling
     if 'I' in params_str:
         I = True
         params_str_I = params_str.replace('I', '')
         params.append('-i')
         print("Roll Formula: Statistical Information Enabled")
+    
     #Drop Lowest handling
     if 'L' in params_str:
         L = True
@@ -266,6 +299,7 @@ def formula_parse(params_in):
             params_str_L = params_str.replace('L', '')
         params.append('-L')
         print("Roll Formula: Drop Lowest Enabled")
+    
     #Drop Highest handling
     if 'H' in params_str:
         if not L:
@@ -283,6 +317,7 @@ def formula_parse(params_in):
             print("Please choose either the \'Drop Lowest\' or \'Drop Highest\' flag.")
             print(error_cli)
             return error_str
+    
     #Upper Bound and Lower Bound handling combo 1
     if params_str.rfind('>') > params_str.rfind('<'):#<u >l syntax order
         ul = True
@@ -350,6 +385,7 @@ def formula_parse(params_in):
                 print(error_cli)
                 return error_str
             print("Roll Formula: Upper Boundary Defined")
+    
     #Upper Bound and Lower Bound handling comdbo 2
     if params_str.rfind('>') < params_str.rfind('<'):#>l <u syntax order
         lu = True
@@ -417,6 +453,7 @@ def formula_parse(params_in):
                 print(error_cli)
                 return error_str
             print("Roll Formula: Lower Boundary Defined")
+    
     #Percentage handling
     if '%' in params_str:
         p = True
@@ -456,6 +493,7 @@ def formula_parse(params_in):
             print(error_cli)
             return error_str
         print("Roll Formula: Percentage Modifier Defined")
+    
     #Set handling
     if '^' in params_str:
         s = True
@@ -481,6 +519,7 @@ def formula_parse(params_in):
             print("Roll Formula \'Set\' Syntax Error:", y[0]+'^')
             print(error_cli)
             return error_str
+    
     #Group handling
     if '*' in params_str:
         g = True
@@ -508,6 +547,7 @@ def formula_parse(params_in):
             print("Roll Formula \'Group\' Syntax Error:", x[0]+'*')
             print(error_cli)
             return error_str
+    
     #Dice and Modifier handling
     if d:
         if g:
@@ -531,11 +571,13 @@ def formula_parse(params_in):
         if "ERROR" in z:
             z_err = z.split(':', maxsplit = 1)
             print(error_blk)
-            print("Roll Formula \'Dice\' Syntax Error:", z_err[1])
+            print("Roll Formula \'Dice Combination\' Syntax Error:", z_err[1])
+            if (z_err[1][0] == '+') or (z_err[1][0] == '-'):
+                print("The first \'Dice Combination\' can not be preceeded by a \'+\' or \'-\' symbol.")
             print(error_cli)
             return error_str
         else:
-            print("**z:",z)
+            print("Roll Formula: Dice Combination Defined")
             params.append('-d'+z)
     
     print("Parsed dice_cup Parameter List:", params)
