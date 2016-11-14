@@ -84,22 +84,22 @@ def popup_rfhlp(title):
     text.insert(tk.END, "  INTEGERS\n    s = dice Set [POSITIVE ONLY]\n    g = dice Group [POSITIVE ONLY]\n")
     text.insert(tk.END, "    c1, c2, ... cn = the Combination of corresponding die Types to roll\n")
     text.insert(tk.END, "    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]\n")
-    text.insert(tk.END, "        NOTE: c1dt1 can not be preceded by a \'+\' or a \'-\' symbol.\n")
+    text.insert(tk.END, "    **NOTE: c1dt1 can not be preceded by a \'+\' or a \'-\' symbol.**\n")
     text.insert(tk.END, "    m = Modifier\n    p = Percentage\n    u = Upper Boundary\n    l = Lower Boundary\n\n")
     text.insert(tk.END, "  FLAGS\n    L = drop the Lowest c1dt1 single die roll in the combination\n")
     text.insert(tk.END, "    H = drop the Highest c1dt1 single die roll in the combination\n")
     text.insert(tk.END, "    I = include Statistical Information\n")
-    text.insert(tk.END, "        NOTE: Either L or H can be set, but not both.\n\n")
+    text.insert(tk.END, "    **NOTE: Either L or H can be set, but not both.**\n\n")
     text.insert(tk.END, "EXAMPLES\n  1) Roll three six-sided dice.\n     Roll Formula Syntax: 3d6\n\n")
     text.insert(tk.END, "  2) Roll two Groups of three six-sided dice, plus one four-sided die, and\n")
-    text.insert(tk.END, "     subtract a modifier of five.\n")
+    text.insert(tk.END, "     subtract a Modifier of five.\n")
     text.insert(tk.END, "     Roll Formula Syntax: 2*3d6+1d4-5\n\n")
     text.insert(tk.END, "  3) Roll five Sets of six Groups of four six-sided dice, add a Percentage of\n")
-    text.insert(tk.END, "     fifteen (15%), drop the lowest single six-sided die from each Group, and\n")
+    text.insert(tk.END, "     fifteen (15%), Drop the Lowest single six-sided die from each Group, and\n")
     text.insert(tk.END, "     include Statistical Information.\n     Roll Formula Syntax: 5^6*4d6+15%LI\n\n")
     text.insert(tk.END, "  4) Roll twenty Groups of ten eight-sided dice, minus a Modifier of seventeen,\n")
-    text.insert(tk.END, "     an upper boundary of sixty five, a lower boundary of negative ten, and drop\n")
-    text.insert(tk.END, "     the highest single eight-sided die from each dice Group.\n")
+    text.insert(tk.END, "     an Upper Boundary of sixty five, a Lower Boundary of negative ten, and\n")
+    text.insert(tk.END, "     Drop the Highest single eight-sided die from each dice Group.\n")
     text.insert(tk.END, "     Roll Formula Syntax: 20*10d8-17<65>-10H\n\n")
     scroll.config(command = text.yview)
     scroll.pack(side = "right", fill = "y")
@@ -108,7 +108,6 @@ def popup_rfhlp(title):
     button1 = tk.Button(popup, text = "OK",  command = popup.destroy)
     button1.pack(pady = 5)
     popup.mainloop()
-
 
 def popup_get(title, msg):
     popup_val = tk.StringVar()
@@ -216,63 +215,149 @@ def formula_parse(params_in):
         dm = False
         mp = False
         mm = False
+        sm = False
+        sp = False
+        fm = False
+        fp = False
+        
         if (str_in[0] == '+' or str_in[0] == '-'):
+            return "ERROR:"+str_in+'F'
+        if 'd' not in str_in or str_in[0] == 'd':
             return "ERROR:"+str_in
-        if '+' in str_in:#Positive Modifier handling
-            dp = True
-            z_add_m = str_in.split('+')
-            if ('d' not in z_add_m[-1]) and (z_add_m[-1].isnumeric()):
-                mp = True
-                print("Roll Formula: Modifier Defined")
-                params.append('-m'+z_add_m[-1])
-        if '-' in str_in:#Negative Modifier handling
-            dm = True
-            z_sub_m = str_in.split('-')
-            if ('d' not in z_sub_m[-1]) and (z_sub_m[-1].isnumeric()):
-                mm = True
-                print("Roll Formula: Modifier Defined")
-                params.append('-m-'+z_sub_m[-1])
-        if dp:
-            if mp:
-                z_add = z_add_m[:-1]
-            elif mm:
-                z_add = z_sub_m[:-1]
+        if '-' in str_in:
+            sm = True
+        if '+' in str_in:
+            sp = True
+        if sm and sp:
+            if str_in.find('-') < str_in.find('+'):
+                str_f = str_in.split('-', maxsplit = 1)
+                if 'd' in str_f[0]:
+                    str_fm = str_f[0].split('d')
+                    if str_fm[0].isnumeric() and str_fm[1].isnumeric():
+                        d_str += str_fm[1]+','+str_fm[0]
+                        fm = True
+                    else:
+                        print("e6")
+                        return "ERROR:"+str_f
+                else:
+                    print("e10")
+                    return "ERROR:"+str_in
+            if str_in.find('-') > str_in.find('+'):
+                str_f = str_in.split('+', maxsplit = 1)
+                if 'd' in str_f[0]:
+                    str_fp = str_f[0].split('d')
+                    if str_fp[0].isnumeric() and str_fp[1].isnumeric():
+                        d_str += str_fp[1]+','+str_fp[0]
+                        fp = True
+                    else:
+                        print("e7")
+                        return "ERROR:"+str_f
+                else:
+                    print("e11")
+                    return "ERROR:"+str_in
+        elif sm:
+            str_f = str_in.split('-', maxsplit = 1)
+            if 'd' in str_f[0]:
+                str_fm = str_f[0].split('d')
+                if str_fm[0].isnumeric() and str_fm[1].isnumeric():
+                    d_str += str_fm[1]+','+str_fm[0]
+                    fm = True
+                else:
+                    print("e8")
+                    return "ERROR:"+str_f
             else:
-                z_add = z_add_m
+                print("e12")
+                return "ERROR:"+str_in
+        elif sp:
+            str_f = str_in.split('+', maxsplit = 1)
+            if 'd' in str_f[0]:
+                str_fp = str_f[0].split('d')
+                if str_fp[0].isnumeric() and str_fp[1].isnumeric():
+                    d_str += str_fp[1]+','+str_fp[0]
+                    fp = True
+                else:
+                    print("e9")
+                    return "ERROR:"+str_f
+            else:
+                print("e13")
+                return "ERROR:"+str_in
+        else:
+            str_f = str_in.split('d')
+            if str_f[0].isnumeric() and str_f[1].isnumeric():
+                d_str += str_f[1]+','+str_f[0]
+                return d_str
+            else:
+                print("e5")
+                return "ERROR:"+str_in
+        
+        if str_in.rfind('+') > str_in.rfind('-'):#Positive Modifier handling
+            z_add_m = str_in.rsplit('+', maxsplit = 1)
+            if 'd' not in z_add_m[-1]:
+                if z_add_m[-1].isnumeric():
+                    mp = True
+                    print("Roll Formula: Positive Modifier Defined")
+                    params.append('-m'+z_add_m[-1])
+                else:
+                    print("m+err")
+                    return "ERROR:"+'+'+z_add_m[-1]
+        if str_in.rfind('-') > str_in.rfind('+'):#Negative Modifier handling
+            z_sub_m = str_in.rsplit('-', maxsplit = 1)
+            if 'd' not in z_sub_m[-1]:
+                if z_sub_m[-1].isnumeric():
+                    mm = True
+                    print("Roll Formula: Negative Modifier Defined")
+                    params.append('-m-'+z_sub_m[-1])
+                else:
+                    print("m-err")
+                    return "ERROR:"+'-'+z_sub_m[-1]
+        
+        if fp:
+            if mp:
+                z_tmp = z_add_m[0].split('+')
+                z_add = z_tmp[1:]
+            elif mm:
+                z_tmp = z_sub_m[0].split('+')
+                z_add = z_tmp[1:]
+            else:
+                z_add = str_f[1].split('+')
             for a in z_add:
                 if 'd' in a:
                     z_tmp = a.split('d', maxsplit = 1)
                     if z_tmp[0].isnumeric() and z_tmp[1].isnumeric():
-                        if first_run:#Assume first dice combo is positive
-                            d_str += z_tmp[1]+','+z_tmp[0]
-                            first_run = False
-                        else:
-                            d_str += '+'+z_tmp[1]+','+z_tmp[0]
+                        d_str += '+'+z_tmp[1]+','+z_tmp[0]
                     elif z_tmp[0].isnumeric() and ('-' in z_tmp[1]):
                         z_tmp_s = z_tmp[1].split('-', maxsplit = 1)
                         if z_tmp_s[0].isnumeric():
-                            if first_run:
-                                d_str += z_tmp_s[0]+','+z_tmp[0]
-                                first_run = False
-                            else:
-                                d_str += '+'+z_tmp_s[0]+','+z_tmp[0]
+                            d_str += '+'+z_tmp_s[0]+','+z_tmp[0]
                         else:
+                            print("e1")
                             return "ERROR:"+str_in
                     else:
+                        print("e2")
                         return "ERROR:"+str_in
-        if dm:
+        if fm:
             if mp:
-                z_sub = z_add_m[:-1]
+                z_sub_m = str_in.rsplit('+', maxsplit = 1)
+                z_sub = z_sub_m[0].split('-')
             elif mm:
                 z_sub = z_sub_m[:-1]
             else:
                 z_sub = z_sub_m
-        if not (dp or dm):
-            z_add = str_in.split('d')
-            if z_add[0].isnumeric() and z_add[1].isnumeric():
-                d_str += z_add[1]+','+z_add[0]
-            else:
-                return "ERROR:"+str_in
+            for b in z_sub:
+                if 'd' in b:
+                    z_tmp = b.split('d', maxsplit = 1)
+                    if z_tmp[0].isnumeric() and z_tmp[1].isnumeric():
+                        d_str += '+'+z_tmp[1]+',-'+z_tmp[0]
+                    elif z_tmp[0].isnumeric() and ('+' in z_tmp[1]):
+                        z_tmp_p = z_tmp[1].split('+', maxsplit = 1)
+                        if z_tmp_p[0].isnumeric():
+                            d_str += '+'+z_tmp_p[0]+',-'+z_tmp[0]
+                        else:
+                            print("e3")
+                            return "ERROR:"+str_in
+                    else:
+                        print("e4")
+                        return "ERROR:"+str_in
         return d_str
     
     #Initial sanity check
@@ -572,9 +657,11 @@ def formula_parse(params_in):
         if "ERROR" in z:
             z_err = z.split(':', maxsplit = 1)
             print(error_blk)
-            print("Roll Formula \'Dice Combination\' Syntax Error:", z_err[1])
-            if (z_err[1][0] == '+') or (z_err[1][0] == '-'):
+            if z_err[1][-1] == 'F':
+                print("Roll Formula \'Dice Combination\' Syntax Error:", z_err[1][:-1])
                 print("The first \'Dice Combination\' can not be preceded by a \'+\' or \'-\' symbol.")
+            else:
+                print("Roll Formula \'Dice Combination\' Syntax Error:", z_err[1])
             print(error_cli)
             return error_str
         else:
@@ -967,7 +1054,7 @@ class GUITest(tk.Tk):
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "Roll Formula", \
-        command = lambda: popup_rfhlp("Roll Formula Help Topics"))
+        command = lambda: popup_rfhlp("Roll Formula Help"))
         helpmenu.add_command(label = "About", \
         command = lambda: popup_wrn("About", "dc_GUI version "+VERSION))
         
