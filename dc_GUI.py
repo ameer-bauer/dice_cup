@@ -19,14 +19,17 @@ WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
 VERSION = "0.1.6"
 
-def dc_run_q(params):
+def dc_run_q(params, formula = False):
     if HOST_SYS == 'Windows':
         dc_out = subprocess.run(WIN_DEFAULT+params+['-q'], stdout=subprocess.PIPE)
     else:
         dc_out = subprocess.run(NIX_DEFAULT+params+['-q'], stdout=subprocess.PIPE)
     now = datetime.now()
     str_dc_out = str(dc_out)
-    str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
+    if formula:
+        str_params = '['+formula+']'
+    else:
+        str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     if str_dc_out.find('returncode=0') == -1:
         print('\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n',dc_out, sep = '\n')
         return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+\
@@ -38,14 +41,17 @@ def dc_run_q(params):
         dc_print = dc_print[1].replace('\\n', '  ')
     return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+dc_print.strip('b\')')[:2048]
 
-def dc_run(params):
+def dc_run(params, formula = False):
     if HOST_SYS == 'Windows':
         dc_out = subprocess.run(WIN_DEFAULT+params, stdout=subprocess.PIPE)
     else:
         dc_out = subprocess.run(NIX_DEFAULT+params, stdout=subprocess.PIPE)
     now = datetime.now()
     str_dc_out = str(dc_out)
-    str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
+    if formula:
+        str_params = '['+formula+']'
+    else:
+        str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     dc_print = str(dc_out).split('stdout=')
     if str_dc_out.find('returncode=0') == -1:
         print('\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n', dc_out, sep = '\n')
@@ -706,7 +712,7 @@ def ledger_config(self):
     
     def formula_roll():
         str_in = entry_val.get()
-        listbox.insert(tk.END, dc_run_q(formula_parse(str_in))),\
+        listbox.insert(tk.END, dc_run_q(formula_parse(str_in), str_in)),\
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
         listbox.select_set(tk.END)
@@ -852,7 +858,7 @@ def journal_config(self):
     
     def formula_roll():
         str_in = entry_val.get()
-        text.insert(tk.END, dc_run(formula_parse(str_in))),\
+        text.insert(tk.END, dc_run(formula_parse(str_in), str_in)),\
         text.see(tk.END)
         return str_in
     
