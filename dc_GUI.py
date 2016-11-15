@@ -243,7 +243,7 @@ def formula_parse(params_in):
                         d_str += str_fm[1]+','+str_fm[0]
                         fm = True
                     else:
-                        return "ERROR:"+str_f
+                        return "ERROR:"+str_in
                 else:
                     return "ERROR:"+str_in
             if str_in.find('-') > str_in.find('+'):
@@ -254,7 +254,7 @@ def formula_parse(params_in):
                         d_str += str_fp[1]+','+str_fp[0]
                         fp = True
                     else:
-                        return "ERROR:"+str_f
+                        return "ERROR:"+str_in
                 else:
                     return "ERROR:"+str_in
         elif sm:
@@ -265,7 +265,7 @@ def formula_parse(params_in):
                     d_str += str_fm[1]+','+str_fm[0]
                     fm = True
                 else:
-                    return "ERROR:"+str_f
+                    return "ERROR:"+str_in
             else:
                 return "ERROR:"+str_in
         elif sp:
@@ -276,7 +276,7 @@ def formula_parse(params_in):
                     d_str += str_fp[1]+','+str_fp[0]
                     fp = True
                 else:
-                    return "ERROR:"+str_f
+                    return "ERROR:"+str_in
             else:
                 return "ERROR:"+str_in
         else:
@@ -674,7 +674,7 @@ def formula_parse(params_in):
             print("Roll Formula: Dice Combination Defined")
             params.append('-d'+z)
     
-    print("Parsed dice_cup Parameter List:", params)
+    print("Parsed Flags:", params)
     return params
 
 def ledger_config(self):
@@ -711,7 +711,8 @@ def ledger_config(self):
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def formula_roll():
-        str_in = entry_val.get()
+        str_raw = entry_val.get()
+        str_in = str_raw.replace(' ', '')
         listbox.insert(tk.END, dc_run_q(formula_parse(str_in), str_in)),\
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
@@ -857,7 +858,8 @@ def journal_config(self):
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def formula_roll():
-        str_in = entry_val.get()
+        str_raw = entry_val.get()
+        str_in = str_raw.replace(' ', '')
         text.insert(tk.END, dc_run(formula_parse(str_in), str_in)),\
         text.see(tk.END)
         return str_in
