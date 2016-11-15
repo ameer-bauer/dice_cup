@@ -2,7 +2,7 @@
 #----------------
 #Name: dc_GUI.py
 #Version: 0.1.6
-#Date: 2016-11-12
+#Date: 2016-11-14
 #----------------
 
 import tkinter as tk
@@ -191,8 +191,8 @@ def formula_parse(params_in):
     ###########################################################################
     params = []
     params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input
-    error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!"
-    error_str = "ERROR"
+    error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
+    error_str = ['ERROR']
     error_cli = "Please verify the input Roll Formula's syntax.\n"
     
     d = True
@@ -237,10 +237,8 @@ def formula_parse(params_in):
                         d_str += str_fm[1]+','+str_fm[0]
                         fm = True
                     else:
-                        print("e6")
                         return "ERROR:"+str_f
                 else:
-                    print("e10")
                     return "ERROR:"+str_in
             if str_in.find('-') > str_in.find('+'):
                 str_f = str_in.split('+', maxsplit = 1)
@@ -250,10 +248,8 @@ def formula_parse(params_in):
                         d_str += str_fp[1]+','+str_fp[0]
                         fp = True
                     else:
-                        print("e7")
                         return "ERROR:"+str_f
                 else:
-                    print("e11")
                     return "ERROR:"+str_in
         elif sm:
             str_f = str_in.split('-', maxsplit = 1)
@@ -263,10 +259,8 @@ def formula_parse(params_in):
                     d_str += str_fm[1]+','+str_fm[0]
                     fm = True
                 else:
-                    print("e8")
                     return "ERROR:"+str_f
             else:
-                print("e12")
                 return "ERROR:"+str_in
         elif sp:
             str_f = str_in.split('+', maxsplit = 1)
@@ -276,10 +270,8 @@ def formula_parse(params_in):
                     d_str += str_fp[1]+','+str_fp[0]
                     fp = True
                 else:
-                    print("e9")
                     return "ERROR:"+str_f
             else:
-                print("e13")
                 return "ERROR:"+str_in
         else:
             str_f = str_in.split('d')
@@ -287,7 +279,6 @@ def formula_parse(params_in):
                 d_str += str_f[1]+','+str_f[0]
                 return d_str
             else:
-                print("e5")
                 return "ERROR:"+str_in
         
         if str_in.rfind('+') > str_in.rfind('-'):#Positive Modifier handling
@@ -298,7 +289,6 @@ def formula_parse(params_in):
                     print("Roll Formula: Positive Modifier Defined")
                     params.append('-m'+z_add_m[-1])
                 else:
-                    print("m+err")
                     return "ERROR:"+'+'+z_add_m[-1]
         if str_in.rfind('-') > str_in.rfind('+'):#Negative Modifier handling
             z_sub_m = str_in.rsplit('-', maxsplit = 1)
@@ -308,7 +298,6 @@ def formula_parse(params_in):
                     print("Roll Formula: Negative Modifier Defined")
                     params.append('-m-'+z_sub_m[-1])
                 else:
-                    print("m-err")
                     return "ERROR:"+'-'+z_sub_m[-1]
         
         if fp:
@@ -322,41 +311,52 @@ def formula_parse(params_in):
                 z_add = str_f[1].split('+')
             for a in z_add:
                 if 'd' in a:
-                    z_tmp = a.split('d', maxsplit = 1)
-                    if z_tmp[0].isnumeric() and z_tmp[1].isnumeric():
-                        d_str += '+'+z_tmp[1]+','+z_tmp[0]
-                    elif z_tmp[0].isnumeric() and ('-' in z_tmp[1]):
-                        z_tmp_s = z_tmp[1].split('-', maxsplit = 1)
-                        if z_tmp_s[0].isnumeric():
-                            d_str += '+'+z_tmp_s[0]+','+z_tmp[0]
+                    d_tmp = a.split('d', maxsplit = 1)
+                    if d_tmp[0].isnumeric() and d_tmp[1].isnumeric():
+                        d_str += '+'+d_tmp[1]+','+d_tmp[0]
+                    elif d_tmp[0].isnumeric() and ('-' in d_tmp[1]):
+                        d_tmp_s = d_tmp[1].split('-')
+                        if d_tmp_s[0].isnumeric():
+                            d_str += '+'+d_tmp_s[0]+','+d_tmp[0]
+                            for b in d_tmp_s[1:]:
+                                if 'd' in b:
+                                    d_tmp2 = b.split('d', maxsplit = 1)
+                                    if d_tmp2[0].isnumeric() and d_tmp2[1].isnumeric():
+                                        d_str += '+'+d_tmp2[1]+',-'+d_tmp2[0]
+                                    else:
+                                        return "ERROR:"+b
                         else:
-                            print("e1")
                             return "ERROR:"+str_in
                     else:
-                        print("e2")
                         return "ERROR:"+str_in
-        if fm:
+        elif fm:
             if mp:
-                z_sub_m = str_in.rsplit('+', maxsplit = 1)
-                z_sub = z_sub_m[0].split('-')
+                z_tmp = z_add_m[0].split('-')
+                z_sub = z_tmp[1:]
             elif mm:
-                z_sub = z_sub_m[:-1]
+                z_tmp = z_sub_m[0].split('-')
+                z_sub = z_tmp[1:]
             else:
-                z_sub = z_sub_m
-            for b in z_sub:
-                if 'd' in b:
-                    z_tmp = b.split('d', maxsplit = 1)
-                    if z_tmp[0].isnumeric() and z_tmp[1].isnumeric():
-                        d_str += '+'+z_tmp[1]+',-'+z_tmp[0]
-                    elif z_tmp[0].isnumeric() and ('+' in z_tmp[1]):
-                        z_tmp_p = z_tmp[1].split('+', maxsplit = 1)
-                        if z_tmp_p[0].isnumeric():
-                            d_str += '+'+z_tmp_p[0]+',-'+z_tmp[0]
+                z_sub = str_f[1].split('-')
+            for a in z_sub:
+                if 'd' in a:
+                    d_tmp = a.split('d', maxsplit = 1)
+                    if d_tmp[0].isnumeric() and d_tmp[1].isnumeric():
+                        d_str += '+'+d_tmp[1]+',-'+d_tmp[0]
+                    elif d_tmp[0].isnumeric() and ('+' in d_tmp[1]):
+                        d_tmp_p = d_tmp[1].split('+')
+                        if d_tmp_p[0].isnumeric():
+                            d_str += '+'+d_tmp_p[0]+',-'+d_tmp[0]
+                            for b in d_tmp_p[1:]:
+                                if 'd' in b:
+                                    d_tmp2 = b.split('d', maxsplit = 1)
+                                    if d_tmp2[0].isnumeric() and d_tmp2[1].isnumeric():
+                                        d_str += '+'+d_tmp2[1]+','+d_tmp2[0]
+                                    else:
+                                        return "ERROR:"+b
                         else:
-                            print("e3")
                             return "ERROR:"+str_in
                     else:
-                        print("e4")
                         return "ERROR:"+str_in
         return d_str
     
@@ -674,7 +674,7 @@ def formula_parse(params_in):
 def ledger_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    default_flags = "-d6,3+4,1;-m2;-g6;-s2"
+    default_flags = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
     "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
     b_presets = [["-d4,1"], ["-d6,1"], ["-d8,1"], ["-d10,1"], ["-d12,1"], \
@@ -705,14 +705,12 @@ def ledger_config(self):
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def formula_roll():
-        k_in = ["Test"]
         str_in = entry_val.get()
-        k_in[0] = str_in.replace(' ', '') #Strip spaces out
-        listbox.insert(tk.END, dc_run_q(k_in[0].split(';'))),\
+        listbox.insert(tk.END, dc_run_q(formula_parse(str_in))),\
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
         listbox.select_set(tk.END)
-        return k_in[0]
+        return str_in
     
     def b_popup_rename(self, title):
         popup_val = tk.StringVar()
@@ -824,7 +822,7 @@ def ledger_config(self):
 def journal_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    default_flags = "-d6,3+4,1;-m2;-g6;-s2"
+    default_flags = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
     "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
     b_presets = [["-d4,1"], ["-d6,1"], ["-d8,1"], ["-d10,1"], ["-d12,1"], \
@@ -853,12 +851,10 @@ def journal_config(self):
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def formula_roll():
-        k_in = ["Test"]
         str_in = entry_val.get()
-        k_in[0] = str_in.replace(' ', '') #Strip spaces out
-        text.insert(tk.END, dc_run(k_in[0].split(';'))),\
+        text.insert(tk.END, dc_run(formula_parse(str_in))),\
         text.see(tk.END)
-        return k_in[0]
+        return str_in
     
     def b_popup_rename(self, title):
         popup_val = tk.StringVar()
