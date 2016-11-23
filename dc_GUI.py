@@ -27,7 +27,7 @@ def dc_run_q(params, formula = False):
     now = datetime.now()
     str_dc_out = str(dc_out)
     if formula:
-        str_params = '['+formula+']'
+        str_params = '['+formula[:100]+']'
     else:
         str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     if str_dc_out.find('returncode=0') == -1:
@@ -49,7 +49,7 @@ def dc_run(params, formula = False):
     now = datetime.now()
     str_dc_out = str(dc_out)
     if formula:
-        str_params = '['+formula+']'
+        str_params = '['+formula[:100]+']'
     else:
         str_params = str(params).replace(' ', '').replace('\',\'', ';').replace('\'', '')
     dc_print = str(dc_out).split('stdout=')
@@ -683,11 +683,11 @@ def ledger_config(self):
     default_flags = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
     "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
-    b_presets = [["-d4,1"], ["-d6,1"], ["-d8,1"], ["-d10,1"], ["-d12,1"], \
-    ["-d20,1"], ["-d100,1"], ["-d20,1;-g2"], ["-d20,2;-L"], ["-d20,2;-H"]]
+    b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
+    ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     
     def button_press(value):
-        listbox.insert(tk.END, dc_run_q(value[0].split(';'))),\
+        listbox.insert(tk.END, dc_run_q(formula_parse(value[0]), value[0])),\
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
         listbox.select_set(tk.END)
@@ -738,7 +738,8 @@ def ledger_config(self):
     def b_popup_revalue(self, title, value, parent):
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
-            str_in = popup_val.get()
+            str_raw = popup_val.get()
+            str_in = str_raw[:100]
             value_in[0] = str_in.replace(' ', '') #Strip spaces out
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
@@ -832,11 +833,11 @@ def journal_config(self):
     default_flags = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
     "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
-    b_presets = [["-d4,1"], ["-d6,1"], ["-d8,1"], ["-d10,1"], ["-d12,1"], \
-    ["-d20,1"], ["-d100,1"], ["-d20,1;-g2"], ["-d20,2;-L"], ["-d20,2;-H"]]
+    b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
+    ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     
     def button_press(value):
-        text.insert(tk.END, dc_run(value[0].split(';'))),\
+        text.insert(tk.END, dc_run(formula_parse(value[0]), value[0])),\
         text.see(tk.END)
         return value[0]
     
@@ -883,7 +884,8 @@ def journal_config(self):
     def b_popup_revalue(self, title, value, parent):
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
-            str_in = popup_val.get()
+            str_raw = popup_val.get()
+            str_in = str_raw[:100]
             value_in[0] = str_in.replace(' ', '') #Strip spaces out
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
