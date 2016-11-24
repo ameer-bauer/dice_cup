@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.6
-#Date: 2016-11-14
+#Version: 0.1.7
+#Date: 2016-11-16
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.6"
+VERSION = "0.1.7"
 
 def dc_run_q(params, formula = False):
     if HOST_SYS == 'Windows':
@@ -140,11 +140,13 @@ def formula_get(title, msg):
     entry = tk.Entry(popup, textvariable = popup_val)
     entry.config(bg = "gray90")
     entry.bind("<Return>", \
-    lambda k: (popup.destroy(), formula_parse(popup_val.get())))
+    lambda k: (popup.destroy(),\
+    print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100]))))
     entry.pack(padx = 20, pady = 5, fill = "x")
-    popup_val.set("2^5*3d6")
+    popup_val.set("2^5*3d6+3")
     button1 = tk.Button(popup, text = "Ok", \
-    command = lambda: (popup.destroy(), formula_parse(popup_val.get()[:150])))
+    command = lambda: (popup.destroy(),\
+    print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100]))))
     button1.pack(pady = 5)
     popup.geometry("250x110")
     popup.mainloop()
@@ -196,7 +198,7 @@ def formula_parse(params_in):
     #    20*10d8-17<65>-10H
     ###########################################################################
     params = []
-    params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input
+    params_str = params_in.replace(' ', '')[:100]#Strip spaces and limit input just in case
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
     error_str = ['ERROR']
     error_cli = "Please verify the input Roll Formula's syntax.\n"
@@ -226,6 +228,7 @@ def formula_parse(params_in):
         fm = False
         fp = False
         
+        #Initial formula structure checking
         if (str_in[0] == '+' or str_in[0] == '-'):
             return "ERROR:"+str_in+'F'
         if 'd' not in str_in or str_in[0] == 'd':
@@ -234,6 +237,8 @@ def formula_parse(params_in):
             sm = True
         if '+' in str_in:
             sp = True
+        
+        #Formula structure discovery
         if sm and sp:
             if str_in.find('-') < str_in.find('+'):
                 str_f = str_in.split('-', maxsplit = 1)
@@ -287,25 +292,31 @@ def formula_parse(params_in):
             else:
                 return "ERROR:"+str_in
         
+        #Modifier handling setup
         if str_in.rfind('+') > str_in.rfind('-'):#Positive Modifier handling
             z_add_m = str_in.rsplit('+', maxsplit = 1)
-            if 'd' not in z_add_m[-1]:
-                if z_add_m[-1].isnumeric():
+            if not z_add_m[0][-1].isnumeric():
+                return "ERROR:"+str_in
+            if 'd' not in z_add_m[1]:
+                if z_add_m[1].isnumeric():
                     mp = True
                     print("Roll Formula: Positive Modifier Defined")
-                    params.append('-m'+z_add_m[-1])
+                    params.append('-m'+z_add_m[1])
                 else:
-                    return "ERROR:"+'+'+z_add_m[-1]
+                    return "ERROR:"+'+'+z_add_m[1]
         if str_in.rfind('-') > str_in.rfind('+'):#Negative Modifier handling
             z_sub_m = str_in.rsplit('-', maxsplit = 1)
-            if 'd' not in z_sub_m[-1]:
-                if z_sub_m[-1].isnumeric():
+            if not z_sub_m[0][-1].isnumeric():
+                return "ERROR:"+str_in
+            if 'd' not in z_sub_m[1]:
+                if z_sub_m[1].isnumeric():
                     mm = True
                     print("Roll Formula: Negative Modifier Defined")
-                    params.append('-m-'+z_sub_m[-1])
+                    params.append('-m-'+z_sub_m[1])
                 else:
-                    return "ERROR:"+'-'+z_sub_m[-1]
+                    return "ERROR:"+'-'+z_sub_m[1]
         
+        #Dice handling setup
         if fp:
             if mp:
                 z_tmp = z_add_m[0].split('+')
@@ -674,7 +685,6 @@ def formula_parse(params_in):
             print("Roll Formula: Dice Combination Defined")
             params.append('-d'+z)
     
-    print("Parsed Flags:", params)
     return params
 
 def ledger_config(self):
@@ -682,7 +692,7 @@ def ledger_config(self):
     entry_val = tk.StringVar()
     default_flags = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
-    "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
+    "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
     b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
     ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     
@@ -711,8 +721,7 @@ def ledger_config(self):
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def formula_roll():
-        str_raw = entry_val.get()
-        str_in = str_raw.replace(' ', '')
+        str_in = entry_val.get().replace(' ', '')[:100]
         listbox.insert(tk.END, dc_run_q(formula_parse(str_in), str_in)),\
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
@@ -723,14 +732,20 @@ def ledger_config(self):
         popup_val = tk.StringVar()
         popup = tk.Toplevel()
         popup.wm_title(title)
+        def setname(self_in):
+            text_in = popup_val.get()[:20]
+            self_in.configure(text = text_in)
+            return text_in
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
+        lambda k: (popup.destroy(),\
+        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
+        command = lambda: (popup.destroy(),\
+        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         button1.pack(pady = 5)
         #popup.geometry("250x80")
         popup.mainloop()
@@ -738,9 +753,7 @@ def ledger_config(self):
     def b_popup_revalue(self, title, value, parent):
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
-            str_raw = popup_val.get()
-            str_in = str_raw[:100]
-            value_in[0] = str_in.replace(' ', '') #Strip spaces out
+            value_in[0] = popup_val.get().replace(' ', '')[:100]
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
         popup = tk.Toplevel()
@@ -748,11 +761,13 @@ def ledger_config(self):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), print(parent.cget("text")+',', "Revalue = "+setvalue(self, value))))
+        lambda k: (popup.destroy(), print("Button Conf.:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), print(parent.cget("text")+',', "Revalue = "+setvalue(self, value))))
+        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         button1.pack(pady = 5)
         #popup.geometry("200x80")
         popup.mainloop()
@@ -769,61 +784,71 @@ def ledger_config(self):
     
     entry = tk.Entry(self, textvariable = entry_val)
     entry.config(bg = "gray90")
-    entry.bind("<Return>", lambda k: print("Keyboard Input: Execute Roll Formula, Value =", formula_roll()))
+    entry.bind("<Return>", lambda k: print("Keyboard In.: \'[Execute Roll Formula]\', Value =", formula_roll()))
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
     rollbutton = tk.Button(self, text = "[Execute Roll Formula]", \
-    command = lambda: print("Button Press: [Execute Roll Formula], Value =", formula_roll()))
+    command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
     button1 = tk.Button(self, text = b_names[0], \
-    command = lambda: (print("Button Press:", button1.cget("text")+',', "Value = "+button_press(b_presets[0]))))
+    command = lambda: (print("Button Press:", '\''+button1.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[0]))))
     button1.pack(side = "left")
     b_menu(button1, button1.cget("text"), b_presets[0])
     
     button2 = tk.Button(self, text = b_names[1], \
-    command = lambda: (print("Button Press:", button2.cget("text")+',', "Value = "+button_press(b_presets[1]))))
+    command = lambda: (print("Button Press:", '\''+button2.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[1]))))
     button2.pack(side = "left")
     b_menu(button2, button2.cget("text"), b_presets[1])
     
     button3 = tk.Button(self, text = b_names[2], \
-    command = lambda: (print("Button Press:", button3.cget("text")+',', "Value = "+button_press(b_presets[2]))))
+    command = lambda: (print("Button Press:", '\''+button3.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[2]))))
     button3.pack(side = "left")
     b_menu(button3, button3.cget("text"), b_presets[2])
     
     button4 = tk.Button(self, text = b_names[3], \
-    command = lambda: (print("Button Press:", button4.cget("text")+',', "Value = "+button_press(b_presets[3]))))
+    command = lambda: (print("Button Press:", '\''+button4.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[3]))))
     button4.pack(side = "left")
     b_menu(button4, button4.cget("text"), b_presets[3])
     
     button5 = tk.Button(self, text = b_names[4], \
-    command = lambda: (print("Button Press:", button5.cget("text")+',', "Value = "+button_press(b_presets[4]))))
+    command = lambda: (print("Button Press:", '\''+button5.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[4]))))
     button5.pack(side = "left")
     b_menu(button5, button5.cget("text"), b_presets[4])
     
     button6 = tk.Button(self, text = b_names[5], \
-    command = lambda: (print("Button Press:", button6.cget("text")+',', "Value = "+button_press(b_presets[5]))))
+    command = lambda: (print("Button Press:", '\''+button6.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[5]))))
     button6.pack(side = "left")
     b_menu(button6, button6.cget("text"), b_presets[5])
     
     button7 = tk.Button(self, text = b_names[6], \
-    command = lambda: (print("Button Press:", button7.cget("text")+',', "Value = "+button_press(b_presets[6]))))
+    command = lambda: (print("Button Press:", '\''+button7.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[6]))))
     button7.pack(side = "left")
     b_menu(button7, button7.cget("text"), b_presets[6])
     
     button8 = tk.Button(self, text = b_names[7], \
-    command = lambda: (print("Button Press:", button8.cget("text")+',', "Value = "+button_press(b_presets[7]))))
+    command = lambda: (print("Button Press:", '\''+button8.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[7]))))
     button8.pack(side = "left")
     b_menu(button8, button8.cget("text"), b_presets[7])
     
     button9 = tk.Button(self, text = b_names[8], \
-    command = lambda: (print("Button Press:", button9.cget("text")+',', "Value = "+button_press(b_presets[8]))))
+    command = lambda: (print("Button Press:", '\''+button9.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[8]))))
     button9.pack(side = "left")
     b_menu(button9, button9.cget("text"), b_presets[8])
     
     button10 = tk.Button(self, text = b_names[9], \
-    command = lambda: (print("Button Press:", button10.cget("text")+',', "Value = "+button_press(b_presets[9]))))
+    command = lambda: (print("Button Press:", '\''+button10.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[9]))))
     button10.pack(side = "left")
     b_menu(button10, button10.cget("text"), b_presets[9])
 
@@ -832,7 +857,7 @@ def journal_config(self):
     entry_val = tk.StringVar()
     default_flags = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
-    "2 Single 1d20s", "2d20 Drop Low", "2d20 Drop High"]
+    "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
     b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
     ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     
@@ -859,8 +884,7 @@ def journal_config(self):
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def formula_roll():
-        str_raw = entry_val.get()
-        str_in = str_raw.replace(' ', '')
+        str_in = entry_val.get().replace(' ', '')[:100]
         text.insert(tk.END, dc_run(formula_parse(str_in), str_in)),\
         text.see(tk.END)
         return str_in
@@ -869,14 +893,20 @@ def journal_config(self):
         popup_val = tk.StringVar()
         popup = tk.Toplevel()
         popup.wm_title(title)
+        def setname(self_in):
+            text_in = popup_val.get()[:20]
+            self_in.configure(text = text_in)
+            return text_in
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
+        lambda k: (popup.destroy(),\
+        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), self.configure(text = popup_val.get()[:20])))
+        command = lambda: (popup.destroy(),\
+        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         button1.pack(pady = 5)
         #popup.geometry("250x80")
         popup.mainloop()
@@ -884,9 +914,7 @@ def journal_config(self):
     def b_popup_revalue(self, title, value, parent):
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
-            str_raw = popup_val.get()
-            str_in = str_raw[:100]
-            value_in[0] = str_in.replace(' ', '') #Strip spaces out
+            value_in[0] = popup_val.get().replace(' ', '')[:100]
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
         popup = tk.Toplevel()
@@ -894,11 +922,13 @@ def journal_config(self):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), print(parent.cget("text")+',', "Revalue = "+setvalue(self, value))))
+        lambda k: (popup.destroy(),\
+        print("Button Conf.:", '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), print(parent.cget("text")+',', "Revalue = "+setvalue(self, value))))
+        command = lambda: (popup.destroy(),\
+        print("Button Conf.:", '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         button1.pack(pady = 5)
         #popup.geometry("200x80")
         popup.mainloop()
@@ -916,61 +946,71 @@ def journal_config(self):
     
     entry = tk.Entry(self, textvariable = entry_val)
     entry.config(bg = "gray90")
-    entry.bind("<Return>", lambda k: print("Keyboard Input: Execute Roll Formula, Value =", formula_roll()))
+    entry.bind("<Return>", lambda k: print("Keyboard In.: \'[Execute Roll Formula]\', Value =", formula_roll()))
     entry.pack(fill = "x")
     entry_val.set(default_flags)
     
     rollbutton = tk.Button(self, text = "[Execute Roll Formula]", \
-    command = lambda: print("Button Press: [Execute Roll Formula], Value =", formula_roll()))
+    command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
     button1 = tk.Button(self, text = b_names[0], \
-    command = lambda: (print("Button Press:", button1.cget("text")+',', "Value = "+button_press(b_presets[0]))))
+    command = lambda: (print("Button Press:", '\''+button1.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[0]))))
     button1.pack(side = "left")
     b_menu(button1, button1.cget("text"), b_presets[0])
     
     button2 = tk.Button(self, text = b_names[1], \
-    command = lambda: (print("Button Press:", button2.cget("text")+',', "Value = "+button_press(b_presets[1]))))
+    command = lambda: (print("Button Press:", '\''+button2.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[1]))))
     button2.pack(side = "left")
     b_menu(button2, button2.cget("text"), b_presets[1])
     
     button3 = tk.Button(self, text = b_names[2], \
-    command = lambda: (print("Button Press:", button3.cget("text")+',', "Value = "+button_press(b_presets[2]))))
+    command = lambda: (print("Button Press:", '\''+button3.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[2]))))
     button3.pack(side = "left")
     b_menu(button3, button3.cget("text"), b_presets[2])
     
     button4 = tk.Button(self, text = b_names[3], \
-    command = lambda: (print("Button Press:", button4.cget("text")+',', "Value = "+button_press(b_presets[3]))))
+    command = lambda: (print("Button Press:", '\''+button4.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[3]))))
     button4.pack(side = "left")
     b_menu(button4, button4.cget("text"), b_presets[3])
     
     button5 = tk.Button(self, text = b_names[4], \
-    command = lambda: (print("Button Press:", button5.cget("text")+',', "Value = "+button_press(b_presets[4]))))
+    command = lambda: (print("Button Press:", '\''+button5.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[4]))))
     button5.pack(side = "left")
     b_menu(button5, button5.cget("text"), b_presets[4])
     
     button6 = tk.Button(self, text = b_names[5], \
-    command = lambda: (print("Button Press:", button6.cget("text")+',', "Value = "+button_press(b_presets[5]))))
+    command = lambda: (print("Button Press:", '\''+button6.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[5]))))
     button6.pack(side = "left")
     b_menu(button6, button6.cget("text"), b_presets[5])
     
     button7 = tk.Button(self, text = b_names[6], \
-    command = lambda: (print("Button Press:", button7.cget("text")+',', "Value = "+button_press(b_presets[6]))))
+    command = lambda: (print("Button Press:", '\''+button7.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[6]))))
     button7.pack(side = "left")
     b_menu(button7, button7.cget("text"), b_presets[6])
     
     button8 = tk.Button(self, text = b_names[7], \
-    command = lambda: (print("Button Press:", button8.cget("text")+',', "Value = "+button_press(b_presets[7]))))
+    command = lambda: (print("Button Press:", '\''+button8.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[7]))))
     button8.pack(side = "left")
     b_menu(button8, button8.cget("text"), b_presets[7])
     
     button9 = tk.Button(self, text = b_names[8], \
-    command = lambda: (print("Button Press:", button9.cget("text")+',', "Value = "+button_press(b_presets[8]))))
+    command = lambda: (print("Button Press:", '\''+button9.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[8]))))
     button9.pack(side = "left")
     b_menu(button9, button9.cget("text"), b_presets[8])
     
     button10 = tk.Button(self, text = b_names[9], \
-    command = lambda: (print("Button Press:", button10.cget("text")+',', "Value = "+button_press(b_presets[9]))))
+    command = lambda: (print("Button Press:", '\''+button10.cget("text")+'\',',\
+    "Value = "+button_press(b_presets[9]))))
     button10.pack(side = "left")
     b_menu(button10, button10.cget("text"), b_presets[9])
 
@@ -1054,9 +1094,8 @@ class GUITest(tk.Tk):
         command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        toolsmenu.add_command(label = "Roll Formula Builder", \
-        #command = lambda: popup_wrn("Formula Build", "Not supported yet."))
-        command = lambda: formula_get("Roll Formula Builder", "Enter a test Roll Formula:"))
+        toolsmenu.add_command(label = "Roll Formula Test", \
+        command = lambda: formula_get("Roll Formula Test", "Enter a Roll Formula to Validate"))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         helpmenu.add_command(label = "Roll Formula", \
