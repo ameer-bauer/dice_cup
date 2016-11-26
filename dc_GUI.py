@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.7
+#Version: 0.1.8
 #Date: 2016-11-16
 #----------------
 
@@ -17,7 +17,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.7"
+VERSION = "0.1.8"
 
 def dc_run_q(params, formula = False):
     if HOST_SYS == 'Windows':
@@ -141,17 +141,17 @@ def formula_get(title, msg):
     entry.config(bg = "gray90")
     entry.bind("<Return>", \
     lambda k: (popup.destroy(),\
-    print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100]))))
+    print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100], True))))
     entry.pack(padx = 20, pady = 5, fill = "x")
     popup_val.set("2^5*3d6+3")
     button1 = tk.Button(popup, text = "Ok", \
     command = lambda: (popup.destroy(),\
-    print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100]))))
+    print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100], True))))
     button1.pack(pady = 5)
     popup.geometry("250x110")
     popup.mainloop()
 
-def formula_parse(params_in):
+def formula_parse(params_in, verbose = False):
     ###########################################################################
     #SYNTAX
     #  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <±u >±l L|H I
@@ -300,7 +300,8 @@ def formula_parse(params_in):
             if 'd' not in z_add_m[1]:
                 if z_add_m[1].isnumeric():
                     mp = True
-                    print("Roll Formula: Positive Modifier Defined")
+                    if verbose:
+                        print("Roll Formula: Positive Modifier Defined")
                     params.append('-m'+z_add_m[1])
                 else:
                     return "ERROR:"+'+'+z_add_m[1]
@@ -311,7 +312,8 @@ def formula_parse(params_in):
             if 'd' not in z_sub_m[1]:
                 if z_sub_m[1].isnumeric():
                     mm = True
-                    print("Roll Formula: Negative Modifier Defined")
+                    if verbose:
+                        print("Roll Formula: Negative Modifier Defined")
                     params.append('-m-'+z_sub_m[1])
                 else:
                     return "ERROR:"+'-'+z_sub_m[1]
@@ -391,7 +393,8 @@ def formula_parse(params_in):
         I = True
         params_str_I = params_str.replace('I', '')
         params.append('-i')
-        print("Roll Formula: Statistical Information Enabled")
+        if verbose:
+            print("Roll Formula: Statistical Information Enabled")
     
     #Drop Lowest handling
     if 'L' in params_str:
@@ -401,7 +404,8 @@ def formula_parse(params_in):
         else:
             params_str_L = params_str.replace('L', '')
         params.append('-L')
-        print("Roll Formula: Drop Lowest Enabled")
+        if verbose:
+            print("Roll Formula: Drop Lowest Enabled")
     
     #Drop Highest handling
     if 'H' in params_str:
@@ -412,7 +416,8 @@ def formula_parse(params_in):
             else:
                 params_str_H = params_str.replace('H', '')
             params.append('-H')
-            print("Roll Formula: Drop Highest Enabled")
+            if verbose:
+                print("Roll Formula: Drop Highest Enabled")
         else:
             print(error_blk)
             print("Roll Formula Syntax Error:", params_str)
@@ -458,7 +463,8 @@ def formula_parse(params_in):
             print("Roll Formula \'Lower Boundary\' Syntax Error:", '>'+lb[1])
             print(error_cli)
             return error_str
-        print("Roll Formula: Lower Boundary Defined")
+        if verbose:
+            print("Roll Formula: Lower Boundary Defined")
         if '<' in params_str:
             u = True
             ub = lb[0].rsplit('<', maxsplit = 1)
@@ -487,7 +493,8 @@ def formula_parse(params_in):
                 print("Roll Formula \'Upper Boundary\' Syntax Error:", '<'+ub[1])
                 print(error_cli)
                 return error_str
-            print("Roll Formula: Upper Boundary Defined")
+            if verbose:
+                print("Roll Formula: Upper Boundary Defined")
     
     #Upper Bound and Lower Bound handling combo 2
     if params_str.rfind('>') < params_str.rfind('<'):#>l <u syntax order
@@ -526,7 +533,8 @@ def formula_parse(params_in):
             print("Roll Formula \'Upper Boundary\' Syntax Error:", '<'+ub[1])
             print(error_cli)
             return error_str
-        print("Roll Formula: Upper Boundary Defined")
+        if verbose:
+            print("Roll Formula: Upper Boundary Defined")
         if '>' in params_str:
             l = True
             lb = ub[0].rsplit('>', maxsplit = 1)
@@ -555,7 +563,8 @@ def formula_parse(params_in):
                 print("Roll Formula \'Lower Boundary\' Syntax Error:", '>'+lb[1])
                 print(error_cli)
                 return error_str
-            print("Roll Formula: Lower Boundary Defined")
+            if verbose:
+                print("Roll Formula: Lower Boundary Defined")
     
     #Percentage handling
     if '%' in params_str:
@@ -595,7 +604,8 @@ def formula_parse(params_in):
             print("Roll Formula \'Percentage\' Syntax Error:", v[0]+'%')
             print(error_cli)
             return error_str
-        print("Roll Formula: Percentage Modifier Defined")
+        if verbose:
+            print("Roll Formula: Percentage Modifier Defined")
     
     #Set handling
     if '^' in params_str:
@@ -616,7 +626,8 @@ def formula_parse(params_in):
             y = params_str.split('^', maxsplit = 1)
         if y[0].isnumeric():
             params.append('-s'+y[0])
-            print("Roll Formula: Dice Set Defined")
+            if verbose:
+                print("Roll Formula: Dice Set Defined")
         else:
             print(error_blk)
             print("Roll Formula \'Set\' Syntax Error:", y[0]+'^')
@@ -644,7 +655,8 @@ def formula_parse(params_in):
             x = params_str.split('*', maxsplit = 1)
         if x[0].isnumeric():
             params.append('-g'+x[0])
-            print("Roll Formula: Dice Group Defined")
+            if verbose:
+                print("Roll Formula: Dice Group Defined")
         else:
             print(error_blk)
             print("Roll Formula \'Group\' Syntax Error:", x[0]+'*')
@@ -682,7 +694,8 @@ def formula_parse(params_in):
             print(error_cli)
             return error_str
         else:
-            print("Roll Formula: Dice Combination Defined")
+            if verbose:
+                print("Roll Formula: Dice Combination Defined")
             params.append('-d'+z)
     
     return params
@@ -702,23 +715,6 @@ def ledger_config(self):
         listbox.select_clear(0,tk.END)
         listbox.select_set(tk.END)
         return value[0]
-    
-    def b_menu(self, name, value):
-        button_rc_popup = tk.Menu(self, tearoff = 0)
-        button_rc_popup.add_command(label = value[0],\
-        command = lambda: button_press(value))
-        button_rc_popup.add_separator()
-        button_rc_popup.add_command(label = "Rename",\
-        command = lambda: b_popup_rename(self, "Rename Button"))
-        button_rc_popup.add_command(label = "Revalue",\
-        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
-        button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
-        if HOST_SYS == 'Darwin':
-            self.bind("<Button-2>",\
-            lambda e: button_rc_popup.post(e.x_root, e.y_root))
-        else:
-            self.bind("<Button-3>",\
-            lambda e: button_rc_popup.post(e.x_root, e.y_root))
     
     def formula_roll():
         str_in = entry_val.get().replace(' ', '')[:100]
@@ -772,6 +768,23 @@ def ledger_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
+    def b_menu(self, name, value):
+        button_rc_popup = tk.Menu(self, tearoff = 0)
+        button_rc_popup.add_command(label = value[0],\
+        command = lambda: button_press(value))
+        button_rc_popup.add_separator()
+        button_rc_popup.add_command(label = "Rename",\
+        command = lambda: b_popup_rename(self, "Rename Button"))
+        button_rc_popup.add_command(label = "Revalue",\
+        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
+        button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
+        if HOST_SYS == 'Darwin':
+            self.bind("<Button-2>",\
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
+        else:
+            self.bind("<Button-3>",\
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
+
     listbox = tk.Listbox(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = listbox.yview)
@@ -866,23 +879,6 @@ def journal_config(self):
         text.see(tk.END)
         return value[0]
     
-    def b_menu(self, name, value):
-        button_rc_popup = tk.Menu(self, tearoff = 0)
-        button_rc_popup.add_command(label = value[0],\
-        command = lambda: button_press(value))
-        button_rc_popup.add_separator()
-        button_rc_popup.add_command(label = "Rename",\
-        command = lambda: b_popup_rename(self, "Rename Button"))
-        button_rc_popup.add_command(label = "Revalue", \
-        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
-        button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
-        if HOST_SYS == 'Darwin':
-            self.bind("<Button-2>",\
-            lambda e: button_rc_popup.post(e.x_root, e.y_root))
-        else:
-            self.bind("<Button-3>",\
-            lambda e: button_rc_popup.post(e.x_root, e.y_root))
-    
     def formula_roll():
         str_in = entry_val.get().replace(' ', '')[:100]
         text.insert(tk.END, dc_run(formula_parse(str_in), str_in)),\
@@ -933,6 +929,23 @@ def journal_config(self):
         #popup.geometry("200x80")
         popup.mainloop()
     
+    def b_menu(self, name, value):
+        button_rc_popup = tk.Menu(self, tearoff = 0)
+        button_rc_popup.add_command(label = value[0],\
+        command = lambda: button_press(value))
+        button_rc_popup.add_separator()
+        button_rc_popup.add_command(label = "Rename",\
+        command = lambda: b_popup_rename(self, "Rename Button"))
+        button_rc_popup.add_command(label = "Revalue", \
+        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
+        button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
+        if HOST_SYS == 'Darwin':
+            self.bind("<Button-2>",\
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
+        else:
+            self.bind("<Button-3>",\
+            lambda e: button_rc_popup.post(e.x_root, e.y_root))
+
     text = tk.Text(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = text.yview)
