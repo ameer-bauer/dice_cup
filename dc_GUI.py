@@ -703,7 +703,7 @@ def formula_parse(params_in, verbose = False):
 def ledger_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    default_flags = "2^5*3d6+1d4-5"
+    def_formula = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
     "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
     b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
@@ -807,20 +807,19 @@ def ledger_config(self):
     entry.config(bg = "gray90")
     entry.bind("<Return>", lambda k: print("Keyboard In.: \'[Execute Roll Formula]\', Value =", formula_roll()))
     entry.pack(fill = "x")
-    entry_val.set(default_flags)
+    entry_val.set(def_formula)
     
     rollbutton = tk.Button(self, text = "[Execute Roll Formula]", \
     command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
     for a in range(0, 10): #Static 10 buttons... for now
-        print("a =", a, "b_preset = ", b_names[a], b_presets[a])
         button_make(self, b_names[a], b_presets[a])
 
 def journal_config(self):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    default_flags = "2^5*3d6+1d4-5"
+    def_formula = "2^5*3d6+1d4-5"
     b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
     "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
     b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
@@ -921,14 +920,13 @@ def journal_config(self):
     entry.config(bg = "gray90")
     entry.bind("<Return>", lambda k: print("Keyboard In.: \'[Execute Roll Formula]\', Value =", formula_roll()))
     entry.pack(fill = "x")
-    entry_val.set(default_flags)
+    entry_val.set(def_formula)
     
     rollbutton = tk.Button(self, text = "[Execute Roll Formula]", \
     command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
     for a in range(0, 10): #Static 10 buttons... for now
-        print("a =", a, "b_preset = ", b_names[a], b_presets[a])
         button_make(self, b_names[a], b_presets[a])
 
 class GUITest(tk.Tk):
