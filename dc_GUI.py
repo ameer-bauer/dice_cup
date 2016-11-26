@@ -125,7 +125,7 @@ def popup_get(title, msg):
     entry.config(bg = "gray90")
     entry.pack(padx = 10, pady = 5, fill = "x")
     popup_val.set("Default")
-    button1 = tk.Button(popup, text = "Ok", \
+    button1 = tk.Button(popup, text = "Ok",\
     command = lambda: (popup.destroy(), print("Value: ", popup_val.get())))
     button1.pack(pady = 5)
     #popup.geometry("250x100")
@@ -139,12 +139,12 @@ def formula_get(title, msg):
     label.pack(padx = 10, pady= 10, side = "top", fill="x")
     entry = tk.Entry(popup, textvariable = popup_val)
     entry.config(bg = "gray90")
-    entry.bind("<Return>", \
+    entry.bind("<Return>",\
     lambda k: (popup.destroy(),\
     print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100], True))))
     entry.pack(padx = 20, pady = 5, fill = "x")
     popup_val.set("2^5*3d6+3")
-    button1 = tk.Button(popup, text = "Ok", \
+    button1 = tk.Button(popup, text = "Ok",\
     command = lambda: (popup.destroy(),\
     print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100], True))))
     button1.pack(pady = 5)
@@ -784,7 +784,15 @@ def ledger_config(self):
         else:
             self.bind("<Button-3>",\
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
-
+    
+    def button_make(self, name, value):
+        #name must be strings, value must be a single element list
+        button = tk.Button(self, text = name,\
+        command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
+        "Value = "+button_press(value))))
+        button.pack(side = "left")
+        b_menu(button, button.cget("text"), value)
+    
     listbox = tk.Listbox(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = listbox.yview)
@@ -805,65 +813,9 @@ def ledger_config(self):
     command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
-    button1 = tk.Button(self, text = b_names[0], \
-    command = lambda: (print("Button Press:", '\''+button1.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[0]))))
-    button1.pack(side = "left")
-    b_menu(button1, button1.cget("text"), b_presets[0])
-    
-    button2 = tk.Button(self, text = b_names[1], \
-    command = lambda: (print("Button Press:", '\''+button2.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[1]))))
-    button2.pack(side = "left")
-    b_menu(button2, button2.cget("text"), b_presets[1])
-    
-    button3 = tk.Button(self, text = b_names[2], \
-    command = lambda: (print("Button Press:", '\''+button3.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[2]))))
-    button3.pack(side = "left")
-    b_menu(button3, button3.cget("text"), b_presets[2])
-    
-    button4 = tk.Button(self, text = b_names[3], \
-    command = lambda: (print("Button Press:", '\''+button4.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[3]))))
-    button4.pack(side = "left")
-    b_menu(button4, button4.cget("text"), b_presets[3])
-    
-    button5 = tk.Button(self, text = b_names[4], \
-    command = lambda: (print("Button Press:", '\''+button5.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[4]))))
-    button5.pack(side = "left")
-    b_menu(button5, button5.cget("text"), b_presets[4])
-    
-    button6 = tk.Button(self, text = b_names[5], \
-    command = lambda: (print("Button Press:", '\''+button6.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[5]))))
-    button6.pack(side = "left")
-    b_menu(button6, button6.cget("text"), b_presets[5])
-    
-    button7 = tk.Button(self, text = b_names[6], \
-    command = lambda: (print("Button Press:", '\''+button7.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[6]))))
-    button7.pack(side = "left")
-    b_menu(button7, button7.cget("text"), b_presets[6])
-    
-    button8 = tk.Button(self, text = b_names[7], \
-    command = lambda: (print("Button Press:", '\''+button8.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[7]))))
-    button8.pack(side = "left")
-    b_menu(button8, button8.cget("text"), b_presets[7])
-    
-    button9 = tk.Button(self, text = b_names[8], \
-    command = lambda: (print("Button Press:", '\''+button9.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[8]))))
-    button9.pack(side = "left")
-    b_menu(button9, button9.cget("text"), b_presets[8])
-    
-    button10 = tk.Button(self, text = b_names[9], \
-    command = lambda: (print("Button Press:", '\''+button10.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[9]))))
-    button10.pack(side = "left")
-    b_menu(button10, button10.cget("text"), b_presets[9])
+    for a in range(0, 10): #Static 10 buttons... for now
+        print("a =", a, "b_preset = ", b_names[a], b_presets[a])
+        button_make(self, b_names[a], b_presets[a])
 
 def journal_config(self):
     set_val = tk.IntVar()
@@ -945,7 +897,15 @@ def journal_config(self):
         else:
             self.bind("<Button-3>",\
             lambda e: button_rc_popup.post(e.x_root, e.y_root))
-
+    
+    def button_make(self, name, value):
+        #name must be strings, value must be a single element list
+        button = tk.Button(self, text = name,\
+        command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
+        "Value = "+button_press(value))))
+        button.pack(side = "left")
+        b_menu(button, button.cget("text"), value)
+    
     text = tk.Text(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
     scrolly.config(command = text.yview)
@@ -967,65 +927,9 @@ def journal_config(self):
     command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
-    button1 = tk.Button(self, text = b_names[0], \
-    command = lambda: (print("Button Press:", '\''+button1.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[0]))))
-    button1.pack(side = "left")
-    b_menu(button1, button1.cget("text"), b_presets[0])
-    
-    button2 = tk.Button(self, text = b_names[1], \
-    command = lambda: (print("Button Press:", '\''+button2.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[1]))))
-    button2.pack(side = "left")
-    b_menu(button2, button2.cget("text"), b_presets[1])
-    
-    button3 = tk.Button(self, text = b_names[2], \
-    command = lambda: (print("Button Press:", '\''+button3.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[2]))))
-    button3.pack(side = "left")
-    b_menu(button3, button3.cget("text"), b_presets[2])
-    
-    button4 = tk.Button(self, text = b_names[3], \
-    command = lambda: (print("Button Press:", '\''+button4.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[3]))))
-    button4.pack(side = "left")
-    b_menu(button4, button4.cget("text"), b_presets[3])
-    
-    button5 = tk.Button(self, text = b_names[4], \
-    command = lambda: (print("Button Press:", '\''+button5.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[4]))))
-    button5.pack(side = "left")
-    b_menu(button5, button5.cget("text"), b_presets[4])
-    
-    button6 = tk.Button(self, text = b_names[5], \
-    command = lambda: (print("Button Press:", '\''+button6.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[5]))))
-    button6.pack(side = "left")
-    b_menu(button6, button6.cget("text"), b_presets[5])
-    
-    button7 = tk.Button(self, text = b_names[6], \
-    command = lambda: (print("Button Press:", '\''+button7.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[6]))))
-    button7.pack(side = "left")
-    b_menu(button7, button7.cget("text"), b_presets[6])
-    
-    button8 = tk.Button(self, text = b_names[7], \
-    command = lambda: (print("Button Press:", '\''+button8.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[7]))))
-    button8.pack(side = "left")
-    b_menu(button8, button8.cget("text"), b_presets[7])
-    
-    button9 = tk.Button(self, text = b_names[8], \
-    command = lambda: (print("Button Press:", '\''+button9.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[8]))))
-    button9.pack(side = "left")
-    b_menu(button9, button9.cget("text"), b_presets[8])
-    
-    button10 = tk.Button(self, text = b_names[9], \
-    command = lambda: (print("Button Press:", '\''+button10.cget("text")+'\',',\
-    "Value = "+button_press(b_presets[9]))))
-    button10.pack(side = "left")
-    b_menu(button10, button10.cget("text"), b_presets[9])
+    for a in range(0, 10): #Static 10 buttons... for now
+        print("a =", a, "b_preset = ", b_names[a], b_presets[a])
+        button_make(self, b_names[a], b_presets[a])
 
 class GUITest(tk.Tk):
     def __init__(self, *args, **kwargs):
