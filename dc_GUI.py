@@ -700,14 +700,24 @@ def formula_parse(params_in, verbose = False):
     
     return params
 
-def ledger_config(self):
+def ledger_config(self, configs = False):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    def_formula = "2^5*3d6+1d4-5"
-    b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
-    "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
-    b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
-    ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
+    def_formula = "2^5*3d6+1d4-5I"
+    
+    if not configs:
+        b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
+        "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
+        b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
+        ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
+    else:
+        b_names = []
+        b_presets = []
+        b_list = configs.split(',')
+        for c in b_list:
+            c_list = c.split(':', maxsplit = 1)
+            b_names.append(c_list[0])
+            b_presets.append([c_list[1]])
     
     def button_press(value):
         listbox.insert(tk.END, dc_run_q(formula_parse(value[0]), value[0])),\
@@ -816,14 +826,24 @@ def ledger_config(self):
     for a in range(0, 10): #Static 10 buttons... for now
         button_make(self, b_names[a], b_presets[a])
 
-def journal_config(self):
+def journal_config(self, configs = False):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    def_formula = "2^5*3d6+1d4-5"
-    b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
-    "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
-    b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
-    ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
+    def_formula = "2^5*3d6+1d4-5I"
+    
+    if not configs:
+        b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
+        "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
+        b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
+        ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
+    else:
+        b_names = []
+        b_presets = []
+        b_list = configs.split(',')
+        for c in b_list:
+            c_list = c.split(':', maxsplit = 1)
+            b_names.append(c_list[0])
+            b_presets.append([c_list[1]])
     
     def button_press(value):
         text.insert(tk.END, dc_run(formula_parse(value[0]), value[0])),\
@@ -1068,13 +1088,13 @@ class GUITest(tk.Tk):
             lambda n: note_rc_popup.post(n.x_root, n.y_root))
         
         notebook.add(note1, text = "Ledger 1")
-        ledger_config(note1)
+        ledger_config(note1, "1d4:1d4,1d6:1d6,1d8:1d8,1d10:1d10,1d12:1d12,1d20:1d20,1d100:1d100,2 Single d20s:2*1d20,2d20 Drop Low:2d20L,2d20 Drop High:2d20H")
         
         notebook.add(note2, text = "Ledger 2")
         ledger_config(note2)
         
         notebook.add(note3, text = "Journal 1")
-        journal_config(note3)
+        journal_config(note3, "1d4:1d4,1d6:1d6,1d8:1d8,1d10:1d10,1d12:1d12,1d20:1d20,1d100:1d100,2 Single d20s:2*1d20,2d20 Drop Low:2d20L,2d20 Drop High:2d20H")
         
         notebook.add(note4, text = "Journal 2")
         journal_config(note4)
