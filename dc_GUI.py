@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.8
-#Date: 2016-11-16
+#Version: 0.1.9
+#Date: 2016-12-01
 #----------------
 
 import tkinter as tk
@@ -778,7 +778,7 @@ def ledger_config(self, configs = False):
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
-        button0 = tk.Button(popup, text = "Match ",\
+        button0 = tk.Button(popup, text = "Match",\
         command = lambda: (popup.destroy(), print("Button Conf.:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
@@ -912,7 +912,7 @@ def journal_config(self, configs = False):
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
-        button0 = tk.Button(popup, text = "Match ",\
+        button0 = tk.Button(popup, text = "Match",\
         command = lambda: (popup.destroy(), print("Button Conf.:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
