@@ -706,11 +706,13 @@ def ledger_config(self, configs = False):
     def_formula = "2^5*3d6+1d4-5I"
     
     if not configs:
+        b_count = 10
         b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
         "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
         b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
         ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     else:
+        b_count = 0
         b_names = []
         b_presets = []
         b_list = configs.split(',')
@@ -718,6 +720,7 @@ def ledger_config(self, configs = False):
             c_list = c.split(':', maxsplit = 1)
             b_names.append(c_list[0])
             b_presets.append([c_list[1]])
+            b_count += 1
     
     def button_press(value):
         listbox.insert(tk.END, dc_run_q(formula_parse(value[0]), value[0])),\
@@ -823,7 +826,7 @@ def ledger_config(self, configs = False):
     command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
-    for a in range(0, 10): #Static 10 buttons... for now
+    for a in range(0, b_count):
         button_make(self, b_names[a], b_presets[a])
 
 def journal_config(self, configs = False):
@@ -832,11 +835,13 @@ def journal_config(self, configs = False):
     def_formula = "2^5*3d6+1d4-5I"
     
     if not configs:
+        b_count = 10
         b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
         "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
         b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
         ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     else:
+        b_count = 0
         b_names = []
         b_presets = []
         b_list = configs.split(',')
@@ -844,6 +849,7 @@ def journal_config(self, configs = False):
             c_list = c.split(':', maxsplit = 1)
             b_names.append(c_list[0])
             b_presets.append([c_list[1]])
+            b_count += 1
     
     def button_press(value):
         text.insert(tk.END, dc_run(formula_parse(value[0]), value[0])),\
@@ -946,7 +952,7 @@ def journal_config(self, configs = False):
     command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
-    for a in range(0, 10): #Static 10 buttons... for now
+    for a in range(0, b_count):
         button_make(self, b_names[a], b_presets[a])
 
 class GUITest(tk.Tk):
