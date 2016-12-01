@@ -703,7 +703,7 @@ def formula_parse(params_in, verbose = False):
 def ledger_config(self, configs = False):
     set_val = tk.IntVar()
     entry_val = tk.StringVar()
-    def_formula = "2^5*3d6+1d4-5I"
+    def_formula = "2^5*3d6+1d4-5"
     
     if not configs:
         b_count = 10
@@ -765,6 +765,10 @@ def ledger_config(self, configs = False):
             value_in[0] = popup_val.get().replace(' ', '')[:100]
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
+        def setname(self_in):
+            text_in = popup_val.get()[:20]
+            self_in.configure(text = text_in)
+            return text_in
         popup = tk.Toplevel()
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
@@ -774,10 +778,15 @@ def ledger_config(self, configs = False):
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
+        button0 = tk.Button(popup, text = "Match ",\
+        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
+        "Rename = \'"+setname(parent)+'\'')))
+        button0.pack(padx = 35, pady = 5, side = "left")
         button1 = tk.Button(popup, text = "Ok",\
         command = lambda: (popup.destroy(), print("Button Conf.:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
-        button1.pack(pady = 5)
+        button1.pack(padx = 35, pady = 5, side = "right")
         #popup.geometry("200x80")
         popup.mainloop()
     
@@ -890,19 +899,28 @@ def journal_config(self, configs = False):
             value_in[0] = popup_val.get().replace(' ', '')[:100]
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
+        def setname(self_in):
+            text_in = popup_val.get()[:20]
+            self_in.configure(text = text_in)
+            return text_in
         popup = tk.Toplevel()
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(),\
-        print("Button Conf.:", '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
+        lambda k: (popup.destroy(), print("Button Conf.:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
+        button0 = tk.Button(popup, text = "Match ",\
+        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
+        "Rename = \'"+setname(parent)+'\'')))
+        button0.pack(padx = 35, pady = 5, side = "left")
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(),\
-        print("Button Conf.:", '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
-        button1.pack(pady = 5)
+        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
+        button1.pack(padx = 35, pady = 5, side = "right")
         #popup.geometry("200x80")
         popup.mainloop()
     
