@@ -1071,11 +1071,6 @@ class GUITest(tk.Tk):
         #style = ttk.Style()
         #style.configure('.', font = NORMAL_FONT) #Change all default ttk styles
         notebook = ttk.Notebook(container)
-        note1 = ttk.Frame(notebook)
-        note2 = ttk.Frame(notebook)
-        note3 = ttk.Frame(notebook)
-        note4 = ttk.Frame(notebook)
-        note5 = ttk.Frame(notebook)
         
         def n_popup_rename(title, target):
             popup_val = tk.StringVar()
@@ -1111,18 +1106,23 @@ class GUITest(tk.Tk):
             notebook.bind("<Button-3>",\
             lambda n: note_rc_popup.post(n.x_root, n.y_root))
         
+        note1 = ttk.Frame(notebook)
         notebook.add(note1, text = "Ledger 1")
         ledger_config(note1, "1d4:1d4,1d6:1d6,1d8:1d8,1d10:1d10,1d12:1d12,1d20:1d20,1d100:1d100,2 Single d20s:2*1d20,2d20 Drop Low:2d20L,2d20 Drop High:2d20H")
         
+        note2 = ttk.Frame(notebook)
         notebook.add(note2, text = "Ledger 2")
         ledger_config(note2)
         
+        note3 = ttk.Frame(notebook)
         notebook.add(note3, text = "Journal 1")
         journal_config(note3, "1d4:1d4,1d6:1d6,1d8:1d8,1d10:1d10,1d12:1d12,1d20:1d20,1d100:1d100,2 Single d20s:2*1d20,2d20 Drop Low:2d20L,2d20 Drop High:2d20H")
         
+        note4 = ttk.Frame(notebook)
         notebook.add(note4, text = "Journal 2")
         journal_config(note4)
         
+        note5 = ttk.Frame(notebook)
         notebook.add(note5, text = "Journal 3")
         journal_config(note5)
         
