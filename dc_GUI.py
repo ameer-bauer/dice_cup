@@ -2,7 +2,7 @@
 #----------------
 #Name: dc_GUI.py
 #Version: 0.1.9
-#Date: 2016-12-01
+#Date: 2016-12-11
 #----------------
 
 import tkinter as tk
@@ -17,7 +17,55 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.8"
+VERSION = "0.1.9"
+
+def config_read(f_name = 'defaults.cfg'):
+    error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
+    error_str = "ERROR"
+    error_cli = "FileIn Error: Incorrect format of config file \'"+f_name+"\'.\n"
+    first_n = True
+    first_b = True
+    n = True
+    n_list = []
+    b_list = []
+    l_count = 0
+    cfg_in = []
+    
+    try:
+        for line_in in open(f_name, encoding = 'utf-8', mode = 'r'):
+            cfg_in.append(line_in[:-1])
+            l_count += 1
+        if l_count % 2 != 0:
+            print(error_blk)
+            print(error_cli)
+            return error_str
+    except:
+        print(error_blk)
+        print("FileIn Error: Can\'t properly open the config file \'"+f_name+"\'.")
+        print("Please verify the filename, path, and permissions of the config file.\n")
+        return error_str
+    
+    for a in cfg_in:
+        if n and first_n and (':' in a):
+            n_list.append(a)
+            first_n = False
+            n = False
+        elif n and (':' in a):
+            n_list.append(a)
+            n = False
+        elif first_b and (':' in a):
+            b_list.append(a)
+            first_b = False
+            n = True
+        elif ':' in a:
+            b_list.append(a)
+            n = True
+        else:
+            print(error_blk)
+            print(error_cli)
+            return error_str
+    print("ConfigLoaded:", f_name)
+    return [n_list, b_list]
 
 def dc_run_q(params, formula = False):
     if HOST_SYS == 'Windows':
@@ -742,19 +790,19 @@ def ledger_config(self, configs = False):
         popup = tk.Toplevel()
         popup.wm_title(title)
         def setname(self_in):
-            text_in = popup_val.get()[:20]
+            text_in = popup_val.get().replace(':', '')[:20]#Watch for length and ctrl chars
             self_in.configure(text = text_in)
             return text_in
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
         lambda k: (popup.destroy(),\
-        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
+        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
         command = lambda: (popup.destroy(),\
-        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
+        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         button1.pack(pady = 5)
         #popup.geometry("250x80")
         popup.mainloop()
@@ -774,17 +822,17 @@ def ledger_config(self, configs = False):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), print("Button Conf.:",\
+        lambda k: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
         button0 = tk.Button(popup, text = "Match",\
-        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
         button0.pack(padx = 35, pady = 5, side = "left")
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         button1.pack(padx = 35, pady = 5, side = "right")
         #popup.geometry("200x80")
@@ -876,19 +924,19 @@ def journal_config(self, configs = False):
         popup = tk.Toplevel()
         popup.wm_title(title)
         def setname(self_in):
-            text_in = popup_val.get()[:20]
+            text_in = popup_val.get().replace(':', '')[:20]#Watch for length and ctrl chars
             self_in.configure(text = text_in)
             return text_in
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
         lambda k: (popup.destroy(),\
-        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
+        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(self.cget("text"))
         button1 = tk.Button(popup, text = "Ok",\
         command = lambda: (popup.destroy(),\
-        print("Button Conf.:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
+        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         button1.pack(pady = 5)
         #popup.geometry("250x80")
         popup.mainloop()
@@ -908,17 +956,17 @@ def journal_config(self, configs = False):
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
         entry.bind("<Return>", \
-        lambda k: (popup.destroy(), print("Button Conf.:",\
+        lambda k: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
         button0 = tk.Button(popup, text = "Match",\
-        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
         button0.pack(padx = 35, pady = 5, side = "left")
         button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), print("Button Conf.:",\
+        command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         button1.pack(padx = 35, pady = 5, side = "right")
         #popup.geometry("200x80")
@@ -973,7 +1021,7 @@ def journal_config(self, configs = False):
     for a in range(0, b_count):
         button_make(self, b_names[a], b_presets[a])
 
-class GUITest(tk.Tk):
+class dc_GUI(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, "dc_GUI")
@@ -1042,7 +1090,7 @@ class GUITest(tk.Tk):
         command = lambda: popup_wrn("Save", "Not supported yet."))
         filemenu.add_separator()
         filemenu.add_command(label = "Exit", \
-        command = quit)
+        command = lambda: (print("FMenu Action: Exiting dc_GUI"), quit()))
         
         settingsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
         settingsmenu.add_command(label = "Import...", \
@@ -1071,6 +1119,7 @@ class GUITest(tk.Tk):
         #style = ttk.Style()
         #style.configure('.', font = NORMAL_FONT) #Change all default ttk styles
         notebook = ttk.Notebook(container)
+        c_list = config_read()
         
         def n_popup_rename(title, target):
             popup_val = tk.StringVar()
@@ -1106,29 +1155,44 @@ class GUITest(tk.Tk):
             notebook.bind("<Button-3>",\
             lambda n: note_rc_popup.post(n.x_root, n.y_root))
         
-        note1 = ttk.Frame(notebook)
-        notebook.add(note1, text = "Ledger 1")
-        ledger_config(note1, "1d4:1d4,1d6:1d6,1d8:1d8,1d10:1d10,1d12:1d12,1d20:1d20,1d100:1d100,2 Single d20s:2*1d20,2d20 Drop Low:2d20L,2d20 Drop High:2d20H")
-        
-        note2 = ttk.Frame(notebook)
-        notebook.add(note2, text = "Ledger 2")
-        ledger_config(note2)
-        
-        note3 = ttk.Frame(notebook)
-        notebook.add(note3, text = "Journal 1")
-        journal_config(note3, "1d4:1d4,1d6:1d6,1d8:1d8,1d10:1d10,1d12:1d12,1d20:1d20,1d100:1d100,2 Single d20s:2*1d20,2d20 Drop Low:2d20L,2d20 Drop High:2d20H")
-        
-        note4 = ttk.Frame(notebook)
-        notebook.add(note4, text = "Journal 2")
-        journal_config(note4)
-        
-        note5 = ttk.Frame(notebook)
-        notebook.add(note5, text = "Journal 3")
-        journal_config(note5)
+        if 'ERROR' in c_list:
+            note1 = ttk.Frame(notebook)
+            notebook.add(note1, text = "Ledger 1")
+            ledger_config(note1)
+            note2 = ttk.Frame(notebook)
+            notebook.add(note2, text = "Ledger 2")
+            ledger_config(note2)
+            note3 = ttk.Frame(notebook)
+            notebook.add(note3, text = "Journal 1")
+            journal_config(note3)
+            note4 = ttk.Frame(notebook)
+            notebook.add(note4, text = "Journal 2")
+            journal_config(note4)
+            note5 = ttk.Frame(notebook)
+            notebook.add(note5, text = "Journal 3")
+            journal_config(note5)
+        else:
+            c_count = 0
+            for a in c_list[0]:
+                n = a.split(':', maxsplit = 1)
+                note = ttk.Frame(notebook)
+                notebook.add(note, text = n[0])
+                if 'L' in n[1]:
+                    ledger_config(note, c_list[1][c_count])
+                elif 'J' in n[1]:
+                    journal_config(note, c_list[1][c_count])
+                else:
+                    print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n")
+                    print("Config Error: Incorrect configuration syntax.")
+                    print("Please verify the syntax within the config file.")
+                    print("!FatalError!: Exiting dc_GUI")
+                    quit()
+                c_count += 1
         
         notebook.pack(fill = "both", expand = 1)
 
-print('Host OS:', HOST_SYS)
-app = GUITest()
+####Main####
+print('DetectHostOS:', HOST_SYS)
+app = dc_GUI()
 #app.geometry("1000x650")
 app.mainloop()
