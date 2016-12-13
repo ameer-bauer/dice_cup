@@ -22,7 +22,7 @@ VERSION = "0.1.9"
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
     error_str = "ERROR"
-    error_cli = "FileIn Error: Incorrect format of config file \'"+f_name+"\'.\n"
+    error_cli = "FileIn Error: Incorrect format of config file \'"+f_name+"\'."
     first_n = True
     first_b = True
     n = True
@@ -38,31 +38,35 @@ def config_read(f_name = 'defaults.cfg'):
         if l_count % 2 != 0:
             print(error_blk)
             print(error_cli)
+            print("ERROR: The config file must have an even number of lines.")
             return error_str
     except:
         print(error_blk)
         print("FileIn Error: Can\'t properly open the config file \'"+f_name+"\'.")
-        print("Please verify the filename, path, and permissions of the config file.\n")
+        print("Please verify the filename, path, and permissions of the config file.")
         return error_str
     
+    l_count = 0
     for a in cfg_in:
-        if n and first_n and (':' in a):
+        l_count += 1
+        if n and first_n and (':' in a) and ((a[-1] == 'L') or (a[-1] == 'J')):
             n_list.append(a)
             first_n = False
             n = False
-        elif n and (':' in a):
+        elif n and (':' in a) and ((a[-1] == 'L') or (a[-1] == 'J')):
             n_list.append(a)
             n = False
-        elif first_b and (':' in a):
+        elif not n and first_b and (':' in a):
             b_list.append(a)
             first_b = False
             n = True
-        elif ':' in a:
+        elif not n and ':' in a:
             b_list.append(a)
             n = True
         else:
             print(error_blk)
             print(error_cli)
+            print("ERROR: Invalid config file syntax on line number "+str(l_count)+".")
             return error_str
     print("ConfigLoaded:", f_name)
     return [n_list, b_list]
@@ -1155,7 +1159,8 @@ class dc_GUI(tk.Tk):
             notebook.bind("<Button-3>",\
             lambda n: note_rc_popup.post(n.x_root, n.y_root))
         
-        if 'ERROR' in c_list:
+        if 'ERROR' in c_list:#Load built-in defaults if the config file is missing or invalid
+            print("Config Error: Incorrect configuration syntax, using built-in presets.")
             note1 = ttk.Frame(notebook)
             notebook.add(note1, text = "Ledger 1")
             ledger_config(note1)
