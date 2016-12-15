@@ -7,6 +7,7 @@
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import subprocess
 from datetime import datetime
 from platform import system
@@ -124,6 +125,26 @@ def popup_wrn(title, msg):
     button1.pack(pady = 5)
     popup.geometry("250x80")
     popup.mainloop()
+
+def file_load(title):
+    filename =  filedialog.askopenfilename(initialdir = ".", title = title,\
+    filetypes = (("cfg Files","*.cfg"), ("All Files","*.*")))
+    if not filename:
+        print ("Load CfgFile: Canceled")
+        return False
+    else:
+        print ("Load CfgFile:", filename)
+        return filename
+
+def file_save(title):
+    filename =  filedialog.asksaveasfilename(initialdir = ".", title = title,\
+    filetypes = (("cfg Files","*.cfg"), ("All Files","*.*")))
+    if not filename:
+        print ("Save CfgFile: Canceled")
+        return False
+    else:
+        print ("Save CfgFile:", filename)
+        return filename
 
 def popup_rfhlp(title):
     popup = tk.Toplevel()
@@ -1083,6 +1104,85 @@ class dc_GUI(tk.Tk):
             popup.geometry("250x80")
             popup.mainloop()
         
+        notebook = ttk.Notebook(container)
+        
+        def init_cfgload():
+            c_list = config_read()
+            if 'ERROR' in c_list:#Load built-in defaults if the config file is missing or invalid
+                print("Config Error: Incorrect configuration syntax, using built-in presets.")
+                note1 = ttk.Frame(notebook)
+                notebook.add(note1, text = "Ledger 1")
+                ledger_config(note1)
+                note2 = ttk.Frame(notebook)
+                notebook.add(note2, text = "Ledger 2")
+                ledger_config(note2)
+                note3 = ttk.Frame(notebook)
+                notebook.add(note3, text = "Journal 1")
+                journal_config(note3)
+                note4 = ttk.Frame(notebook)
+                notebook.add(note4, text = "Journal 2")
+                journal_config(note4)
+                note5 = ttk.Frame(notebook)
+                notebook.add(note5, text = "Journal 3")
+                journal_config(note5)
+            else:
+                c_count = 0
+                for a in c_list[0]:
+                    n = a.split(':', maxsplit = 1)
+                    note = ttk.Frame(notebook)
+                    notebook.add(note, text = n[0])
+                    if 'L' in n[1]:
+                        ledger_config(note, c_list[1][c_count])
+                    elif 'J' in n[1]:
+                        journal_config(note, c_list[1][c_count])
+                    else:
+                        print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n")
+                        print("Config Error: Incorrect configuration syntax.")
+                        print("Please verify the syntax within the config file.")
+                        print("!FatalError!: Exiting dc_GUI")
+                        quit()
+                    c_count += 1
+        
+        def cfg_load(title):
+            f_in = file_load(title)
+            if f_in:
+                c_list = config_read(f_in)
+                if not 'ERROR' in c_list:
+                    for t in notebook.tabs():
+                        notebook.forget(t)
+                    c_count = 0
+                    for a in c_list[0]:
+                        n = a.split(':', maxsplit = 1)
+                        note = ttk.Frame(notebook)
+                        notebook.add(note, text = n[0])
+                        if 'L' in n[1]:
+                            ledger_config(note, c_list[1][c_count])
+                        elif 'J' in n[1]:
+                            journal_config(note, c_list[1][c_count])
+                        else:
+                            print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n")
+                            print("Config Error: Incorrect configuration syntax.")
+                            print("Please verify the syntax within the config file.")
+                            print("!FatalError!: Exiting dc_GUI")
+                            quit()
+                        c_count += 1
+        
+        def n_popup_rename(title, target):
+            popup_val = tk.StringVar()
+            popup = tk.Toplevel()
+            popup.wm_title(title)
+            entry = tk.Entry(popup, textvariable = popup_val)
+            entry.config(bg = "gray90")
+            entry.bind("<Return>", \
+            lambda k: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
+            entry.pack(padx = 20, pady = 10, fill = "x")
+            popup_val.set(notebook.tab(notebook.select(), 'text'))
+            button1 = tk.Button(popup, text = "Ok",  command =\
+            lambda: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
+            button1.pack(pady = 5)
+            #popup.geometry("200x80")
+            popup.mainloop()
+        
         menubar = tk.Menu(container, relief = "flat")
         
         filemenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
@@ -1097,10 +1197,10 @@ class dc_GUI(tk.Tk):
         command = lambda: (print("FMenu Action: Exiting dc_GUI"), quit()))
         
         settingsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        settingsmenu.add_command(label = "Import...", \
-        command = lambda: popup_wrn("Import...", "Not supported yet."))
-        settingsmenu.add_command(label = "Export...", \
-        command = lambda: popup_wrn("Export...", "Not supported yet."))
+        settingsmenu.add_command(label = "Load Config...", \
+        command = lambda: cfg_load("Load Config File"))
+        settingsmenu.add_command(label = "Save Config...", \
+        command = lambda: file_save("Save Config File"))
         settingsmenu.add_command(label = "Load Defaults", \
         command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
         
@@ -1122,24 +1222,6 @@ class dc_GUI(tk.Tk):
         
         #style = ttk.Style()
         #style.configure('.', font = NORMAL_FONT) #Change all default ttk styles
-        notebook = ttk.Notebook(container)
-        c_list = config_read()
-        
-        def n_popup_rename(title, target):
-            popup_val = tk.StringVar()
-            popup = tk.Toplevel()
-            popup.wm_title(title)
-            entry = tk.Entry(popup, textvariable = popup_val)
-            entry.config(bg = "gray90")
-            entry.bind("<Return>", \
-            lambda k: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
-            entry.pack(padx = 20, pady = 10, fill = "x")
-            popup_val.set(notebook.tab(notebook.select(), 'text'))
-            button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
-            button1.pack(pady = 5)
-            #popup.geometry("200x80")
-            popup.mainloop()
         
         note_rc_popup = tk.Menu(notebook, tearoff = 0)
         note_rc_popup.add_command(label = "Rename",\
@@ -1159,44 +1241,11 @@ class dc_GUI(tk.Tk):
             notebook.bind("<Button-3>",\
             lambda n: note_rc_popup.post(n.x_root, n.y_root))
         
-        if 'ERROR' in c_list:#Load built-in defaults if the config file is missing or invalid
-            print("Config Error: Incorrect configuration syntax, using built-in presets.")
-            note1 = ttk.Frame(notebook)
-            notebook.add(note1, text = "Ledger 1")
-            ledger_config(note1)
-            note2 = ttk.Frame(notebook)
-            notebook.add(note2, text = "Ledger 2")
-            ledger_config(note2)
-            note3 = ttk.Frame(notebook)
-            notebook.add(note3, text = "Journal 1")
-            journal_config(note3)
-            note4 = ttk.Frame(notebook)
-            notebook.add(note4, text = "Journal 2")
-            journal_config(note4)
-            note5 = ttk.Frame(notebook)
-            notebook.add(note5, text = "Journal 3")
-            journal_config(note5)
-        else:
-            c_count = 0
-            for a in c_list[0]:
-                n = a.split(':', maxsplit = 1)
-                note = ttk.Frame(notebook)
-                notebook.add(note, text = n[0])
-                if 'L' in n[1]:
-                    ledger_config(note, c_list[1][c_count])
-                elif 'J' in n[1]:
-                    journal_config(note, c_list[1][c_count])
-                else:
-                    print("\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n")
-                    print("Config Error: Incorrect configuration syntax.")
-                    print("Please verify the syntax within the config file.")
-                    print("!FatalError!: Exiting dc_GUI")
-                    quit()
-                c_count += 1
+        init_cfgload()
         
         notebook.pack(fill = "both", expand = 1)
 
-####Main####
+####Main Progam####
 print('DetectHostOS:', HOST_SYS)
 app = dc_GUI()
 #app.geometry("1000x650")
