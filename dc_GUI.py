@@ -2,7 +2,7 @@
 #----------------
 #Name: dc_GUI.py
 #Version: 0.1.9
-#Date: 2016-12-11
+#Date: 2016-12-17
 #----------------
 
 import tkinter as tk
@@ -69,7 +69,7 @@ def config_read(f_name = 'defaults.cfg'):
             print(error_cli)
             print("ERROR: Invalid config file syntax on line number "+str(l_count)+".")
             return error_str
-    print("ConfigLoaded:", f_name)
+    print("CfgFileParse:", f_name)
     return [n_list, b_list]
 
 def dc_run_q(params, formula = False):
@@ -130,20 +130,20 @@ def file_load(title):
     filename =  filedialog.askopenfilename(initialdir = ".", title = title,\
     filetypes = (("cfg Files","*.cfg"), ("All Files","*.*")))
     if not filename:
-        print ("Load CfgFile: Canceled")
+        print ("CfgFile Load: Canceled")
         return False
     else:
-        print ("Load CfgFile:", filename)
+        print ("CfgFile Load:", filename)
         return filename
 
 def file_save(title):
     filename =  filedialog.asksaveasfilename(initialdir = ".", title = title,\
     filetypes = (("cfg Files","*.cfg"), ("All Files","*.*")))
     if not filename:
-        print ("Save CfgFile: Canceled")
+        print ("CfgFile Save: Canceled")
         return False
     else:
-        print ("Save CfgFile:", filename)
+        print ("CfgFile Save:", filename)
         return filename
 
 def popup_rfhlp(title):
@@ -780,9 +780,9 @@ def ledger_config(self, configs = False):
     
     if not configs:
         b_count = 10
-        b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
+        b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100",\
         "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
-        b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
+        b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"],\
         ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     else:
         b_count = 0
@@ -820,7 +820,7 @@ def ledger_config(self, configs = False):
             return text_in
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
-        entry.bind("<Return>", \
+        entry.bind("<Return>",\
         lambda k: (popup.destroy(),\
         print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         entry.pack(padx = 35, pady = 5, fill = "x")
@@ -846,7 +846,7 @@ def ledger_config(self, configs = False):
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
-        entry.bind("<Return>", \
+        entry.bind("<Return>",\
         lambda k: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
@@ -918,9 +918,9 @@ def journal_config(self, configs = False):
     
     if not configs:
         b_count = 10
-        b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100", \
+        b_names = ["1d4", "1d6", "1d8", "1d10", "1d12", "1d20", "1d100",\
         "2 Single d20s", "2d20 Drop Low", "2d20 Drop High"]
-        b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"], \
+        b_presets = [["1d4"], ["1d6"], ["1d8"], ["1d10"], ["1d12"],\
         ["1d20"], ["1d100"], ["2*1d20"], ["2d20L"], ["2d20H"]]
     else:
         b_count = 0
@@ -954,7 +954,7 @@ def journal_config(self, configs = False):
             return text_in
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
-        entry.bind("<Return>", \
+        entry.bind("<Return>",\
         lambda k: (popup.destroy(),\
         print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
         entry.pack(padx = 35, pady = 5, fill = "x")
@@ -980,7 +980,7 @@ def journal_config(self, configs = False):
         popup.wm_title(title)
         entry = tk.Entry(popup, textvariable = popup_val)
         entry.config(bg = "gray90")
-        entry.bind("<Return>", \
+        entry.bind("<Return>",\
         lambda k: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
         entry.pack(padx = 35, pady = 5, fill = "x")
@@ -1039,7 +1039,7 @@ def journal_config(self, configs = False):
     entry.pack(fill = "x")
     entry_val.set(def_formula)
     
-    rollbutton = tk.Button(self, text = "[Execute Roll Formula]", \
+    rollbutton = tk.Button(self, text = "[Execute Roll Formula]",\
     command = lambda: print("Button Press: \'[Execute Roll Formula]\', Value =", formula_roll()))
     rollbutton.pack(side = "top", fill = "x")
     
@@ -1064,7 +1064,7 @@ class dc_GUI(tk.Tk):
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
-            entry.bind("<Return>", \
+            entry.bind("<Return>",\
             lambda k: (popup.destroy(), new_ltab(popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set("New Ledger")
@@ -1083,7 +1083,7 @@ class dc_GUI(tk.Tk):
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
-            entry.bind("<Return>", \
+            entry.bind("<Return>",\
             lambda k: (popup.destroy(), new_jtab(popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set("New Journal")
@@ -1107,6 +1107,7 @@ class dc_GUI(tk.Tk):
         notebook = ttk.Notebook(container)
         
         def init_cfgload():
+            print("CfgFile Load: defaults.cfg")
             c_list = config_read()
             if 'ERROR' in c_list:#Load built-in defaults if the config file is missing or invalid
                 print("Config Error: Incorrect configuration syntax, using built-in presets.")
@@ -1114,16 +1115,16 @@ class dc_GUI(tk.Tk):
                 notebook.add(note1, text = "Ledger 1")
                 ledger_config(note1)
                 note2 = ttk.Frame(notebook)
-                notebook.add(note2, text = "Ledger 2")
-                ledger_config(note2)
+                notebook.add(note2, text = "Journal 1")
+                journal_config(note2)
                 note3 = ttk.Frame(notebook)
-                notebook.add(note3, text = "Journal 1")
+                notebook.add(note3, text = "Journal 2")
                 journal_config(note3)
                 note4 = ttk.Frame(notebook)
-                notebook.add(note4, text = "Journal 2")
+                notebook.add(note4, text = "Journal 3")
                 journal_config(note4)
                 note5 = ttk.Frame(notebook)
-                notebook.add(note5, text = "Journal 3")
+                notebook.add(note5, text = "Journal 4")
                 journal_config(note5)
             else:
                 c_count = 0
@@ -1167,13 +1168,47 @@ class dc_GUI(tk.Tk):
                             quit()
                         c_count += 1
         
+        def load_defaults():
+            popup = tk.Toplevel()
+            popup.wm_title("Built-in Defaults")
+            label = tk.Label(popup, text =\
+            "Are you sure you wish to\nload the built-in defaults?")
+            label.pack(pady = 10, padx= 35, side = "top", fill="x")
+            def reload_defaults():
+                for t in notebook.tabs():
+                    notebook.forget(t)
+                note1 = ttk.Frame(notebook)
+                notebook.add(note1, text = "Ledger 1")
+                ledger_config(note1)
+                note2 = ttk.Frame(notebook)
+                notebook.add(note2, text = "Journal 1")
+                journal_config(note2)
+                note3 = ttk.Frame(notebook)
+                notebook.add(note3, text = "Journal 2")
+                journal_config(note3)
+                note4 = ttk.Frame(notebook)
+                notebook.add(note4, text = "Journal 3")
+                journal_config(note4)
+                note5 = ttk.Frame(notebook)
+                notebook.add(note5, text = "Journal 4")
+                journal_config(note5)
+                print("ConfigLoaded: Built-in Defaults")
+            button0 = tk.Button(popup, text = "Yes", command =\
+            lambda: (popup.destroy(), reload_defaults()))
+            button0.pack(padx = 35, pady = 5, side = "left")
+            button1 = tk.Button(popup, text = "No", command =\
+            lambda: popup.destroy())
+            button1.pack(padx = 35, pady = 5, side = "right")
+            #popup.geometry("250x80")
+            popup.mainloop()
+        
         def n_popup_rename(title, target):
             popup_val = tk.StringVar()
             popup = tk.Toplevel()
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
             entry.config(bg = "gray90")
-            entry.bind("<Return>", \
+            entry.bind("<Return>",\
             lambda k: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
             popup_val.set(notebook.tab(notebook.select(), 'text'))
@@ -1186,32 +1221,32 @@ class dc_GUI(tk.Tk):
         menubar = tk.Menu(container, relief = "flat")
         
         filemenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        filemenu.add_command(label = "Open...", \
+        filemenu.add_command(label = "Open...",\
         command = lambda: popup_wrn("Open...", "Not supported yet."))
-        filemenu.add_command(label = "Save As...", \
+        filemenu.add_command(label = "Save As...",\
         command = lambda: popup_wrn("Save As...", "Not supported yet."))
-        filemenu.add_command(label = "Save", \
+        filemenu.add_command(label = "Save",\
         command = lambda: popup_wrn("Save", "Not supported yet."))
         filemenu.add_separator()
-        filemenu.add_command(label = "Exit", \
+        filemenu.add_command(label = "Exit",\
         command = lambda: (print("FMenu Action: Exiting dc_GUI"), quit()))
         
         settingsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        settingsmenu.add_command(label = "Load Config...", \
+        settingsmenu.add_command(label = "Load Config...",\
         command = lambda: cfg_load("Load Config File"))
-        settingsmenu.add_command(label = "Save Config...", \
+        settingsmenu.add_command(label = "Save Config...",\
         command = lambda: file_save("Save Config File"))
-        settingsmenu.add_command(label = "Load Defaults", \
-        command = lambda: popup_wrn("Load Defaults", "Not supported yet."))
+        settingsmenu.add_command(label = "Built-in Defaults",\
+        command = lambda: load_defaults())
         
         toolsmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        toolsmenu.add_command(label = "Roll Formula Test", \
+        toolsmenu.add_command(label = "Roll Formula Test",\
         command = lambda: formula_get("Roll Formula Test", "Enter a Roll Formula to Validate"))
         
         helpmenu = tk.Menu(menubar, tearoff = 0, relief = "flat")
-        helpmenu.add_command(label = "Roll Formula", \
+        helpmenu.add_command(label = "Roll Formula",\
         command = lambda: popup_rfhlp("Roll Formula Help"))
-        helpmenu.add_command(label = "About", \
+        helpmenu.add_command(label = "About",\
         command = lambda: popup_wrn("About", "dc_GUI version "+VERSION))
         
         menubar.add_cascade(label = "File",  menu = filemenu)
