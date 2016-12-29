@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.9
-#Date: 2016-12-17
+#Version: 0.1.10
+#Date: 2016-12-29
 #----------------
 
 import tkinter as tk
@@ -18,14 +18,12 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.9"
+VERSION = "0.1.10"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
     error_str = "ERROR"
     error_cli = "FileIn Error: Incorrect format of config file \'"+f_name+"\'."
-    first_n = True
-    first_b = True
     n = True
     n_list = []
     b_list = []
@@ -33,34 +31,28 @@ def config_read(f_name = 'defaults.cfg'):
     cfg_in = []
     
     try:
-        for line_in in open(f_name, encoding = 'utf-8', mode = 'r'):
-            cfg_in.append(line_in[:-1])
-            l_count += 1
-        if l_count % 2 != 0:
-            print(error_blk)
-            print(error_cli)
-            print("ERROR: The config file must have an even number of lines.")
-            return error_str
+        f_in = open(f_name, encoding = 'utf-8', mode = 'r')
     except:
         print(error_blk)
         print("FileIn Error: Can\'t properly open the config file \'"+f_name+"\'.")
         print("Please verify the filename, path, and permissions of the config file.")
         return error_str
     
+    for line_in in f_in:
+        cfg_in.append(line_in[:-1])
+        l_count += 1
+    if l_count % 2 != 0:
+        print(error_blk)
+        print(error_cli)
+        print("ERROR: The config file must have an even number of lines.")
+        return error_str
+    f_in.close()
     l_count = 0
     for a in cfg_in:
         l_count += 1
-        if n and first_n and (':' in a) and ((a[-1] == 'L') or (a[-1] == 'J')):
-            n_list.append(a)
-            first_n = False
-            n = False
-        elif n and (':' in a) and ((a[-1] == 'L') or (a[-1] == 'J')):
+        if n and (':' in a) and ((a[-1] == 'L') or (a[-1] == 'J')):
             n_list.append(a)
             n = False
-        elif not n and first_b and (':' in a):
-            b_list.append(a)
-            first_b = False
-            n = True
         elif not n and ':' in a:
             b_list.append(a)
             n = True
@@ -69,8 +61,25 @@ def config_read(f_name = 'defaults.cfg'):
             print(error_cli)
             print("ERROR: Invalid config file syntax on line number "+str(l_count)+".")
             return error_str
-    print("CfgFileParse:", f_name)
+    print("CfgFileParse: Successfully parsed", f_name)
     return [n_list, b_list]
+
+def config_write(f_name, c_list):
+    error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
+    error_str = "ERROR"
+    error_cli = "FileOutError: Unable to write to config file \'"+f_name+"\'."
+    
+    try:
+        f_out = open(f_name, encoding = 'utf-8', mode = 'w')
+    except:
+        print(error_blk)
+        print(error_cli)
+        print("Please validate the filename and permissions.")
+        return error_str
+    c_count = f_out.write(c_list)
+    f_out.close()
+    print("CfgFileWrite:", c_count, "characters written to", f_name)
+    return
 
 def dc_run_q(params, formula = False):
     if HOST_SYS == 'Windows':
@@ -1168,6 +1177,13 @@ class dc_GUI(tk.Tk):
                             quit()
                         c_count += 1
         
+        def cfg_save(title):
+            f_name = file_save(title)
+            if f_name:
+                status = config_write(f_name, "This is not a drill!\n")
+                if not status:
+                    print("cfg_save No ERROR")
+        
         def load_defaults():
             popup = tk.Toplevel()
             popup.wm_title("Built-in Defaults")
@@ -1235,7 +1251,7 @@ class dc_GUI(tk.Tk):
         settingsmenu.add_command(label = "Load Config...",\
         command = lambda: cfg_load("Load Config File"))
         settingsmenu.add_command(label = "Save Config...",\
-        command = lambda: file_save("Save Config File"))
+        command = lambda: cfg_save("Save Config File"))
         settingsmenu.add_command(label = "Built-in Defaults",\
         command = lambda: load_defaults())
         
