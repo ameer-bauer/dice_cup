@@ -1179,6 +1179,22 @@ class dc_GUI(tk.Tk):
         
         def cfg_save(title):
             f_name = file_save(title)
+            for c1 in notebook.winfo_children():
+                if 'menu' not in str(c1):
+                    print("Notebook Frame:", c1)
+                    print("Tab Name:", notebook.tab(c1, 'text'))
+                    b_count = 0
+                    for c2 in c1.winfo_children():
+                        print("Tab Children:", c2)
+                        if 'button' in str(c2):
+                            b_count += 1
+                            print("Button Number:", b_count)
+                            print("Button Text:", c2.cget('text'))
+                            print("Button Command:", c2.cget('command'))
+           # for t in notebook.tabs():
+           #     print("Tab ID:", t)
+           #     print("Tab Name:", notebook.tab(t, 'text'))
+           #     print("Tab Index:", notebook.index(t))
             if f_name:
                 status = config_write(f_name, "This is not a drill!\n")
                 if not status:
