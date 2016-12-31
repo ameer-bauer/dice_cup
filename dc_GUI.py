@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.10
-#Date: 2016-12-29
+#Version: 0.1.11
+#Date: 2016-12-30
 #----------------
 
 import tkinter as tk
@@ -18,7 +18,7 @@ SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.10"
+VERSION = "0.1.11"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -1179,26 +1179,43 @@ class dc_GUI(tk.Tk):
         
         def cfg_save(title):
             f_name = file_save(title)
+            c_list = ""
+            first_run = True
             for c1 in notebook.winfo_children():
                 if 'menu' not in str(c1):
-                    print("Notebook Frame:", c1)
-                    print("Tab Name:", notebook.tab(c1, 'text'))
-                    b_count = 0
+                    t_name = str(notebook.tab(c1, 'text'))
+                    if first_run:
+                        c_list += t_name+':'
+                        first_run = False
+                    else:
+                        if c_list[-1] == ',':
+                            c_list = c_list[:-1]
+                        c_list += '\n'+t_name+':'
+                    print("Tab Name:", t_name)
                     for c2 in c1.winfo_children():
-                        print("Tab Children:", c2)
-                        if 'button' in str(c2):
-                            b_count += 1
-                            print("Button Number:", b_count)
-                            print("Button Text:", c2.cget('text'))
-                            print("Button Command:", c2.cget('command'))
-           # for t in notebook.tabs():
-           #     print("Tab ID:", t)
-           #     print("Tab Name:", notebook.tab(t, 'text'))
-           #     print("Tab Index:", notebook.index(t))
+                        str_c2 = str(c2)
+                        if 'listbox' in str_c2:
+                            t_type = 'L'
+                            c_list += t_type+'\n'
+                            print("Tab Type:", t_type)
+                        elif 'text' in str_c2:
+                            t_type = 'J'
+                            c_list += t_type+'\n'
+                            print("Tab Type:", t_type)
+                        elif 'button' in str_c2:
+                            b_name = str(c2.cget('text'))
+                            for c3 in c2.winfo_children():
+                                if c3:
+                                    c_list += b_name+':'
+                                    b_type = str(c3.entrycget(0, 'label'))
+                                    c_list += b_type+','
+                                    print("Button Name:", b_name)
+                                    print("Button Value:", b_type)
             if f_name:
-                status = config_write(f_name, "This is not a drill!\n")
-                if not status:
-                    print("cfg_save No ERROR")
+                c_list = c_list[:-1]+'\n'
+                status = config_write(f_name, c_list)
+                if status:
+                    print("CfgFile Save: Unsuccessful")
         
         def load_defaults():
             popup = tk.Toplevel()
