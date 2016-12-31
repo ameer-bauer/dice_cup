@@ -1155,11 +1155,15 @@ class dc_GUI(tk.Tk):
         
         def cfg_load(title):
             f_in = file_load(title)
+            f_run = True
             if f_in:
                 c_list = config_read(f_in)
                 if not 'ERROR' in c_list:
                     for c in notebook.winfo_children():
-                        c.destroy()
+                        if f_run:
+                            f_run = False
+                        else:
+                            c.destroy()
                     c_count = 0
                     for a in c_list[0]:
                         n = a.split(':', maxsplit = 1)
