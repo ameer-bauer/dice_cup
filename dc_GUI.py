@@ -1180,18 +1180,27 @@ class dc_GUI(tk.Tk):
         def cfg_save(title):
             f_name = file_save(title)
             c_list = ""
+            t_names = []
+            t_count = -1
             first_run = True
+            print("Winfo:",notebook.winfo_children())
+            for t in notebook.tabs():
+                t_names.append(notebook.tab(t, 'text'))
+            print("t_names:", t_names)
             for c1 in notebook.winfo_children():
                 if 'menu' not in str(c1):
-                    t_name = str(notebook.tab(c1, 'text'))
                     if first_run:
-                        c_list += t_name+':'
+                        t_count += 1
+                        print("t_count:", t_count)
+                        c_list += t_names[t_count]+':'
                         first_run = False
                     else:
+                        t_count += 1
+                        print("t_count:", t_count)
                         if c_list[-1] == ',':
                             c_list = c_list[:-1]
-                        c_list += '\n'+t_name+':'
-                    print("Tab Name:", t_name)
+                        c_list += '\n'+t_names[t_count]+':'
+                    print("Tab Name:", t_names[t_count])
                     for c2 in c1.winfo_children():
                         str_c2 = str(c2)
                         if 'listbox' in str_c2:
