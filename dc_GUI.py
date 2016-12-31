@@ -1108,7 +1108,7 @@ class dc_GUI(tk.Tk):
             label = tk.Label(popup, text = "Delete "+notebook.tab(target, 'text')+"?")
             label.pack(pady = 10, padx= 10, side = "top", fill="x")
             button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), notebook.winfo_children()[target].destroy(), print("target index:",target,"children:", notebook.winfo_children())))
+            lambda: (popup.destroy(), notebook.winfo_children()[target + 1].destroy()))
             button1.pack(pady = 5)
             popup.geometry("250x80")
             popup.mainloop()
