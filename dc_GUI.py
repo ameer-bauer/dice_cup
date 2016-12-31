@@ -1108,7 +1108,7 @@ class dc_GUI(tk.Tk):
             label = tk.Label(popup, text = "Delete "+notebook.tab(target, 'text')+"?")
             label.pack(pady = 10, padx= 10, side = "top", fill="x")
             button1 = tk.Button(popup, text = "Ok",  command =\
-            lambda: (popup.destroy(), notebook.forget(target)))
+            lambda: (popup.destroy(), notebook.winfo_children()[target].destroy(), print("target index:",target,"children:", notebook.winfo_children())))
             button1.pack(pady = 5)
             popup.geometry("250x80")
             popup.mainloop()
@@ -1237,8 +1237,14 @@ class dc_GUI(tk.Tk):
             "Are you sure you wish to\nload the built-in defaults?")
             label.pack(pady = 10, padx= 35, side = "top", fill="x")
             def reload_defaults():
-                for t in notebook.tabs():
-                    notebook.forget(t)
+                f_run = True
+                for c in notebook.winfo_children():
+                    if f_run:
+                        f_run = False
+                    else:
+                        c.destroy()
+                #for t in notebook.tabs():
+                #    notebook.forget(t)
                 note1 = ttk.Frame(notebook)
                 notebook.add(note1, text = "Ledger 1")
                 ledger_config(note1)
@@ -1329,7 +1335,7 @@ class dc_GUI(tk.Tk):
         command = lambda: n_popup_jadd(notebook, "Add Journal"))
         #note_rc_popup.add_separator()
         note_rc_popup.add_command(label = "Delete",\
-        command = lambda: n_popup_tdel("Delete Tab", notebook.select()))
+        command = lambda: n_popup_tdel("Delete Tab", notebook.index(notebook.select())))
         note_rc_popup.bind("<Leave>", lambda p: note_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             notebook.bind("<Button-2>",\
