@@ -1158,8 +1158,8 @@ class dc_GUI(tk.Tk):
             if f_in:
                 c_list = config_read(f_in)
                 if not 'ERROR' in c_list:
-                    for t in notebook.tabs():
-                        notebook.forget(t)
+                    for c in notebook.winfo_children():
+                        c.destroy()
                     c_count = 0
                     for a in c_list[0]:
                         n = a.split(':', maxsplit = 1)
