@@ -1183,12 +1183,13 @@ class dc_GUI(tk.Tk):
             t_names = []
             t_count = -1
             first_run = True
+            f_run = True
             print("Winfo:",notebook.winfo_children())
             for t in notebook.tabs():
                 t_names.append(notebook.tab(t, 'text'))
             print("t_names:", t_names)
             for c1 in notebook.winfo_children():
-                if 'menu' not in str(c1):
+                if not f_run:
                     if first_run:
                         t_count += 1
                         print("t_count:", t_count)
@@ -1220,6 +1221,7 @@ class dc_GUI(tk.Tk):
                                     c_list += b_type+','
                                     print("Button Name:", b_name)
                                     print("Button Value:", b_type)
+                f_run = False
             if f_name:
                 c_list = c_list[:-1]+'\n'
                 status = config_write(f_name, c_list)
