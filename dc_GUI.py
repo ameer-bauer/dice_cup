@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.11
-#Date: 2016-12-30
+#Version: 0.1.12
+#Date: 20167-01-01
 #----------------
 
 import tkinter as tk
@@ -11,11 +11,13 @@ from tkinter import filedialog
 import subprocess
 from datetime import datetime
 from platform import system
+from sys import version_info
 
 LARGE_FONT = ("Verdana", 12)
 NORMAL_FONT = ("Verdana", 9)
 SMALL_FONT = ("Verdana", 8)
 HOST_SYS = system()
+PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
 VERSION = "0.1.11"
@@ -125,14 +127,15 @@ def dc_run(params, formula = False):
         dc_print = dc_print[1].replace('\\n', '\n').replace('\\x08\\x08', '0')
     return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'\n'+dc_print.strip('b\')')+'\n'
 
-def popup_wrn(title, msg):
+def popup_wrn(title, msg, geom = "250x80"):
     popup = tk.Toplevel()
+    popup.wm_attributes("-topmost", True)
     popup.wm_title(title)
     label = tk.Label(popup, text = msg)
     label.pack(pady = 10, padx= 30, side = "top", fill="x")
     button1 = tk.Button(popup, text = "Ok",  command = popup.destroy)
     button1.pack(pady = 5)
-    popup.geometry("250x80")
+    popup.geometry(geom)
     popup.mainloop()
 
 def file_load(title):
@@ -1187,34 +1190,27 @@ class dc_GUI(tk.Tk):
             t_names = []
             t_count = -1
             first_run = True
-            print("Winfo:",notebook.winfo_children())
             for t in notebook.tabs():
                 t_names.append(notebook.tab(t, 'text'))
-            print("t_names:", t_names)
             for c1 in notebook.winfo_children():
                 if 'menu' not in str(c1):
                     if first_run:
                         t_count += 1
-                        print("t_count:", t_count)
                         c_list += t_names[t_count]+':'
                         first_run = False
                     else:
                         t_count += 1
-                        print("t_count:", t_count)
                         if c_list[-1] == ',':
                             c_list = c_list[:-1]
                         c_list += '\n'+t_names[t_count]+':'
-                    print("Tab Name:", t_names[t_count])
                     for c2 in c1.winfo_children():
                         str_c2 = str(c2)
                         if 'listbox' in str_c2:
                             t_type = 'L'
                             c_list += t_type+'\n'
-                            print("Tab Type:", t_type)
                         elif 'text' in str_c2:
                             t_type = 'J'
                             c_list += t_type+'\n'
-                            print("Tab Type:", t_type)
                         elif 'button' in str_c2:
                             b_name = str(c2.cget('text'))
                             for c3 in c2.winfo_children():
@@ -1222,8 +1218,6 @@ class dc_GUI(tk.Tk):
                                     c_list += b_name+':'
                                     b_type = str(c3.entrycget(0, 'label'))
                                     c_list += b_type+','
-                                    print("Button Name:", b_name)
-                                    print("Button Value:", b_type)
             if f_name:
                 c_list = c_list[:-1]+'\n'
                 status = config_write(f_name, c_list)
@@ -1345,11 +1339,17 @@ class dc_GUI(tk.Tk):
             lambda n: note_rc_popup.post(n.x_root, n.y_root))
         
         init_cfgload()
-        
         notebook.pack(fill = "both", expand = 1)
+        
+        if PY_VER[0] != 3 or PY_VER[1] < 6:
+            print("PyVerWarning: Incorrect version of Python 3 detected.")
+            popup_wrn("Python Version Warning",\
+            "Hi, dc_GUI is designed to use Python 3.6.0 or greater.\nGo to python.org to update your Python 3 installation.",\
+            "400x100")
 
 ####Main Progam####
-print('DetectHostOS:', HOST_SYS)
+print("DetectHostOS:", HOST_SYS)
+print("Detect PyVer:", "Python", str(PY_VER[0])+'.'+str(PY_VER[1])+'.'+str(PY_VER[2]))
 app = dc_GUI()
 #app.geometry("1000x650")
 app.mainloop()
