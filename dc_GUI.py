@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.11"
+VERSION = "0.1.12"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -43,12 +43,12 @@ def config_read(f_name = 'defaults.cfg'):
     for line_in in f_in:
         cfg_in.append(line_in[:-1])
         l_count += 1
+    f_in.close()
     if l_count % 2 != 0:
         print(error_blk)
         print(error_cli)
         print("ERROR: The config file must have an even number of lines.")
         return error_str
-    f_in.close()
     l_count = 0
     for a in cfg_in:
         l_count += 1
@@ -1237,8 +1237,6 @@ class dc_GUI(tk.Tk):
                         f_run = False
                     else:
                         c.destroy()
-                #for t in notebook.tabs():
-                #    notebook.forget(t)
                 note1 = ttk.Frame(notebook)
                 notebook.add(note1, text = "Ledger 1")
                 ledger_config(note1)
@@ -1261,7 +1259,6 @@ class dc_GUI(tk.Tk):
             button1 = tk.Button(popup, text = "No", command =\
             lambda: popup.destroy())
             button1.pack(padx = 35, pady = 5, side = "right")
-            #popup.geometry("250x80")
             popup.mainloop()
         
         def n_popup_rename(title, target):
@@ -1277,7 +1274,6 @@ class dc_GUI(tk.Tk):
             button1 = tk.Button(popup, text = "Ok",  command =\
             lambda: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
             button1.pack(pady = 5)
-            #popup.geometry("200x80")
             popup.mainloop()
         
         menubar = tk.Menu(container, relief = "flat")
@@ -1342,14 +1338,13 @@ class dc_GUI(tk.Tk):
         notebook.pack(fill = "both", expand = 1)
         
         if PY_VER[0] != 3 or PY_VER[1] < 6:
+            l1 = "Warning, dc_GUI is designed to use Python 3.6.0 or greater.\n"
+            l2= "Please go to python.org and update your Python 3 installation."
             print("PyVerWarning: Incorrect version of Python 3 detected.")
-            popup_wrn("Python Version Warning",\
-            "Hi, dc_GUI is designed to use Python 3.6.0 or greater.\nGo to python.org to update your Python 3 installation.",\
-            "400x100")
+            popup_wrn("Python Version Warning", l1 + l2, "450x100")
 
 ####Main Progam####
 print("DetectHostOS:", HOST_SYS)
 print("Detect PyVer:", "Python", str(PY_VER[0])+'.'+str(PY_VER[1])+'.'+str(PY_VER[2]))
 app = dc_GUI()
-#app.geometry("1000x650")
 app.mainloop()
