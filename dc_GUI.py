@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.12
-#Date: 20167-01-01
+#Version: 0.1.13
+#Date: 20167-01-09
 #----------------
 
 import tkinter as tk
@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.12"
+VERSION = "0.1.13"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -142,7 +142,7 @@ def file_load(title):
     filename =  filedialog.askopenfilename(initialdir = ".", title = title,\
     filetypes = (("cfg Files","*.cfg"), ("All Files","*.*")))
     if not filename:
-        print ("CfgFile Load: Canceled")
+        print ("CfgFile Load: Cancelled")
         return False
     else:
         print ("CfgFile Load:", filename)
@@ -152,7 +152,7 @@ def file_save(title):
     filename =  filedialog.asksaveasfilename(initialdir = ".", title = title,\
     filetypes = (("cfg Files","*.cfg"), ("All Files","*.*")))
     if not filename:
-        print ("CfgFile Save: Canceled")
+        print ("CfgFile Save: Cancelled")
         return False
     else:
         print ("CfgFile Save:", filename)
@@ -822,55 +822,49 @@ def ledger_config(self, configs = False):
         listbox.select_set(tk.END)
         return str_in
     
-    def b_popup_rename(self, title):
-        popup_val = tk.StringVar()
-        popup = tk.Toplevel()
-        popup.wm_title(title)
-        def setname(self_in):
-            text_in = popup_val.get().replace(':', '')[:20]#Watch for length and ctrl chars
-            self_in.configure(text = text_in)
-            return text_in
-        entry = tk.Entry(popup, textvariable = popup_val)
-        entry.config(bg = "gray90")
-        entry.bind("<Return>",\
-        lambda k: (popup.destroy(),\
-        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
-        entry.pack(padx = 35, pady = 5, fill = "x")
-        popup_val.set(self.cget("text"))
-        button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(),\
-        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
-        button1.pack(pady = 5)
-        #popup.geometry("250x80")
-        popup.mainloop()
-    
-    def b_popup_revalue(self, title, value, parent):
+    def b_popup_config(self, title, value, parent):
+        popup_lab = tk.StringVar()
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
             value_in[0] = popup_val.get().replace(' ', '')[:100]
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
         def setname(self_in):
-            text_in = popup_val.get()[:20]
+            text_in = popup_lab.get().replace(':', '')[:20]#Watch for length and ctrl chars
             self_in.configure(text = text_in)
             return text_in
         popup = tk.Toplevel()
         popup.wm_title(title)
-        entry = tk.Entry(popup, textvariable = popup_val)
-        entry.config(bg = "gray90")
-        entry.bind("<Return>",\
-        lambda k: (popup.destroy(), print("Button ReCfg:",\
-        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
-        entry.pack(padx = 35, pady = 5, fill = "x")
+        
+        label1 = tk.Label(popup, text = "Button Label:")
+        label1.pack(fill="x")
+        entry_lab = tk.Entry(popup, textvariable = popup_lab)
+        entry_lab.config(bg = "gray90")
+        entry_lab.bind("<Return>",\
+        lambda k1: (popup.destroy(), print("Button ReCfg:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
+        "Rename = \'"+setname(parent)+'\'')))
+        entry_lab.pack(padx = 35, pady = 5, fill = "x")
+        popup_lab.set(parent.cget("text"))
+        
+        label2 = tk.Label(popup, text = "Roll Formula:")
+        label2.pack(fill="x")
+        entry_val = tk.Entry(popup, textvariable = popup_val)
+        entry_val.config(bg = "gray90")
+        entry_val.bind("<Return>",\
+        lambda k2: (popup.destroy(), print("Button ReCfg:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
+        "Rename = \'"+setname(parent)+'\'')))
+        entry_val.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
-        button0 = tk.Button(popup, text = "Match",\
+        
+        button0 = tk.Button(popup, text = "OK",\
         command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
         button0.pack(padx = 35, pady = 5, side = "left")
-        button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), print("Button ReCfg:",\
-        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
+        button1 = tk.Button(popup, text = "Cancel",\
+        command = lambda: (popup.destroy(), print("Button ReCfg: Cancelled")))
         button1.pack(padx = 35, pady = 5, side = "right")
         #popup.geometry("200x80")
         popup.mainloop()
@@ -880,10 +874,8 @@ def ledger_config(self, configs = False):
         button_rc_popup.add_command(label = value[0],\
         command = lambda: button_press(value))
         button_rc_popup.add_separator()
-        button_rc_popup.add_command(label = "Rename",\
-        command = lambda: b_popup_rename(self, "Rename Button"))
-        button_rc_popup.add_command(label = "Revalue",\
-        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
+        button_rc_popup.add_command(label = "Configure",\
+        command = lambda: b_popup_config(button_rc_popup, "Configure Button", value, self))
         button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             self.bind("<Button-2>",\
@@ -956,55 +948,49 @@ def journal_config(self, configs = False):
         text.see(tk.END)
         return str_in
     
-    def b_popup_rename(self, title):
-        popup_val = tk.StringVar()
-        popup = tk.Toplevel()
-        popup.wm_title(title)
-        def setname(self_in):
-            text_in = popup_val.get().replace(':', '')[:20]#Watch for length and ctrl chars
-            self_in.configure(text = text_in)
-            return text_in
-        entry = tk.Entry(popup, textvariable = popup_val)
-        entry.config(bg = "gray90")
-        entry.bind("<Return>",\
-        lambda k: (popup.destroy(),\
-        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
-        entry.pack(padx = 35, pady = 5, fill = "x")
-        popup_val.set(self.cget("text"))
-        button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(),\
-        print("Button ReCfg:", '\''+self.cget("text")+'\'', "Renamed to", '\''+setname(self)+'\'')))
-        button1.pack(pady = 5)
-        #popup.geometry("250x80")
-        popup.mainloop()
-    
-    def b_popup_revalue(self, title, value, parent):
+    def b_popup_config(self, title, value, parent):
+        popup_lab = tk.StringVar()
         popup_val = tk.StringVar()
         def setvalue(self_in, value_in):
             value_in[0] = popup_val.get().replace(' ', '')[:100]
             self_in.entryconfigure(0, label = value[0])
             return value_in[0]
         def setname(self_in):
-            text_in = popup_val.get()[:20]
+            text_in = popup_lab.get().replace(':', '')[:20]#Watch for length and ctrl chars
             self_in.configure(text = text_in)
             return text_in
         popup = tk.Toplevel()
         popup.wm_title(title)
-        entry = tk.Entry(popup, textvariable = popup_val)
-        entry.config(bg = "gray90")
-        entry.bind("<Return>",\
-        lambda k: (popup.destroy(), print("Button ReCfg:",\
-        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
-        entry.pack(padx = 35, pady = 5, fill = "x")
+        
+        label1 = tk.Label(popup, text = "Button Label:")
+        label1.pack(fill="x")
+        entry_lab = tk.Entry(popup, textvariable = popup_lab)
+        entry_lab.config(bg = "gray90")
+        entry_lab.bind("<Return>",\
+        lambda k1: (popup.destroy(), print("Button ReCfg:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
+        "Rename = \'"+setname(parent)+'\'')))
+        entry_lab.pack(padx = 35, pady = 5, fill = "x")
+        popup_lab.set(parent.cget("text"))
+        
+        label2 = tk.Label(popup, text = "Roll Formula:")
+        label2.pack(fill="x")
+        entry_val = tk.Entry(popup, textvariable = popup_val)
+        entry_val.config(bg = "gray90")
+        entry_val.bind("<Return>",\
+        lambda k2: (popup.destroy(), print("Button ReCfg:",\
+        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
+        "Rename = \'"+setname(parent)+'\'')))
+        entry_val.pack(padx = 35, pady = 5, fill = "x")
         popup_val.set(value[0])
-        button0 = tk.Button(popup, text = "Match",\
+        
+        button0 = tk.Button(popup, text = "OK",\
         command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
         button0.pack(padx = 35, pady = 5, side = "left")
-        button1 = tk.Button(popup, text = "Ok",\
-        command = lambda: (popup.destroy(), print("Button ReCfg:",\
-        '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value))))
+        button1 = tk.Button(popup, text = "Cancel",\
+        command = lambda: (popup.destroy(), print("Button ReCfg: Cancelled")))
         button1.pack(padx = 35, pady = 5, side = "right")
         #popup.geometry("200x80")
         popup.mainloop()
@@ -1014,10 +1000,8 @@ def journal_config(self, configs = False):
         button_rc_popup.add_command(label = value[0],\
         command = lambda: button_press(value))
         button_rc_popup.add_separator()
-        button_rc_popup.add_command(label = "Rename",\
-        command = lambda: b_popup_rename(self, "Rename Button"))
-        button_rc_popup.add_command(label = "Revalue", \
-        command = lambda: b_popup_revalue(button_rc_popup, "Enter New Value", value, self))
+        button_rc_popup.add_command(label = "Configure",\
+        command = lambda: b_popup_config(button_rc_popup, "Configure Button", value, self))
         button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             self.bind("<Button-2>",\
