@@ -862,10 +862,7 @@ def ledger_config(self, configs = False):
         command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
-        button0.pack(padx = 35, pady = 5, side = "left")
-        button1 = tk.Button(popup, text = "Cancel",\
-        command = lambda: (popup.destroy(), print("Button ReCfg: Cancelled")))
-        button1.pack(padx = 35, pady = 5, side = "right")
+        button0.pack(padx = 35, pady = 5)
         #popup.geometry("200x80")
         popup.mainloop()
     
@@ -988,10 +985,7 @@ def journal_config(self, configs = False):
         command = lambda: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
         "Rename = \'"+setname(parent)+'\'')))
-        button0.pack(padx = 35, pady = 5, side = "left")
-        button1 = tk.Button(popup, text = "Cancel",\
-        command = lambda: (popup.destroy(), print("Button ReCfg: Cancelled")))
-        button1.pack(padx = 35, pady = 5, side = "right")
+        button0.pack(padx = 35, pady = 5)
         #popup.geometry("200x80")
         popup.mainloop()
     
