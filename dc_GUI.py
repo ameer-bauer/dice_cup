@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.13
-#Date: 20167-01-09
+#Version: 0.1.14
+#Date: 2017-01-21
 #----------------
 
 import tkinter as tk
@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.13"
+VERSION = "0.1.14"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -866,6 +866,18 @@ def ledger_config(self, configs = False):
         #popup.geometry("200x80")
         popup.mainloop()
     
+    def b_popup_del(self, title, parent):
+        popup_val = tk.StringVar()
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        label = tk.Label(popup, text = "Delete the button \'"+parent.cget("text")+"\' ?")
+        label.pack(pady = 10, padx= 10, side = "top", fill="x")
+        button1 = tk.Button(popup, text = "Ok",  command =\
+        lambda: (popup.destroy(), print("ButtonDelete: \'"+parent.cget("text")+'\''), parent.destroy()))
+        button1.pack(pady = 5)
+        #popup.geometry("280x80")
+        popup.mainloop()
+    
     def b_menu(self, name, value):
         button_rc_popup = tk.Menu(self, tearoff = 0)
         button_rc_popup.add_command(label = value[0],\
@@ -873,6 +885,8 @@ def ledger_config(self, configs = False):
         button_rc_popup.add_separator()
         button_rc_popup.add_command(label = "Configure",\
         command = lambda: b_popup_config(button_rc_popup, "Configure Button", value, self))
+        button_rc_popup.add_command(label = "Delete",\
+        command = lambda: b_popup_del(button_rc_popup, "Delete Button", self))
         button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             self.bind("<Button-2>",\
@@ -989,6 +1003,18 @@ def journal_config(self, configs = False):
         #popup.geometry("200x80")
         popup.mainloop()
     
+    def b_popup_del(self, title, parent):
+        popup_val = tk.StringVar()
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        label = tk.Label(popup, text = "Delete the button \'"+parent.cget("text")+"\' ?")
+        label.pack(pady = 10, padx= 10, side = "top", fill="x")
+        button1 = tk.Button(popup, text = "Ok",  command =\
+        lambda: (popup.destroy(), print("ButtonDelete: \'"+parent.cget("text")+'\''), parent.destroy()))
+        button1.pack(pady = 5)
+        #popup.geometry("280x80")
+        popup.mainloop()
+    
     def b_menu(self, name, value):
         button_rc_popup = tk.Menu(self, tearoff = 0)
         button_rc_popup.add_command(label = value[0],\
@@ -996,6 +1022,8 @@ def journal_config(self, configs = False):
         button_rc_popup.add_separator()
         button_rc_popup.add_command(label = "Configure",\
         command = lambda: b_popup_config(button_rc_popup, "Configure Button", value, self))
+        button_rc_popup.add_command(label = "Delete",\
+        command = lambda: b_popup_del(button_rc_popup, "Delete Button", self))
         button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
         if HOST_SYS == 'Darwin':
             self.bind("<Button-2>",\
@@ -1086,12 +1114,12 @@ class dc_GUI(tk.Tk):
             popup_val = tk.StringVar()
             popup = tk.Toplevel()
             popup.wm_title(title)
-            label = tk.Label(popup, text = "Delete "+notebook.tab(target, 'text')+"?")
+            label = tk.Label(popup, text = "Delete \'"+notebook.tab(target, 'text')+"\' ?")
             label.pack(pady = 10, padx= 10, side = "top", fill="x")
             button1 = tk.Button(popup, text = "Ok",  command =\
             lambda: (popup.destroy(), notebook.winfo_children()[target + 1].destroy()))
             button1.pack(pady = 5)
-            popup.geometry("250x80")
+            #popup.geometry("250x80")
             popup.mainloop()
         
         notebook = ttk.Notebook(container)
