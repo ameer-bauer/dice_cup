@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.14
-#Date: 2017-01-21
+#Version: 0.1.15
+#Date: 2017-01-22
 #----------------
 
 import tkinter as tk
@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.14"
+VERSION = "0.1.15"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -878,13 +878,55 @@ def ledger_config(self, configs = False):
         #popup.geometry("280x80")
         popup.mainloop()
     
-    def b_menu(self, name, value):
+    def b_popup_add(self, title):
+        def b_make():
+            value_in = []
+            value_in.append(popup_val.get().replace(' ', '')[:100])
+            name = popup_lab.get().replace(':', '')[:20]
+            button = tk.Button(self, text = name,\
+            command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
+            "Value = "+button_press(value_in))))
+            button.pack(side = "left")
+            b_menu(button, name, value_in, self)
+            print("ButtonCreate: \'"+name+'\',', "Value =", value_in[0])
+        
+        popup_lab = tk.StringVar()
+        popup_val = tk.StringVar()
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        label1 = tk.Label(popup, text = "Button Label:")
+        label1.pack(fill="x")
+        entry_lab = tk.Entry(popup, textvariable = popup_lab)
+        entry_lab.config(bg = "gray90")
+        entry_lab.bind("<Return>",\
+        lambda k1: (popup.destroy(), b_make()))
+        entry_lab.pack(padx = 35, pady = 5, fill = "x")
+        popup_lab.set("New Button")
+        
+        label2 = tk.Label(popup, text = "Roll Formula:")
+        label2.pack(fill="x")
+        entry_val = tk.Entry(popup, textvariable = popup_val)
+        entry_val.config(bg = "gray90")
+        entry_val.bind("<Return>",\
+        lambda k2: (popup.destroy(), b_make()))
+        entry_val.pack(padx = 35, pady = 5, fill = "x")
+        popup_val.set("1d13")
+        
+        button0 = tk.Button(popup, text = "OK",\
+        command = lambda: (popup.destroy(),\
+        b_make()))
+        button0.pack(padx = 35, pady = 5)
+        popup.mainloop()
+    
+    def b_menu(self, name, value, parent = None):
         button_rc_popup = tk.Menu(self, tearoff = 0)
         button_rc_popup.add_command(label = value[0],\
         command = lambda: button_press(value))
         button_rc_popup.add_separator()
         button_rc_popup.add_command(label = "Configure",\
         command = lambda: b_popup_config(button_rc_popup, "Configure Button", value, self))
+        button_rc_popup.add_command(label = "Create",\
+        command = lambda: b_popup_add(parent, "Create Button"))
         button_rc_popup.add_command(label = "Delete",\
         command = lambda: b_popup_del(button_rc_popup, "Delete Button", self))
         button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
@@ -901,7 +943,7 @@ def ledger_config(self, configs = False):
         command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
         "Value = "+button_press(value))))
         button.pack(side = "left")
-        b_menu(button, button.cget("text"), value)
+        b_menu(button, button.cget("text"), value, self)
     
     listbox = tk.Listbox(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
@@ -1003,6 +1045,46 @@ def journal_config(self, configs = False):
         #popup.geometry("200x80")
         popup.mainloop()
     
+    def b_popup_add(self, title):
+        def b_make():
+            value_in = []
+            value_in.append(popup_val.get().replace(' ', '')[:100])
+            name = popup_lab.get().replace(':', '')[:20]
+            button = tk.Button(self, text = name,\
+            command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
+            "Value = "+button_press(value_in))))
+            button.pack(side = "left")
+            b_menu(button, name, value_in, self)
+            print("ButtonCreate: \'"+name+'\',', "Value =", value_in[0])
+        
+        popup_lab = tk.StringVar()
+        popup_val = tk.StringVar()
+        popup = tk.Toplevel()
+        popup.wm_title(title)
+        label1 = tk.Label(popup, text = "Button Label:")
+        label1.pack(fill="x")
+        entry_lab = tk.Entry(popup, textvariable = popup_lab)
+        entry_lab.config(bg = "gray90")
+        entry_lab.bind("<Return>",\
+        lambda k1: (popup.destroy(), b_make()))
+        entry_lab.pack(padx = 35, pady = 5, fill = "x")
+        popup_lab.set("New Button")
+        
+        label2 = tk.Label(popup, text = "Roll Formula:")
+        label2.pack(fill="x")
+        entry_val = tk.Entry(popup, textvariable = popup_val)
+        entry_val.config(bg = "gray90")
+        entry_val.bind("<Return>",\
+        lambda k2: (popup.destroy(), b_make()))
+        entry_val.pack(padx = 35, pady = 5, fill = "x")
+        popup_val.set("1d13")
+        
+        button0 = tk.Button(popup, text = "OK",\
+        command = lambda: (popup.destroy(),\
+        b_make()))
+        button0.pack(padx = 35, pady = 5)
+        popup.mainloop()
+    
     def b_popup_del(self, title, parent):
         popup_val = tk.StringVar()
         popup = tk.Toplevel()
@@ -1015,13 +1097,15 @@ def journal_config(self, configs = False):
         #popup.geometry("280x80")
         popup.mainloop()
     
-    def b_menu(self, name, value):
+    def b_menu(self, name, value, parent = None):
         button_rc_popup = tk.Menu(self, tearoff = 0)
         button_rc_popup.add_command(label = value[0],\
         command = lambda: button_press(value))
         button_rc_popup.add_separator()
         button_rc_popup.add_command(label = "Configure",\
         command = lambda: b_popup_config(button_rc_popup, "Configure Button", value, self))
+        button_rc_popup.add_command(label = "Create",\
+        command = lambda: b_popup_add(parent, "Create Button"))
         button_rc_popup.add_command(label = "Delete",\
         command = lambda: b_popup_del(button_rc_popup, "Delete Button", self))
         button_rc_popup.bind("<Leave>", lambda b: button_rc_popup.unpost())
@@ -1038,7 +1122,7 @@ def journal_config(self, configs = False):
         command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
         "Value = "+button_press(value))))
         button.pack(side = "left")
-        b_menu(button, button.cget("text"), value)
+        b_menu(button, button.cget("text"), value, self)
     
     text = tk.Text(self, width = 90, height = 30)
     scrolly = tk.Scrollbar(self)
