@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.15
-#Date: 2017-01-22
+#Version: 0.1.16
+#Date: 2017-05-31
 #----------------
 
 import tkinter as tk
@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.15"
+VERSION = "0.1.16"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -83,7 +83,7 @@ def config_write(f_name, c_list):
     print("CfgFileWrite:", c_count, "characters written to", f_name)
     return
 
-def dc_run_q(params, formula = False):
+def dc_run_q(params, formula = False, label = 'Roll Formula'):
     if HOST_SYS == 'Windows':
         dc_out = subprocess.run(WIN_DEFAULT+params+['-q'], stdout=subprocess.PIPE)
     else:
@@ -103,9 +103,9 @@ def dc_run_q(params, formula = False):
         dc_print = dc_print[1].replace('\\n', '  ').replace('\\r', '')
     else:
         dc_print = dc_print[1].replace('\\n', '  ')
-    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'  '+dc_print.strip('b\')')[:2048]
+    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+label+' '+str_params+'  '+dc_print.strip('b\')')[:2048]
 
-def dc_run(params, formula = False):
+def dc_run(params, formula = False, label = 'Roll Formula'):
     if HOST_SYS == 'Windows':
         dc_out = subprocess.run(WIN_DEFAULT+params, stdout=subprocess.PIPE)
     else:
@@ -125,7 +125,7 @@ def dc_run(params, formula = False):
         dc_print = dc_print[1].replace('\\n', '\n').replace('\\r', '').replace('\\x08\\x08', '0')
     else:
         dc_print = dc_print[1].replace('\\n', '\n').replace('\\x08\\x08', '0')
-    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+str_params+'\n'+dc_print.strip('b\')')+'\n'
+    return now.strftime("%Y-%m-%dT%H:%M:%S.%f  ")+label+' '+str_params+'\n'+dc_print.strip('b\')')+'\n'
 
 def popup_wrn(title, msg, geom = "250x80"):
     popup = tk.Toplevel()
@@ -807,8 +807,8 @@ def ledger_config(self, configs = False):
             b_presets.append([c_list[1]])
             b_count += 1
     
-    def button_press(value):
-        listbox.insert(tk.END, dc_run_q(formula_parse(value[0]), value[0])),\
+    def button_press(value, label):
+        listbox.insert(tk.END, dc_run_q(formula_parse(value[0]), value[0], label)),\
         listbox.see(tk.END)
         listbox.select_clear(0,tk.END)
         listbox.select_set(tk.END)
@@ -885,7 +885,7 @@ def ledger_config(self, configs = False):
             name = popup_lab.get().replace(':', '')[:20]
             button = tk.Button(self, text = name,\
             command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
-            "Value = "+button_press(value_in))))
+            "Value = "+button_press(value_in, button.cget("text")))))
             button.pack(side = "left")
             b_menu(button, name, value_in, self)
             print("ButtonCreate: \'"+name+'\',', "Value =", value_in[0])
@@ -941,7 +941,7 @@ def ledger_config(self, configs = False):
         #name must be strings, value must be a single element list
         button = tk.Button(self, text = name,\
         command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
-        "Value = "+button_press(value))))
+        "Value = "+button_press(value, button.cget("text")))))
         button.pack(side = "left")
         b_menu(button, button.cget("text"), value, self)
     
@@ -990,8 +990,8 @@ def journal_config(self, configs = False):
             b_presets.append([c_list[1]])
             b_count += 1
     
-    def button_press(value):
-        text.insert(tk.END, dc_run(formula_parse(value[0]), value[0])),\
+    def button_press(value, label):
+        text.insert(tk.END, dc_run(formula_parse(value[0]), value[0], label)),\
         text.see(tk.END)
         return value[0]
     
@@ -1052,7 +1052,7 @@ def journal_config(self, configs = False):
             name = popup_lab.get().replace(':', '')[:20]
             button = tk.Button(self, text = name,\
             command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
-            "Value = "+button_press(value_in))))
+            "Value = "+button_press(value_in, button.cget("text")))))
             button.pack(side = "left")
             b_menu(button, name, value_in, self)
             print("ButtonCreate: \'"+name+'\',', "Value =", value_in[0])
@@ -1120,7 +1120,7 @@ def journal_config(self, configs = False):
         #name must be strings, value must be a single element list
         button = tk.Button(self, text = name,\
         command = lambda: (print("Button Press:", '\''+button.cget("text")+'\',',\
-        "Value = "+button_press(value))))
+        "Value = "+button_press(value, button.cget("text")))))
         button.pack(side = "left")
         b_menu(button, button.cget("text"), value, self)
     
