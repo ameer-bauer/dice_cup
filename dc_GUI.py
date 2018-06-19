@@ -1151,7 +1151,7 @@ def journal_config(self, configs = False):
 class dc_GUI(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        tk.Tk.wm_title(self, "dc_GUI")
+        tk.Tk.wm_title(self, "dc_GUI  -  "+VERSION)
         
         container = tk.Frame(self)
         container.pack(side = "top", fill = "both", expand = True)
