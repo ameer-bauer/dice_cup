@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.16"
+VERSION = "0.1.17"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -172,15 +172,17 @@ def popup_rfhlp(title):
     text.insert(tk.END, "SYNTAX\n  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <±u >±l L|H I\n\n")
     text.insert(tk.END, "  NOTE: All input variables are either INTEGERS, or FLAGS which can be\n")
     text.insert(tk.END, "        present or omitted; empty spaces are optional.\n\n")
-    text.insert(tk.END, "  INTEGERS\n    s = dice Set [POSITIVE ONLY]\n    g = dice Group [POSITIVE ONLY]\n")
+    text.insert(tk.END, "  INTEGERS\n    s = dice Set [POSITIVE ONLY]\n    g = dice Group [POSITIVE ONLY]\n\n")
     text.insert(tk.END, "    c1, c2, ... cn = the Combination of corresponding die Types to roll\n")
     text.insert(tk.END, "    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]\n")
-    text.insert(tk.END, "    **NOTE: c1dt1 can not be preceded by a \'+\' or a \'-\' symbol.**\n")
-    text.insert(tk.END, "    m = Modifier\n    p = Percentage\n    u = Upper Boundary\n    l = Lower Boundary\n\n")
+    text.insert(tk.END, "    NOTE: c1dt1 can not be preceded by a \'+\' or a \'-\' symbol.\n\n")
+    text.insert(tk.END, "    m = Modifier\n    p = Percentage\n")
+    text.insert(tk.END, "    u = Upper Boundary (is evaluated as \'total result\' <= u)\n")
+    text.insert(tk.END, "    l = Lower Boundary (is evaluated as \'total result\' >= l)\n\n")
     text.insert(tk.END, "  FLAGS\n    L = drop the Lowest c1dt1 single die roll in the combination\n")
     text.insert(tk.END, "    H = drop the Highest c1dt1 single die roll in the combination\n")
     text.insert(tk.END, "    I = include Statistical Information\n")
-    text.insert(tk.END, "    **NOTE: Either L or H can be set, but not both.**\n\n")
+    text.insert(tk.END, "    NOTE: Either L or H can be set, but not both.\n\n")
     text.insert(tk.END, "EXAMPLES\n  1) Roll three six-sided dice.\n     Roll Formula Syntax: 3d6\n\n")
     text.insert(tk.END, "  2) Roll two Groups of three six-sided dice, plus one four-sided die, and\n")
     text.insert(tk.END, "     subtract a Modifier of five.\n")
