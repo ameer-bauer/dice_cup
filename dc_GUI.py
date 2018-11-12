@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.16
-#Date: 2017-05-31
+#Version: 0.1.17
+#Date: 2018-11-12
 #----------------
 
 import tkinter as tk
@@ -183,16 +183,16 @@ def popup_rfhlp(title):
     text.insert(tk.END, "    H = drop the Highest c1dt1 single die roll in the combination\n")
     text.insert(tk.END, "    I = include Statistical Information\n")
     text.insert(tk.END, "    NOTE: Either L or H can be set, but not both.\n\n")
-    text.insert(tk.END, "EXAMPLES\n  1) Roll three six-sided dice.\n     Roll Formula Syntax: 3d6\n\n")
+    text.insert(tk.END, "EXAMPLES\n  1) Roll three six-sided dice.\n\n     Roll Formula Syntax: 3d6\n\n")
     text.insert(tk.END, "  2) Roll two Groups of three six-sided dice, plus one four-sided die, and\n")
-    text.insert(tk.END, "     subtract a Modifier of five.\n")
+    text.insert(tk.END, "     subtract a Modifier of five.\n\n")
     text.insert(tk.END, "     Roll Formula Syntax: 2*3d6+1d4-5\n\n")
     text.insert(tk.END, "  3) Roll five Sets of six Groups of four six-sided dice, add a Percentage of\n")
     text.insert(tk.END, "     fifteen (15%), Drop the Lowest single six-sided die from each Group, and\n")
-    text.insert(tk.END, "     include Statistical Information.\n     Roll Formula Syntax: 5^6*4d6+15%LI\n\n")
+    text.insert(tk.END, "     include Statistical Information.\n\n     Roll Formula Syntax: 5^6*4d6+15%LI\n\n")
     text.insert(tk.END, "  4) Roll twenty Groups of ten eight-sided dice, minus a Modifier of seventeen,\n")
     text.insert(tk.END, "     an Upper Boundary of sixty five, a Lower Boundary of negative ten, and\n")
-    text.insert(tk.END, "     Drop the Highest single eight-sided die from each dice Group.\n")
+    text.insert(tk.END, "     Drop the Highest single eight-sided die from each dice Group.\n\n")
     text.insert(tk.END, "     Roll Formula Syntax: 20*10d8-17<65>-10H\n\n")
     scroll.config(command = text.yview)
     scroll.pack(side = "right", fill = "y")
