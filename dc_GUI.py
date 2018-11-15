@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.17
-#Date: 2018-11-12
+#Version: 0.1.18
+#Date: 2018-11-14
 #----------------
 
 import tkinter as tk
@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.17"
+VERSION = "0.1.18"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -166,9 +166,9 @@ def popup_rfhlp(title):
     text.insert(tk.END, "A \'Roll Formula\' is a flexible input mechanism for simulating various dice\n")
     text.insert(tk.END, "rolls.  It is designed to be intuitive and predictable in structure.  Below you\n")
     text.insert(tk.END, "will find the syntactical and variable definitions along with some examples.\n")
-    text.insert(tk.END, "Please note that verbose error messages are printed to the CLI window; if your\n")
-    text.insert(tk.END, "input syntax has an error.  Roll Formulae have a maximum size of 100 characters.\n")
-    text.insert(tk.END, "At least one combination of dice must be defined to form a valid Roll Formula.\n\n")
+    text.insert(tk.END, "Please note that verbose error messages are printed to the CLI window.\n")
+    text.insert(tk.END, "Roll Formulae have a maximum size of 100 characters.  At least one combination \n")
+    text.insert(tk.END, "of dice must be defined to form a valid Roll Formula.\n\n")
     text.insert(tk.END, "SYNTAX\n  s^ g* c1dt1 ±c2dt2 ... ±cndtn ±m ±p% <±u >±l L|H I\n\n")
     text.insert(tk.END, "  NOTE: All input variables are either INTEGERS, or FLAGS which can be\n")
     text.insert(tk.END, "        present or omitted; empty spaces are optional.\n\n")
@@ -176,13 +176,13 @@ def popup_rfhlp(title):
     text.insert(tk.END, "    c1, c2, ... cn = the Combination of corresponding die Types to roll\n")
     text.insert(tk.END, "    t1, t2, ... tn = the Type(s) of dice to roll [POSITIVE ONLY]\n")
     text.insert(tk.END, "    NOTE: c1dt1 can not be preceded by a \'+\' or a \'-\' symbol.\n\n")
-    text.insert(tk.END, "    m = Modifier\n    p = Percentage\n")
+    text.insert(tk.END, "    m = Modifier\n    p = Percentage\n\n")
     text.insert(tk.END, "    u = Upper Boundary (is evaluated as \'total result\' <= u)\n")
     text.insert(tk.END, "    l = Lower Boundary (is evaluated as \'total result\' >= l)\n\n")
     text.insert(tk.END, "  FLAGS\n    L = drop the Lowest c1dt1 single die roll in the combination\n")
     text.insert(tk.END, "    H = drop the Highest c1dt1 single die roll in the combination\n")
-    text.insert(tk.END, "    I = include Statistical Information\n")
-    text.insert(tk.END, "    NOTE: Either L or H can be set, but not both.\n\n")
+    text.insert(tk.END, "    NOTE: either L or H can be set, but not both.\n\n")
+    text.insert(tk.END, "    I = include Statistical Information\n\n")
     text.insert(tk.END, "EXAMPLES\n  1) Roll three six-sided dice.\n\n     Roll Formula Syntax: 3d6\n\n")
     text.insert(tk.END, "  2) Roll two Groups of three six-sided dice, plus one four-sided die, and\n")
     text.insert(tk.END, "     subtract a Modifier of five.\n\n")
@@ -1216,20 +1216,20 @@ class dc_GUI(tk.Tk):
             if 'ERROR' in c_list:#Load built-in defaults if the config file is missing or invalid
                 print("Config Error: Incorrect configuration syntax, using built-in presets.")
                 note1 = ttk.Frame(notebook)
-                notebook.add(note1, text = "Ledger 1")
-                ledger_config(note1)
+                notebook.add(note1, text = "Journal 1")
+                journal_config(note1)
                 note2 = ttk.Frame(notebook)
-                notebook.add(note2, text = "Journal 1")
+                notebook.add(note2, text = "Journal 2")
                 journal_config(note2)
                 note3 = ttk.Frame(notebook)
-                notebook.add(note3, text = "Journal 2")
+                notebook.add(note3, text = "Journal 3")
                 journal_config(note3)
                 note4 = ttk.Frame(notebook)
-                notebook.add(note4, text = "Journal 3")
+                notebook.add(note4, text = "Journal 4")
                 journal_config(note4)
                 note5 = ttk.Frame(notebook)
-                notebook.add(note5, text = "Journal 4")
-                journal_config(note5)
+                notebook.add(note5, text = "Ledger 1")
+                ledger_config(note5)
             else:
                 c_count = 0
                 for a in c_list[0]:
@@ -1330,20 +1330,20 @@ class dc_GUI(tk.Tk):
                     else:
                         c.destroy()
                 note1 = ttk.Frame(notebook)
-                notebook.add(note1, text = "Ledger 1")
-                ledger_config(note1)
+                notebook.add(note1, text = "Journal 1")
+                journal_config(note1)
                 note2 = ttk.Frame(notebook)
-                notebook.add(note2, text = "Journal 1")
+                notebook.add(note2, text = "Journal 2")
                 journal_config(note2)
                 note3 = ttk.Frame(notebook)
-                notebook.add(note3, text = "Journal 2")
+                notebook.add(note3, text = "Journal 3")
                 journal_config(note3)
                 note4 = ttk.Frame(notebook)
-                notebook.add(note4, text = "Journal 3")
+                notebook.add(note4, text = "Journal 4")
                 journal_config(note4)
                 note5 = ttk.Frame(notebook)
-                notebook.add(note5, text = "Journal 4")
-                journal_config(note5)
+                notebook.add(note5, text = "Ledger 1")
+                ledger_config(note5)
                 print("ConfigLoaded: Built-in Defaults")
             button0 = tk.Button(popup, text = "Yes", command =\
             lambda: (popup.destroy(), reload_defaults()))
@@ -1431,7 +1431,7 @@ class dc_GUI(tk.Tk):
         
         if PY_VER[0] != 3 or PY_VER[1] < 6:
             l1 = "Warning, dc_GUI is designed to use Python 3.6.0 or greater.\n"
-            l2= "Please go to python.org and update your Python 3 installation."
+            l2 = "Please go to python.org and update your Python 3 installation."
             print("PyVerWarning: Incorrect version of Python 3 detected.")
             popup_wrn("Python Version Warning", l1 + l2, "450x100")
 
