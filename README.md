@@ -13,12 +13,15 @@ Introduction to dice_cup 1.1.8
   the outcome of various types of dice rolls.  Die types can be set
   arbitrarily greater than 1, making for fun die types such as an eleven-
   sided die, or "1(d11)".  The nomenclature for die rolls herein is as
-  follows: "set { dice group [ number ( die type ) +\- modifier ] }"
+  follows: 
+  "set { dice group [ number ( die type ) +\- modifier ] }"
 
 SYNTAX
+
   dice_cup.py [-h] [-v] [-q] [-d] [-m] [-g] [-s] [-i] [-l] [-u]
 
 ARGUMENTS
+
   -h Displays this help page.
 
   -v Displays the version of dice_cup.
