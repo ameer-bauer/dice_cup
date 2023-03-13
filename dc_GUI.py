@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #----------------
 #Name: dc_GUI.py
-#Version: 0.1.18
-#Date: 2018-11-14
+#Version: 0.1.19
+#Date: 2023-03-13
 #----------------
 
 import tkinter as tk
@@ -20,7 +20,7 @@ HOST_SYS = system()
 PY_VER = version_info
 WIN_DEFAULT = ['cmd', '/C', 'dice_cup.py']
 NIX_DEFAULT = ['./dice_cup.py']
-VERSION = "0.1.18"
+VERSION = "0.1.19"
 
 def config_read(f_name = 'defaults.cfg'):
     error_blk = "\n!!!!!!!!!\n!!ERROR!!\n!!!!!!!!!\n"
@@ -209,7 +209,7 @@ def popup_get(title, msg):
     label = tk.Label(popup, text = msg)
     label.pack(padx = 10, pady= 10, side = "top", fill="x")
     entry = tk.Entry(popup, textvariable = popup_val)
-    entry.config(bg = "gray90")
+    #entry.config(bg = "gray90")
     entry.pack(padx = 10, pady = 5, fill = "x")
     popup_val.set("Default")
     button1 = tk.Button(popup, text = "Ok",\
@@ -225,7 +225,7 @@ def formula_get(title, msg):
     label = tk.Label(popup, text = msg)
     label.pack(padx = 10, pady= 10, side = "top", fill="x")
     entry = tk.Entry(popup, textvariable = popup_val)
-    entry.config(bg = "gray90")
+    #entry.config(bg = "gray90")
     entry.bind("<Return>",\
     lambda k: (popup.destroy(),\
     print("Parsed Flags:", formula_parse(popup_val.get().replace(' ', '')[:100], True))))
@@ -841,7 +841,7 @@ def ledger_config(self, configs = False):
         label1 = tk.Label(popup, text = "Button Label:")
         label1.pack(fill="x")
         entry_lab = tk.Entry(popup, textvariable = popup_lab)
-        entry_lab.config(bg = "gray90")
+        #entry_lab.config(bg = "gray90")
         entry_lab.bind("<Return>",\
         lambda k1: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
@@ -852,7 +852,7 @@ def ledger_config(self, configs = False):
         label2 = tk.Label(popup, text = "Roll Formula:")
         label2.pack(fill="x")
         entry_val = tk.Entry(popup, textvariable = popup_val)
-        entry_val.config(bg = "gray90")
+        #entry_val.config(bg = "gray90")
         entry_val.bind("<Return>",\
         lambda k2: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
@@ -899,7 +899,7 @@ def ledger_config(self, configs = False):
         label1 = tk.Label(popup, text = "Button Label:")
         label1.pack(fill="x")
         entry_lab = tk.Entry(popup, textvariable = popup_lab)
-        entry_lab.config(bg = "gray90")
+        #entry_lab.config(bg = "gray90")
         entry_lab.bind("<Return>",\
         lambda k1: (popup.destroy(), b_make()))
         entry_lab.pack(padx = 35, pady = 5, fill = "x")
@@ -908,7 +908,7 @@ def ledger_config(self, configs = False):
         label2 = tk.Label(popup, text = "Roll Formula:")
         label2.pack(fill="x")
         entry_val = tk.Entry(popup, textvariable = popup_val)
-        entry_val.config(bg = "gray90")
+        #entry_val.config(bg = "gray90")
         entry_val.bind("<Return>",\
         lambda k2: (popup.destroy(), b_make()))
         entry_val.pack(padx = 35, pady = 5, fill = "x")
@@ -954,11 +954,12 @@ def ledger_config(self, configs = False):
     scrollx = tk.Scrollbar(self)
     scrollx.config(command = listbox.xview, orient = "horizontal")
     scrollx.pack(side = "bottom", fill = "x")
-    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set,  bg = "gray90")
+    #listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "gray90")
+    listbox.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set)
     listbox.pack(fill = "both", expand = 1)
     
     entry = tk.Entry(self, textvariable = entry_val)
-    entry.config(bg = "gray90")
+    #entry.config(bg = "gray90")
     entry.bind("<Return>", lambda k: print("Keyboard In.: \'[Execute Roll Formula]\', Value =", formula_roll()))
     entry.pack(fill = "x")
     entry_val.set(def_formula)
@@ -1020,7 +1021,7 @@ def journal_config(self, configs = False):
         label1 = tk.Label(popup, text = "Button Label:")
         label1.pack(fill="x")
         entry_lab = tk.Entry(popup, textvariable = popup_lab)
-        entry_lab.config(bg = "gray90")
+        #entry_lab.config(bg = "gray90")
         entry_lab.bind("<Return>",\
         lambda k1: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
@@ -1031,7 +1032,7 @@ def journal_config(self, configs = False):
         label2 = tk.Label(popup, text = "Roll Formula:")
         label2.pack(fill="x")
         entry_val = tk.Entry(popup, textvariable = popup_val)
-        entry_val.config(bg = "gray90")
+        #entry_val.config(bg = "gray90")
         entry_val.bind("<Return>",\
         lambda k2: (popup.destroy(), print("Button ReCfg:",\
         '\''+parent.cget("text")+'\',', "Revalue = "+setvalue(self, value)+',',\
@@ -1066,7 +1067,7 @@ def journal_config(self, configs = False):
         label1 = tk.Label(popup, text = "Button Label:")
         label1.pack(fill="x")
         entry_lab = tk.Entry(popup, textvariable = popup_lab)
-        entry_lab.config(bg = "gray90")
+        #entry_lab.config(bg = "gray90")
         entry_lab.bind("<Return>",\
         lambda k1: (popup.destroy(), b_make()))
         entry_lab.pack(padx = 35, pady = 5, fill = "x")
@@ -1075,7 +1076,7 @@ def journal_config(self, configs = False):
         label2 = tk.Label(popup, text = "Roll Formula:")
         label2.pack(fill="x")
         entry_val = tk.Entry(popup, textvariable = popup_val)
-        entry_val.config(bg = "gray90")
+        #entry_val.config(bg = "gray90")
         entry_val.bind("<Return>",\
         lambda k2: (popup.destroy(), b_make()))
         entry_val.pack(padx = 35, pady = 5, fill = "x")
@@ -1133,12 +1134,13 @@ def journal_config(self, configs = False):
     scrollx = tk.Scrollbar(self)
     scrollx.config(command = text.xview, orient = "horizontal")
     scrollx.pack(side = "bottom", fill = "x")
-    text.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "gray90",\
-    wrap = "word")
+    #text.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, bg = "gray90",\
+    #wrap = "word")
+    text.config(yscrollcommand = scrolly.set, xscrollcommand = scrollx.set, wrap = "word")
     text.pack(fill = "both", expand = 1)
     
     entry = tk.Entry(self, textvariable = entry_val)
-    entry.config(bg = "gray90")
+    #entry.config(bg = "gray90")
     entry.bind("<Return>", lambda k: print("Keyboard In.: \'[Execute Roll Formula]\', Value =", formula_roll()))
     entry.pack(fill = "x")
     entry_val.set(def_formula)
@@ -1167,7 +1169,7 @@ class dc_GUI(tk.Tk):
             popup = tk.Toplevel()
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
-            entry.config(bg = "gray90")
+            #entry.config(bg = "gray90")
             entry.bind("<Return>",\
             lambda k: (popup.destroy(), new_ltab(popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
@@ -1186,7 +1188,7 @@ class dc_GUI(tk.Tk):
             popup = tk.Toplevel()
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
-            entry.config(bg = "gray90")
+            #entry.config(bg = "gray90")
             entry.bind("<Return>",\
             lambda k: (popup.destroy(), new_jtab(popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
@@ -1358,7 +1360,7 @@ class dc_GUI(tk.Tk):
             popup = tk.Toplevel()
             popup.wm_title(title)
             entry = tk.Entry(popup, textvariable = popup_val)
-            entry.config(bg = "gray90")
+            #entry.config(bg = "gray90")
             entry.bind("<Return>",\
             lambda k: (popup.destroy(), notebook.tab(target, text = popup_val.get()[:30])))
             entry.pack(padx = 20, pady = 10, fill = "x")
