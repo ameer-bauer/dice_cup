@@ -6,7 +6,7 @@ groupings, just to name a few features.  It is designed to be a dice
 rolling engine for use with other programs or a GUI, but it works well
 on its own.
 
-~The help screen is below, enjoy.~
+The help screen is below, enjoy...
 
 Introduction to dice_cup 1.1.8
   Hello, dice_cup is a CLI program written in Python 3 to simulate
